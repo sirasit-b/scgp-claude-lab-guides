@@ -1,5 +1,9 @@
 # SCGP · Claude Lab Guides
 
+**GitHub Pages**
+- Claude for Technician: https://sirasit-b.github.io/scgp-claude-lab-guides/Claude_for_Technician_Lab_Guide.html
+- Claude for Researcher: https://sirasit-b.github.io/scgp-claude-lab-guides/Claude_for_Researcher_Lab_Guide.html
+
 คู่มือ Lab สำหรับหลักสูตร Claude (1 วัน) ของ SCGP (IPDC) จัดทำโดย BorntoDev
 
 | คู่มือ | เปิดดูออนไลน์ | โฟลเดอร์ไฟล์ Workshop |
