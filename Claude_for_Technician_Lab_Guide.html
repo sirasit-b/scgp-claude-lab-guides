@@ -1,0 +1,1492 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Claude for Technician · Lab Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&family=Instrument+Serif:ital@1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0a0b; --bg2:#111113; --surface:#161618; --surface2:#1d1d20; --line:#2a2a2f;
+  --text:#f4f4f5; --muted:#a1a1aa; --dim:#6b6b73;
+  --lime:#e4f04a; --lime-ink:#1a1a0a;
+  --A:#6c5ce7; --B:#f0656e; --C:#1fb3cc; --D:#4fcf6a; --E:#5b6cf0;
+  --A-soft:rgba(108,92,231,.16); --B-soft:rgba(240,101,110,.16); --C-soft:rgba(31,179,204,.16); --D-soft:rgba(79,207,106,.16); --E-soft:rgba(91,108,240,.16);
+  --radius:22px;
+  --font:"IBM Plex Sans Thai",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --serif:"Instrument Serif",Georgia,serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:90px}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font);font-size:16px;line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(900px 500px at 50% -10%,rgba(255,255,255,.06),transparent 70%),
+             radial-gradient(1px 1px at 12% 30%,#fff3 50%,transparent 51%),
+             radial-gradient(1px 1px at 82% 18%,#fff3 50%,transparent 51%),
+             radial-gradient(1px 1px at 68% 62%,#fff2 50%,transparent 51%),
+             radial-gradient(1px 1px at 22% 78%,#fff2 50%,transparent 51%)}
+main,header,footer{position:relative;z-index:1}
+a{color:inherit}
+code,.mono{font-family:var(--mono);font-size:.88em}
+code{background:var(--surface2);border:1px solid var(--line);padding:.08em .4em;border-radius:6px;word-break:break-word}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+
+/* NAV */
+.nav{position:sticky;top:0;z-index:20;background:linear-gradient(var(--bg) 60%,transparent);padding:16px 0 14px}
+.nav .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.logo{font-size:34px;font-weight:700;line-height:1;text-decoration:none}
+.pill{display:flex;gap:2px;background:#1a1a1d;border:1px solid var(--line);border-radius:999px;padding:5px;overflow-x:auto;scrollbar-width:none}
+.pill::-webkit-scrollbar{display:none}
+.pill{border-radius:20px}
+.pill{align-items:stretch}
+.pill a{align-content:center;text-decoration:none;color:var(--muted);font-size:13.5px;padding:7px 14px;border-radius:15px;white-space:nowrap;display:grid;grid-template-columns:auto auto;column-gap:8px;align-items:center;line-height:1.3}
+.pill a small{grid-column:1/-1;font-family:var(--mono);font-size:10.5px;color:var(--dim)}
+.pill a span{font-weight:500}
+.pill a .pg{font-style:normal;font-family:var(--mono);font-size:10.5px;padding:0 6px;border-radius:99px;background:#26262b;color:var(--dim)}
+.pill a.part .pg{background:color-mix(in srgb,var(--c) 30%,transparent);color:#fff}
+.pill a.full .pg{background:var(--c);color:#111}
+.pill a:hover{color:var(--text)}
+.pill a.on{background:#2a2a2f;color:var(--text)}
+.pill a.on small{color:var(--muted)}
+.shot{margin:14px 0 0;border:1px solid var(--line);border-radius:16px;overflow:hidden;background:#fff}
+.shot img{display:block;width:100%;height:auto}
+.shot figcaption{background:var(--surface2);color:var(--muted);font-size:13.5px;padding:10px 14px}
+.mini{margin:6px 0 0;padding-left:20px;font-size:14.5px;color:#d4d4d8}
+.mini li{margin:2px 0}
+.ex{margin-top:14px;border:1px dashed #ffffff30;border-radius:14px;padding:12px 16px}
+.ex summary{cursor:pointer;font-weight:600;font-size:14.5px;color:var(--lime)}
+.ex summary:focus-visible{outline:2px solid var(--lime);outline-offset:2px}
+.tools{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.tool{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:500;color:#d4d4d8;background:#1d1d20;border:1px solid var(--line);border-radius:999px;padding:3px 10px 3px 3px;white-space:nowrap;line-height:1.4}
+.tool i{display:grid;place-items:center;min-width:20px;height:20px;padding:0 4px;border-radius:999px;font:700 10px/1 var(--mono);font-style:normal}
+.legend{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:18px;padding:14px 16px;border:1px solid var(--line);border-radius:16px;background:var(--surface)}
+.legend-h{font-size:13px;color:var(--muted);margin-right:4px}
+.gl{font-weight:400;color:var(--muted);font-size:.92em}
+.lab-hero .gl{color:rgba(255,255,255,.72)}
+.legend-br{flex-basis:100%;height:0}
+.legend-n{flex-basis:100%;font-size:13px;color:var(--dim);margin-top:2px}
+.faq{margin-top:4px;border:1px solid var(--line);border-radius:20px;background:var(--surface);padding:0}
+.faq>summary{cursor:pointer;list-style:none;padding:18px 22px;font-weight:600;font-size:16px;display:flex;align-items:center;gap:10px}
+.faq>summary::-webkit-details-marker{display:none}
+.faq>summary::before{content:"?";display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--lime);color:var(--lime-ink);font-weight:700;font-size:14px}
+.faq>summary::after{content:"＋";margin-left:auto;color:var(--muted)}
+.faq[open]>summary::after{content:"－"}
+.faq>summary:focus-visible{outline:2px solid var(--lime);outline-offset:2px;border-radius:20px}
+.faq .fq{border-top:1px solid var(--line);padding:18px 22px}
+.faq .fq h5{margin:0;font-size:15px;font-weight:600}
+.faq .why{margin:6px 0 0;font-size:14px;color:#c9c9cf}
+.faq .why b{color:#fff;font-weight:600}
+.faq .short{background:rgba(228,240,74,.05)}
+.faq .short h5{color:var(--lime)}
+.dl{display:inline-flex;align-items:center;gap:10px;margin:12px 0 4px;background:var(--lime);color:var(--lime-ink);text-decoration:none;font-weight:600;font-size:15px;padding:8px 8px 8px 18px;border-radius:999px}
+.dl span{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:#111;color:var(--lime);font-size:14px}
+.dl:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.done-btn{appearance:none;cursor:pointer;font:500 13px var(--font);display:inline-flex;align-items:center;gap:8px;padding:5px 12px 5px 6px;border-radius:999px;border:1px solid var(--line);background:var(--surface2);color:var(--muted);white-space:nowrap}
+.done-btn i{width:20px;height:20px;border-radius:50%;border:1.5px solid #55555c;display:grid;place-items:center;font-style:normal;font-size:12px;color:transparent}
+.done-btn:hover{color:var(--text)}
+.done-btn:focus-visible{outline:2px solid var(--lime);outline-offset:2px}
+.is-done .done-btn{background:var(--lime);border-color:var(--lime);color:#111}
+.is-done .done-btn i{border-color:#111;background:#111;color:var(--lime)}
+.lstep,.step{transition:border-color .2s}
+.is-done{border-color:rgba(228,240,74,.35)!important}
+.is-done .prompt,.is-done .tbl,.is-done .cp,.is-done>p,.is-done>ul,.is-done .tree,.is-done .note{opacity:.5}
+.is-now{border-color:#ffffffaa!important;box-shadow:0 10px 40px rgba(0,0,0,.45)}
+.now-tag{display:none;font-size:12px;font-weight:600;color:#111;background:#fff;border-radius:999px;padding:1px 10px;vertical-align:middle}
+.is-now .now-tag{display:inline-block}
+.done-row{display:flex;justify-content:flex-end;margin-top:16px}
+.lstep-head .ctl{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+
+.btn-white{background:#fff;color:#111;text-decoration:none;font-size:14px;font-weight:500;padding:9px 18px;border-radius:12px;white-space:nowrap}
+
+/* HERO */
+.hero{text-align:center;padding:56px 0 0}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
+.eyebrow b{color:var(--lime);font-weight:500}
+.eyebrow i{display:inline-block;width:14px;height:10px;border-radius:3px;background:var(--lime)}
+h1{font-size:clamp(34px,6.4vw,64px);line-height:1.12;font-weight:500;letter-spacing:-.02em;margin:18px 0 0}
+h1 .l2{display:block;background:linear-gradient(180deg,#fff,#a8a8ae);-webkit-background-clip:text;background-clip:text;color:transparent}
+.script{font-family:var(--serif);font-style:italic;font-weight:400;color:#fff;-webkit-text-fill-color:#fff}
+.lead{max-width:620px;margin:20px auto 0;color:var(--muted);font-size:16.5px}
+.tag{position:absolute;font-size:13px;padding:4px 12px;border-radius:999px;color:#fff;font-weight:500}
+.tag::after{content:"";position:absolute;width:0;height:0;border:7px solid transparent}
+.tag.t1{left:6%;top:120px;background:#2f8f8a}
+.tag.t1::after{right:-12px;top:-8px;border-left-color:#3fb3a8;transform:rotate(-35deg)}
+.tag.t2{right:6%;top:250px;background:#e2575f}
+.tag.t2::after{left:-12px;top:-8px;border-right-color:#e2575f;transform:rotate(35deg)}
+
+.fan{display:flex;justify-content:center;align-items:flex-end;gap:0;margin:48px auto 90px;height:300px;max-width:900px;position:relative}
+.steps>*,.lab-body>*,.grid2>*,.grid3>*,.mission>*{min-width:0}
+.card{flex:0 0 200px;height:260px;border-radius:24px;padding:18px;text-decoration:none;position:relative;overflow:hidden;transition:transform .25s ease;box-shadow:0 20px 50px rgba(0,0,0,.5)}
+.card h3{margin:0;font-size:24px;font-weight:600;line-height:1.1;color:#fff}
+.card p{margin:4px 0 0;font-size:13px;color:rgba(255,255,255,.78)}
+.card .big{position:absolute;right:-6px;bottom:-34px;font-size:170px;font-weight:700;line-height:1;color:rgba(255,255,255,.22)}
+.card .blob{position:absolute;left:18px;bottom:22px;width:74px;height:74px;border-radius:50%;background:rgba(255,255,255,.9);box-shadow:inset -10px -12px 0 rgba(0,0,0,.12)}
+.card .blob::before,.card .blob::after{content:"";position:absolute;top:28px;width:10px;height:14px;border-radius:50%;background:#111}
+.card .blob::before{left:22px}.card .blob::after{right:22px}
+.card.a{background:linear-gradient(160deg,#7d6ff0,#4a3cc7);transform:rotate(-12deg) translate(40px,40px);z-index:1}
+.card.b{background:linear-gradient(160deg,#f77c84,#d9434f);transform:rotate(-6deg) translate(18px,12px);z-index:2}
+.card.c{background:linear-gradient(160deg,#2cc7de,#138aa3);transform:translateY(-8px);z-index:3;flex-basis:220px;height:290px}
+.card.d{background:linear-gradient(160deg,#68e07f,#2ea94a);transform:rotate(6deg) translate(-18px,12px);z-index:2}
+.card.e{background:linear-gradient(160deg,#7482ff,#3d4bd1);transform:rotate(12deg) translate(-40px,40px);z-index:1}
+.card:hover{z-index:5}
+.card.a:hover{transform:rotate(-12deg) translate(40px,20px)}
+.card.b:hover{transform:rotate(-6deg) translate(18px,-8px)}
+.card.c:hover{transform:translateY(-24px)}
+.card.d:hover{transform:rotate(6deg) translate(-18px,-8px)}
+.card.e:hover{transform:rotate(12deg) translate(-40px,20px)}
+.cta{position:absolute;top:-18px;left:50%;transform:translateX(30px);z-index:6;display:inline-flex;align-items:center;gap:10px;background:#fff;color:#111;text-decoration:none;font-size:14px;font-weight:500;padding:6px 6px 6px 16px;border-radius:999px;box-shadow:0 10px 30px rgba(0,0,0,.4)}
+.cta span{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--lime);font-weight:700}
+
+/* SECTIONS */
+section{padding:72px 0 8px}
+section.wrap{padding-top:72px;padding-bottom:8px}
+section.wrap.lab{padding-top:80px}
+.sec-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:24px}
+.kicker{font-size:13px;color:var(--muted);letter-spacing:.04em}
+h2{font-size:clamp(28px,4.2vw,42px);font-weight:500;letter-spacing:-.015em;line-height:1.15;margin:6px 0 0}
+h3{font-size:20px;font-weight:600;margin:0}
+h4{font-size:16.5px;font-weight:600;margin:0}
+.muted{color:var(--muted)}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:24px}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:500;padding:3px 11px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.chip.lime{background:var(--lime);color:var(--lime-ink);border-color:var(--lime)}
+.chip.human{background:rgba(255,255,255,.08);color:#fff;border-color:#ffffff33}
+.chip.ai{background:rgba(228,240,74,.12);color:var(--lime);border-color:rgba(228,240,74,.35)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+
+/* Mission */
+.mission{display:grid;grid-template-columns:1fr;gap:16px}
+.q3{display:grid;gap:10px}
+.q3 div{display:flex;gap:14px;align-items:center;background:var(--surface2);border:1px solid var(--line);border-radius:16px;padding:14px 16px}
+.q3 b{display:grid;place-items:center;flex:0 0 38px;height:38px;border-radius:12px;color:#111;font-weight:700}
+
+/* timeline */
+.tl{display:grid;gap:8px}
+.tl a{display:grid;grid-template-columns:118px 1fr auto;gap:14px;align-items:center;text-decoration:none;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 16px}
+.tl a:hover{border-color:#44444b}
+.tl .t{font-family:var(--mono);font-size:13px;color:var(--muted)}
+.tl .dot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:8px}
+.tl .brk{opacity:.55}
+
+/* readiness */
+.steps{counter-reset:s;display:grid;gap:14px}
+.step{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:20px 20px 20px 70px}
+.step::before{counter-increment:s;content:counter(s);position:absolute;left:20px;top:18px;width:34px;height:34px;border-radius:11px;background:var(--surface2);border:1px solid var(--line);display:grid;place-items:center;font-weight:600;font-size:15px}
+.step p{margin:6px 0 0}
+.check{list-style:none;padding:0;margin:12px 0 0;display:grid;gap:8px}
+.check li{display:flex;gap:12px;align-items:flex-start}
+.check input{appearance:none;flex:0 0 20px;width:20px;height:20px;margin-top:3px;border-radius:6px;border:1.5px solid #55555c;background:transparent;cursor:pointer;display:grid;place-items:center}
+.check input:checked{background:var(--lime);border-color:var(--lime)}
+.check input:checked::after{content:"";width:6px;height:11px;border:solid #111;border-width:0 2.5px 2.5px 0;transform:rotate(45deg) translate(-1px,-1px)}
+.check input:focus-visible{outline:2px solid var(--lime);outline-offset:2px}
+.check label{cursor:pointer}
+.check input:checked + label{color:var(--muted);text-decoration:line-through;text-decoration-color:#ffffff40}
+.progress{display:flex;align-items:center;gap:12px;font-size:13.5px;color:var(--muted)}
+.bar{flex:1;height:8px;border-radius:99px;background:var(--surface2);overflow:hidden;min-width:120px}
+.bar i{display:block;height:100%;width:0;background:var(--lime);border-radius:99px;transition:width .3s}
+
+.tree{font-family:var(--mono);font-size:13.5px;line-height:1.75;background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:18px 20px;overflow-x:auto;white-space:pre;color:#d4d4d8}
+.tree .c{color:var(--dim)}
+.tree .f{color:var(--lime)}
+
+/* PROMPT BLOCK */
+.prompt{margin-top:14px;border-radius:16px;border:1px solid var(--line);background:var(--bg2);overflow:hidden}
+.prompt-top{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px 10px 16px;border-bottom:1px solid var(--line);background:#141417}
+.prompt-id{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--muted);min-width:0}
+.prompt-id b{font-family:var(--mono);font-size:12.5px;color:#111;padding:2px 9px;border-radius:7px;font-weight:600}
+.copy{appearance:none;border:0;cursor:pointer;font:500 13px var(--font);background:#fff;color:#111;padding:6px 6px 6px 14px;border-radius:999px;display:inline-flex;align-items:center;gap:8px;flex:0 0 auto}
+.copy span{display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--lime);font-size:12px}
+.copy.done{background:var(--lime)}
+.copy:focus-visible{outline:2px solid var(--lime);outline-offset:2px}
+.prompt pre{margin:0;padding:16px 18px;font-family:var(--font);font-size:14.5px;line-height:1.75;white-space:pre-wrap;word-break:break-word;color:#e7e7ea}
+.prompt mark{background:rgba(228,240,74,.18);color:var(--lime);border-radius:5px;padding:0 4px}
+
+/* LAB */
+.lab{padding-top:80px}
+.lab-hero{border-radius:28px;padding:28px;position:relative;overflow:hidden;color:#fff}
+.lab-hero .letter{position:absolute;right:16px;bottom:-60px;font-size:240px;font-weight:700;line-height:1;color:rgba(255,255,255,.16)}
+.lab-hero h2{margin:8px 0 0;max-width:700px}
+.lab-hero p{max-width:640px;margin:10px 0 0;color:rgba(255,255,255,.88)}
+.lab-hero .chips{margin-top:16px}
+.lab-hero .chip{background:rgba(0,0,0,.22);border-color:rgba(255,255,255,.2);color:#fff}
+#labA .lab-hero{background:linear-gradient(135deg,#7d6ff0,#4337b8)}
+#labB .lab-hero{background:linear-gradient(135deg,#f77c84,#c93a46)}
+#labC .lab-hero{background:linear-gradient(135deg,#2cc7de,#11798f)}
+#labD .lab-hero{background:linear-gradient(135deg,#5fd877,#23893b)}
+#labE .lab-hero{background:linear-gradient(135deg,#7482ff,#3340b8)}
+.lab-body{display:grid;gap:16px;margin-top:16px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--muted);font-weight:500;font-size:13px}
+tr:last-child td{border-bottom:0}
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:16px;background:var(--surface)}
+.tbl td:first-child code{white-space:nowrap;word-break:normal}
+.lstep{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:22px}
+.lstep-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.lstep-head h4{display:flex;align-items:center;gap:12px}
+.num{display:grid;place-items:center;width:32px;height:32px;border-radius:10px;color:#111;font-weight:700;font-size:14px;flex:0 0 32px}
+.time{font-family:var(--mono);font-size:12.5px;color:var(--muted)}
+.cp{margin-top:14px;border-radius:14px;padding:14px 16px;background:rgba(255,255,255,.04);border:1px dashed #ffffff30}
+.cp strong{display:flex;align-items:center;gap:8px;font-size:14px}
+.cp p{margin:6px 0 0;font-size:14.5px;color:#d4d4d8}
+.outputs{display:flex;flex-wrap:wrap;gap:8px}
+.outputs code{font-size:12.5px}
+.note{border-left:3px solid var(--lime);padding:10px 16px;background:rgba(228,240,74,.06);border-radius:0 12px 12px 0;font-size:14.5px;color:#e4e4e7}
+.warn{border-left-color:var(--B);background:rgba(240,101,110,.08)}
+.A .num,.A b.id{background:var(--A);color:#fff}
+.B .num,.B b.id{background:var(--B);color:#fff}
+.C .num,.C b.id{background:var(--C);color:#06262c}
+.D .num,.D b.id{background:var(--D);color:#082610}
+.E .num,.E b.id{background:var(--E);color:#fff}
+.T .num,.T b.id{background:var(--lime);color:var(--lime-ink)}
+
+/* index */
+.pidx a{text-decoration:none}
+.pidx td:first-child{white-space:nowrap}
+.pidx b.id{font-family:var(--mono);font-size:12px;padding:2px 8px;border-radius:7px}
+
+/* rules */
+.rule{display:flex;gap:14px;align-items:flex-start}
+.rule i{flex:0 0 10px;height:10px;border-radius:50%;margin-top:9px}
+
+footer{padding:64px 0 48px;color:var(--dim);font-size:13px;text-align:center}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:#fff;color:#111;padding:10px 18px;border-radius:999px;font-size:14px;font-weight:500;opacity:0;transition:.25s;z-index:50;pointer-events:none}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+
+@media (max-width:860px){
+  .grid3{grid-template-columns:1fr}
+  .grid2,.mission{grid-template-columns:1fr}
+  .btn-white{display:none}
+  .tag{display:none}
+  .fan{height:230px;margin:36px auto 60px}
+  .card{flex-basis:118px;height:190px;padding:12px;border-radius:18px}
+  .card.c{flex-basis:130px;height:210px}
+  .card h3{font-size:17px}
+  .card p{font-size:11px}
+  .card .big{font-size:110px;bottom:-20px}
+  .card .blob{width:48px;height:48px;left:12px;bottom:14px}
+  .card .blob::before,.card .blob::after{top:18px;width:7px;height:10px}
+  .card .blob::before{left:13px}.card .blob::after{right:13px}
+  .card.a{transform:rotate(-12deg) translate(60px,30px)}
+  .card.b{transform:rotate(-6deg) translate(28px,8px)}
+  .card.d{transform:rotate(6deg) translate(-28px,8px)}
+  .card.e{transform:rotate(12deg) translate(-60px,30px)}
+  .cta{transform:translateX(-50%);top:-26px}
+  .tl a{grid-template-columns:96px 1fr}
+  .tl a .chip{display:none}
+  .step{padding:18px 16px 18px 60px}
+  .step::before{left:14px}
+}
+@media (max-width:520px){
+  .wrap{padding:0 16px}
+  .card.a,.card.e{display:none}
+  .card.b{transform:rotate(-6deg) translate(14px,8px)}
+  .card.d{transform:rotate(6deg) translate(-14px,8px)}
+  .lab-hero{padding:22px}
+  .panel,.lstep{padding:18px}
+  .prompt pre{font-size:14px;padding:14px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+@media print{
+  .nav,.copy,.fan,.cta,.toast{display:none!important}
+  body{background:#fff;color:#111}
+  body::before{display:none}
+  .panel,.lstep,.step,.prompt,.tbl{background:#fff;border-color:#ccc}
+  .prompt pre{color:#111}
+  section,.lab{padding-top:24px;break-inside:avoid-page}
+}
+
+.mission .q3{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+
+@media (max-width:520px){.tbl td:first-child code{white-space:normal;word-break:break-all}.tbl td:first-child{min-width:120px}}
+</style>
+</head>
+<body>
+<header class="nav">
+  <div class="wrap">
+    <a class="logo" href="#top" aria-label="กลับด้านบน">*</a>
+    <nav class="pill" aria-label="เมนูหลัก">
+      <a href="#top" class="on"><span>Home</span></a>
+      <a href="#schedule"><span>ตารางเรียน</span></a>
+      <a href="#ready"><span>Setup</span></a>
+      <a href="#labA"><span>Lab A</span></a>
+      <a href="#labB"><span>Lab B</span></a>
+      <a href="#labC"><span>Lab C</span></a>
+      <a href="#labD"><span>Lab D</span></a>
+      <a href="#labE"><span>Lab E</span></a>
+      <a href="#chrome"><span>Chrome</span></a>
+    </nav>
+    <a class="btn-white" href="#ready">เริ่มเลย</a>
+  </div>
+</header>
+
+<main id="top">
+<div class="wrap hero" style="position:relative">
+  <span class="tag t1">Driver</span>
+  <span class="tag t2">Checker</span>
+  <div class="eyebrow"><i></i><b>SCGP (IPDC)</b> — Claude for Technician · 1 Day</div>
+  <h1>เอกสารหน้างานครบวงจร<span class="l2"><span class="script">C</span>owork Lab Guide</span></h1>
+  <div class="fan">
+    <a class="cta" href="#ready">เริ่มที่นี่ <span>↗</span></a>
+    <a class="card a" href="#labA"><h3>Lab A</h3><p>Work Instruction</p><div class="blob"></div><div class="big">A</div></a>
+    <a class="card b" href="#labB"><h3>Lab B</h3><p>Video → Procedure</p><div class="blob"></div><div class="big">B</div></a>
+    <a class="card c" href="#labC"><h3>Lab C</h3><p>Test Report</p><div class="blob"></div><div class="big">C</div></a>
+    <a class="card d" href="#labD"><h3>Lab D</h3><p>Training Media</p><div class="blob"></div><div class="big">D</div></a>
+    <a class="card e" href="#labE"><h3>Lab E</h3><p>Skills + Auto</p><div class="blob"></div><div class="big">E</div></a>
+  </div>
+</div>
+
+<section class="wrap" id="mission">
+  <div class="sec-head"><div><div class="kicker">MISSION BRIEF</div><h2>โจทย์เดียวตลอดทั้งวัน</h2></div></div>
+  <div class="mission">
+    <div class="panel">
+      <h3>ชุดเอกสารสำหรับเครื่อง Bursting Strength Tester ที่ติดตั้งใหม่</h3>
+      <p class="muted" style="margin:8px 0 16px">ห้องปฏิบัติการเพิ่งติดตั้งเครื่อง BTD BST-1400 (รหัส QC-BST-07) ต้องมีเอกสารครบตั้งแต่วิธีใช้เครื่องจนถึงสอนงานพนักงานใหม่</p>
+      <div class="q3">
+        <div><b style="background:var(--A);color:#fff">A</b><span><strong>Work Instruction</strong> — จาก Standard และคู่มือเครื่อง</span></div>
+        <div><b style="background:var(--B);color:#fff">B</b><span><strong>Work Procedure</strong> — จากวิดีโอการใช้งานจริง</span></div>
+        <div><b style="background:var(--C)">C</b><span><strong>Test Report</strong> — จากข้อมูลดิบของเครื่อง</span></div>
+        <div><b style="background:var(--D)">D</b><span><strong>สื่อสอนงาน</strong> — Flowchart, OPL, การ์ด, สไลด์, แบบทดสอบ</span></div>
+        <div><b style="background:var(--E);color:#fff">E</b><span><strong>Skill + Automation</strong> — นำกลับไปใช้กับเครื่องอื่น</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="legend">
+    <span class="legend-h">ป้ายขั้นตอน</span>
+    <span class="chip human">● คนทำเอง</span>
+    <span class="chip ai">● ส่ง Prompt ให้ Cowork</span>
+    <span class="chip">ข้อความ <mark style="background:rgba(228,240,74,.18);color:var(--lime);border-radius:5px;padding:0 4px">ไฮไลต์สีเหลือง</mark> ใน Prompt = ต้องแก้ก่อนส่ง</span>
+    <span class="legend-br"></span>
+    <span class="legend-h">ป้ายเครื่องมือ</span>
+    <span class="tool"><i style="background:#d97757;color:#fff">✱</i>Claude Cowork</span><span class="tool"><i style="background:#4285f4;color:#fff">G</i>Gemini / NotebookLM</span><span class="tool"><i style="background:#9aa0a6;color:#111">KF</i>ภาพ Key Frame</span><span class="tool"><i style="background:#8b7cf6;color:#fff">SA</i>Sub Agent</span><span class="tool"><i style="background:#5b8cff;color:#fff">Sk</i>Skill</span><span class="tool"><i style="background:#f0656e;color:#fff">ST</i>Scheduled Task</span><span class="tool"><i style="background:#e4f04a;color:#1a1a0a">LA</i>Live Artifact</span><span class="tool"><i style="background:#3776ab;color:#fff">Py</i>Python</span><span class="tool"><i style="background:#e44d26;color:#fff">&lt;/&gt;</i>HTML / Mermaid</span><span class="tool"><i style="background:#21a366;color:#fff">X</i>Excel</span><span class="tool"><i style="background:#2b7cd3;color:#fff">W</i>Word</span><span class="tool"><i style="background:#d35230;color:#fff">P</i>PowerPoint</span>
+    <span class="legend-n">ทุกขั้นทำใน Claude Cowork ยกเว้นที่มีป้าย Gemini / NotebookLM · ป้ายในการ์ดบอกความสามารถหรือไฟล์ที่ใช้เพิ่มในขั้นนั้น<br>ศัพท์ที่อาจไม่คุ้น มีคำอธิบายสั้น ๆ <span class="gl">(ในวงเล็บสีเทาแบบนี้)</span> ตรงที่เจอครั้งแรก</span>
+  </div>
+</section>
+
+<section class="wrap" id="schedule">
+  <div class="sec-head"><div><div class="kicker">AGENDA · 09:00–16:00</div><h2>ตารางเรียน</h2></div></div>
+  <div class="tl">
+    <a href="#ready"><span class="t">ก่อนวันอบรม</span><span><span class="dot" style="background:var(--lime)"></span>Setup · เตรียมเครื่องให้พร้อม</span><span class="chip">~15 นาที</span></a>
+    <a href="#mission"><span class="t">09:00–09:20</span><span><span class="dot" style="background:#fff"></span>Module 0 · Recap &amp; Mission Brief + Pre-test + จัดกลุ่ม</span><span class="chip">20 นาที</span></a>
+    <a href="#ready"><span class="t">09:20–10:00</span><span><span class="dot" style="background:#fff"></span>Module 1 · Work Document Workflow Canvas + ตั้ง Project</span><span class="chip">40 นาที</span></a>
+    <a href="#labA"><span class="t">10:00–10:45</span><span><span class="dot" style="background:var(--A)"></span>Lab A · Standard &amp; Manual → Work Instruction</span><span class="chip">45 นาที</span></a>
+    <a class="brk"><span class="t">10:45–11:00</span><span>พักเบรก</span></a>
+    <a href="#labB"><span class="t">11:00–12:00</span><span><span class="dot" style="background:var(--B)"></span>Lab B · Video → Work Procedure</span><span class="chip">60 นาที</span></a>
+    <a class="brk"><span class="t">12:00–13:00</span><span>พักกลางวัน</span></a>
+    <a href="#labC"><span class="t">13:00–14:00</span><span><span class="dot" style="background:var(--C)"></span>Lab C · Test Data → Test Report</span><span class="chip">60 นาที</span></a>
+    <a class="brk"><span class="t">14:00–14:15</span><span>พักเบรก</span></a>
+    <a href="#labD"><span class="t">14:15–15:05</span><span><span class="dot" style="background:var(--D)"></span>Lab D · Flowchart, Visual &amp; Training Media</span><span class="chip">50 นาที</span></a>
+    <a href="#labE"><span class="t">15:05–15:45</span><span><span class="dot" style="background:var(--E)"></span>Lab E · Technician Skills Library + Automation</span><span class="chip">40 นาที</span></a>
+    <a class="brk"><span class="t">15:45–16:00</span><span>สรุปผล, Post-test และแนวทางต่อยอด</span></a>
+  </div>
+</section>
+
+<section class="wrap T" id="ready">
+  <div class="sec-head">
+    <div><div class="kicker">SETUP · ทำก่อนวันอบรม ~15 นาที</div><h2>เตรียมเครื่องให้พร้อม</h2></div>
+    <div class="progress" style="min-width:260px"><span id="pText">0 / 0</span><div class="bar"><i id="pBar"></i></div></div>
+  </div>
+  <div class="note" style="margin-bottom:14px">หลักสูตรนี้ทำเป็นกลุ่ม <strong>2–3 คนต่อโน้ตบุ๊ก 1 เครื่อง</strong> ใช้คู่มือนี้กับเครื่องของกลุ่ม</div>
+  <div class="steps">
+    <div class="step">
+      <h4>ติดตั้งโปรแกรมและบัญชี</h4>
+      <div class="tools"><span class="tool"><i style="background:#d97757;color:#fff">✱</i>Claude Cowork</span><span class="tool"><i style="background:#21a366;color:#fff">X</i>Excel</span><span class="tool"><i style="background:#2b7cd3;color:#fff">W</i>Word</span><span class="tool"><i style="background:#d35230;color:#fff">P</i>PowerPoint</span><span class="tool"><i style="background:#4285f4;color:#fff">G</i>Gemini / NotebookLM</span></div>
+      <ul class="check"><li><input type="checkbox" id="r1"><label for="r1">โน้ตบุ๊กของกลุ่มติดตั้ง <strong>Claude Desktop</strong> และเปิดโหมด <strong>Cowork<span class="gl"> (โหมดที่ Claude ทำงานกับไฟล์ในเครื่องให้ได้)</span></strong> ได้</label></li><li><input type="checkbox" id="r2"><label for="r2">เข้าใช้งานผ่าน <strong>API Gateway<span class="gl"> (ช่องทางที่องค์กรใช้เชื่อมต่อ AI)</span> ของ SCGP</strong> ได้ (ไม่ใช้ Free-tier หรือ Public AI)</label></li><li><input type="checkbox" id="r3"><label for="r3">สมาชิกทุกคนมี <strong>API Key<span class="gl"> (รหัสประจำตัวสำหรับใช้ AI)</span> ของตัวเองที่มีโควตาคงเหลือ</strong> (สลับใช้ Key ของแต่ละคนในแต่ละ Lab เพื่อกระจายโควตา)</label></li><li><input type="checkbox" id="r4"><label for="r4">มี Microsoft <strong>Excel, Word และ PowerPoint</strong> เปิดไฟล์ได้</label></li><li><input type="checkbox" id="r5"><label for="r5">ถ้าองค์กรอนุญาต: เข้า <strong>Gemini / NotebookLM</strong> ได้ (ใช้ใน Lab B ทาง A ถ้าไม่ได้ ใช้ทาง B แทนได้)</label></li><li><input type="checkbox" id="r6"><label for="r6">ตอบ <strong>Pre-Course Survey</strong> เรียบร้อย</label></li></ul>
+    </div>
+
+    <div class="step">
+      <h4>ดาวน์โหลดไฟล์ Workshop</h4>
+      <a class="dl" href="https://drive.google.com/drive/folders/1JMJoGsHR0dtQM2HdgYkxseXr_yjLkAHA" target="_blank" rel="noopener">ดาวน์โหลดไฟล์ Workshop <span>↓</span></a>
+      <p>กดปุ่มด้านบนเพื่อเปิดโฟลเดอร์ <code>SCGP-Technician-Labs</code> บน Google Drive คลิกที่<strong>ชื่อโฟลเดอร์ด้านบน</strong> แล้วเลือก <strong>ดาวน์โหลด</strong> ตามภาพ (Drive จะรวมเป็น .zip ให้) จากนั้นแตกไฟล์ไว้ในเครื่อง ทุก Lab แยกโฟลเดอร์และมีไฟล์ครบแล้ว <strong>ไม่ต้องเลือกไฟล์เอง</strong> ส่วนโฟลเดอร์ <code>output/</code> และ <code>skills/</code> Prompt<span class="gl"> (ข้อความสั่งงาน AI)</span> จะสร้างให้</p>
+<figure class="shot"><img src="data:image/jpeg;base64,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" alt="Google Drive: คลิกชื่อโฟลเดอร์ SCGP-Technician-Labs ด้านบน แล้วเลือกเมนู ดาวน์โหลด" loading="lazy"><figcaption>คลิกชื่อโฟลเดอร์ <code>SCGP-Technician-Labs</code> → <strong>ดาวน์โหลด</strong></figcaption></figure>
+<div class="tree" style="margin-top:14px">SCGP-Technician-Labs/
+├── <span class="f">คู่มือ.html</span>
+├── 00_Check/   src/  <span class="f">Data_Export_2026-10-20.csv · Spec_Sheet.xlsx · keyframe_00-00-36.jpg</span>
+├── LabA/       src/  <span class="f">TestMethod_TM-201.pdf · Manual_BST-1400_EN.pdf · Datasheet_Consumables.pdf · WI_Old_BST-001.docx</span>
+├── LabB/       src/  <span class="f">Video_BST_Demo.mp4 · keyframes/ (26 ภาพ)</span>
+│               prev/ <span class="f">WI_BST-002_Rev00.docx</span>                <span class="c"># ไฟล์สำรอง</span>
+├── LabC/       src/  <span class="f">Data_Export_2026-10-20.csv · Data_ManualLog_2026-10-21.xlsx · Spec_Sheet.xlsx</span>
+│                     <span class="f">Template_TestReport.docx · TestMethod_TM-201.pdf</span>
+├── LabD/       src/  <span class="f">WI_BST-002_Rev00.docx</span>
+└── LabE/       src/  <span class="f">Skills_Rules.md · Spec_Sheet.xlsx · cobb/ (2 ไฟล์) · inbox/ (3 ไฟล์)</span></div>
+      <div class="note" style="margin-top:14px"><strong>กติกาเดียวที่ต้องจำ:</strong> ทำ Lab ไหน เปิดโฟลเดอร์ Lab นั้นเป็น Project<span class="gl"> (โฟลเดอร์งานที่เปิดใน Cowork)</span> · โฟลเดอร์ <code>prev/</code> ใน LabB มี WI สำรองให้แล้ว ถ้ากลุ่มทำ Lab A เสร็จ ให้วาง WI ของตัวเองลงไปด้วย</div>
+      <ul class="check"><li><input type="checkbox" id="r7"><label for="r7">แตกไฟล์แล้วเห็นโฟลเดอร์ <code>00_Check</code> และ <code>LabA</code>–<code>LabE</code> ครบ 6 โฟลเดอร์</label></li><li><input type="checkbox" id="r8"><label for="r8">เปิดโฟลเดอร์ <code>00_Check</code> เป็น Cowork Project ได้</label></li></ul>
+    </div>
+
+    <div class="step">
+      <h4>ทดสอบ Cowork ด้วย Prompt 5 ข้อ</h4>
+      <div class="tools"><span class="tool"><i style="background:#3776ab;color:#fff">Py</i>Python</span><span class="tool"><i style="background:#21a366;color:#fff">X</i>Excel</span><span class="tool"><i style="background:#2b7cd3;color:#fff">W</i>Word</span><span class="tool"><i style="background:#d35230;color:#fff">P</i>PowerPoint</span><span class="tool"><i style="background:#9aa0a6;color:#111">KF</i>ภาพ Key Frame</span><span class="tool"><i style="background:#8b7cf6;color:#fff">SA</i>Sub Agent</span></div>
+      <p class="muted">ทำใน Project <code>00_Check</code> ส่งทีละข้อ ใช้เวลารวมราว 5 นาที</p>
+      <div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">T1</b>เชื่อมต่อและอ่านไฟล์</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>แสดงรายชื่อไฟล์ในโฟลเดอร์ src/ พร้อมขนาดไฟล์ ยังไม่ต้องสรุปเนื้อหา
+แล้วสร้างโฟลเดอร์ output/ ไว้เก็บไฟล์ทดสอบ
+ถ้ามีไฟล์ที่เปิดไม่ได้ ให้แจ้งชื่อไฟล์และสาเหตุ</pre></div>
+      <div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">T2</b>อ่านไฟล์ข้อมูลเครื่องทดสอบด้วย Python</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>รัน Python เพื่อตรวจความพร้อม:
+1) พิมพ์ Version ของ python และ openpyxl
+2) อ่าน src/Data_Export_2026-10-20.csv โดยข้ามบรรทัดที่ขึ้นต้นด้วย # แล้วบอกชื่อคอลัมน์และจำนวนแถวข้อมูล
+3) อ่าน src/Spec_Sheet.xlsx แล้วบอกชื่อ Sheet ทั้งหมด
+ถ้า Library ใดไม่มี ให้แจ้งก่อน ห้ามติดตั้งเองจนกว่าฉันจะยืนยัน</pre></div>
+      <div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">T3</b>สร้างไฟล์ Office 3 แบบ</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>สร้างไฟล์ทดสอบ 3 ไฟล์:
+1) output/_check.xlsx ใส่ตัวเลข 1, 2, 3 ใน A1:A3 และสูตร =AVERAGE(A1:A3) ใน A4 (ต้องเป็นสูตรจริง ไม่ใช่ตัวเลข 2)
+2) output/_check.docx มีหัวข้อ 1 บรรทัด ย่อหน้าภาษาไทย 1 ย่อหน้า และกรอบคำเตือน ⚠ 1 กรอบ
+3) output/_check.pptx สไลด์ 1 หน้า มีหัวข้อภาษาไทยและ Speaker Notes
+แล้วยืนยันว่าทั้ง 3 ไฟล์ถูกสร้างสำเร็จ</pre></div>
+      <div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">T4</b>อ่านภาพ Key Frame</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>ดูภาพ src/keyframe_00-00-36.jpg แล้วบอกว่าเห็นอะไรในภาพ และอ่านตัวเลขบนหน้าจอเครื่องได้หรือไม่
+ถ้าอ่านไม่ชัด ให้เขียนว่า "อ่านไม่ชัด" ห้ามเดา</pre></div>
+      <div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">T5</b>Sub Agent</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>ใช้ Sub Agent 1 ตัว อ่าน src/Spec_Sheet.xlsx Sheet Spec แล้วรายงานกลับว่ามีเกรดอะไรบ้าง และค่า Burst min ของแต่ละเกรด
+บอกด้วยว่างานนี้ทำโดย Sub Agent จริง</pre></div>
+      <ul class="check"><li><input type="checkbox" id="rt1"><label for="rt1">T1 เห็นไฟล์ครบ 3 ไฟล์ และมีโฟลเดอร์ <code>output/</code> แล้ว</label></li><li><input type="checkbox" id="rt2"><label for="rt2">T2 อ่าน CSV ได้ ข้ามบรรทัด # ถูก และเห็นชื่อ Sheet ของ Spec<span class="gl"> (เกณฑ์ที่กำหนดของสินค้า)</span></label></li><li><input type="checkbox" id="rt3"><label for="rt3">T3 เปิดไฟล์ Excel / Word / PowerPoint ได้ทั้ง 3 ไฟล์ คลิก A4 เห็นสูตร และภาษาไทยไม่เพี้ยน</label></li><li><input type="checkbox" id="rt4"><label for="rt4">T4 AI อธิบายภาพได้ และบอกตรง ๆ เมื่ออ่านค่าไม่ชัด</label></li><li><input type="checkbox" id="rt5"><label for="rt5">T5 ได้คำตอบจาก Sub Agent<span class="gl"> (ผู้ช่วย AI อีกตัวที่แยกไปทำงานย่อย)</span></label></li></ul>
+      <div class="note warn" style="margin-top:14px">ถ้าข้อใดไม่ผ่าน ให้แจ้งผู้ช่วยวิทยากร<strong>ก่อนวันอบรม</strong> พร้อมแคปหน้าจอข้อความ Error</div>
+    </div>
+
+    <div class="step">
+      <h4>Module 1 · ตั้ง Project และบทบาทในกลุ่ม (ทำในคลาส)</h4>
+      <p>วิทยากรพาออกแบบวงจรเอกสารหน้างานด้วย <strong>Work Document Workflow Canvas<span class="gl"> (แผนวงจรเอกสาร 1 หน้าที่กลุ่มกรอกร่วมกัน)</span></strong> (Source → ร่างเอกสาร → ตรวจกับหน้างานจริง → อนุมัติตามระบบควบคุมเอกสาร → ใช้สอนงาน) กลุ่มละ 1 ชุด จากนั้นแบ่งบทบาทในกลุ่ม และ<strong>สลับกันทุก Lab</strong>:</p>
+      <div class="tbl"><table><thead><tr><th>บทบาท</th><th>หน้าที่</th></tr></thead><tbody><tr><td>Driver<span class="gl"> (คนพิมพ์ Prompt)</span></td><td>พิมพ์ Prompt และจัดการไฟล์</td></tr><tr><td>Checker<span class="gl"> (คนตรวจกับต้นฉบับ)</span></td><td>เปิดต้นฉบับตรวจค่าที่ AI อ้าง และคำนวณซ้ำด้วย Excel</td></tr><tr><td>Recorder<span class="gl"> (คนจดบันทึก)</span></td><td>จดจุดที่ AI ผิดหรือต้องแก้ Prompt</td></tr></tbody></table></div>
+      <p class="muted" style="font-size:14px;margin:12px 0 0">ใส่ Instruction<span class="gl"> (กฎประจำ Project ที่ Claude ทำตามทุกครั้ง)</span> กลางที่วิทยากรแจกในช่อง Instruction ของ<strong>ทุก Project</strong> ตอนเปิดครั้งแรก ถ้าวิทยากรไม่ได้แจกฉบับอื่น ใช้ข้อความนี้ได้เลย</p>
+      <div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">IN</b>Instruction กลาง (คัดลอกไปวาง)</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>กฎประจำ Project — Claude for Technician (SCGP IPDC)
+
+1) เขียนภาษาไทยที่พนักงานหน้างานอ่านเข้าใจ
+   ประโยคสั้น 1 การกระทำต่อ 1 ข้อ ศัพท์เทคนิคภาษาอังกฤษใช้ได้
+2) ทุกค่า Parameter ตัวเลข และเกณฑ์ ต้องอ้างแหล่งที่มา
+   [ชื่อไฟล์, หน้า, หัวข้อ] หรือแบบสั้น เช่น [TM 6.2] [OM 5.2] ถ้าหาไม่พบให้เขียนว่า "ไม่พบในเอกสาร" ห้ามเดา
+3) คำเตือน Safety ใส่สัญลักษณ์ ⚠ และกรอบ วางไว้ก่อนขั้นตอนที่เกี่ยวข้อง
+4) หน่วย: ค่า Burst ใช้ kPa (ถ้าแปลงหน่วยให้แสดงสูตร), แกรมเมจ g/m², Cobb60 g/m²
+5) ห้ามแก้ไฟล์ใน src/ และ prev/ ผลลัพธ์ทุกไฟล์บันทึกใน output/ ตามชื่อที่ Prompt กำหนด
+6) เอกสารทุกฉบับที่สร้าง ติดป้าย "DRAFT — รอตรวจตามระบบควบคุมเอกสาร"
+7) ค่าด้าน Safety เกณฑ์ผ่าน/ไม่ผ่าน และข้อขัดแย้งระหว่างเอกสาร ห้ามตัดสินเอง ให้เขียนว่า "รอหัวหน้าห้องแล็บตัดสิน"
+8) ถ้าข้อมูลไม่พอ ไฟล์เปิดไม่ได้ หรือค่าน่าสงสัย ให้หยุดและถามก่อน ห้ามแก้ค่าเอง</pre></div>
+      <ul class="check"><li><input type="checkbox" id="rm1"><label for="rm1">แบ่งบทบาท Driver / Checker / Recorder ของ Lab แรกแล้ว</label></li><li><input type="checkbox" id="rm2"><label for="rm2">เก็บข้อความ Instruction กลางไว้ พร้อมวางใน Project ของแต่ละ Lab</label></li></ul>
+    </div>
+  </div>
+
+    <details class="faq">
+      <summary>วิธีแก้ปัญหาที่พบบ่อย · Setup</summary>
+      <div class="fq"><h5>T2 แจ้งว่าไม่มี openpyxl</h5><p class="why"><b>ทำไม:</b> เครื่องบางเครื่องยังไม่ได้ติดตั้ง Library สำหรับอ่านไฟล์ Excel</p><p class="why"><b>ถ้ายังไม่ได้:</b> แคปหน้าจอ Error ส่งผู้ช่วยวิทยากร เครือข่ายองค์กรอาจบล็อกการติดตั้ง</p><div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">S·1</b>ติดตั้ง Library</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>ติดตั้ง openpyxl ด้วย pip แล้วรัน T2 ใหม่:
+- พิมพ์ Version ของ python และ openpyxl
+- อ่าน src/Data_Export_2026-10-20.csv (ข้ามบรรทัด #)
+- และอ่านชื่อ Sheet ของ src/Spec_Sheet.xlsx
+
+ถ้าติดตั้งไม่ได้เพราะเครือข่ายหรือสิทธิ์ ให้แสดงข้อความ Error ทั้งหมด</pre></div></div>
+      <div class="fq"><h5>T3 คลิก A4 แล้วเห็นเลข 2 ไม่ใช่สูตร</h5><p class="why"><b>ทำไม:</b> AI คำนวณค่าเองแล้วเขียนเป็นตัวเลข แทนที่จะเขียนสูตรลงเซลล์</p><div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">S·2</b>บังคับเขียนสูตร</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>สร้าง output/_check.xlsx ใหม่ด้วย openpyxl: ใส่ 1, 2, 3 ใน A1:A3 และเขียนข้อความสูตร "=AVERAGE(A1:A3)" ลงเซลล์ A4 โดยตรง
+ห้ามคำนวณค่าเอง แล้วเปิดไฟล์อ่านกลับมายืนยันว่า A4 เก็บเป็นสูตร</pre></div></div>
+      <div class="fq"><h5>ภาษาไทยใน Word หรือ PowerPoint เป็นกล่องหรืออ่านไม่ออก</h5><p class="why"><b>ทำไม:</b> ฟอนต์ที่ใช้สร้างไฟล์ไม่รองรับภาษาไทย</p><div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">S·3</b>ตั้งฟอนต์ภาษาไทย</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>สร้าง output/_check.docx และ output/_check.pptx ใหม่ ตั้งฟอนต์ทั้งเอกสาร (รวมฟอนต์สำหรับภาษาไทย/Complex Script) เป็น Tahoma
+เนื้อหาเหมือนเดิม แล้วยืนยันว่าสร้างสำเร็จ</pre></div></div>
+      <div class="fq"><h5>T4 AI บอกว่าดูภาพไม่ได้</h5><p class="why"><b>ทำไม:</b> บางการตั้งค่าไม่ส่งภาพให้ AI อ่าน ถ้าดูภาพไม่ได้ Lab B ต้องใช้ทาง A (Gemini / NotebookLM) แทน</p><p class="why"><b>ถ้ายังไม่ได้:</b> แจ้งผู้ช่วยวิทยากร และเตรียมใช้ Lab B ทาง A</p><div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">S·4</b>ลองให้อ่านภาพอีกครั้ง</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>เปิดไฟล์ภาพ src/keyframe_00-00-36.jpg ด้วยเครื่องมืออ่านไฟล์ แล้วบรรยายสิ่งที่เห็น 3 ประโยค
+ถ้ายังดูภาพไม่ได้ ให้บอกเหตุผลที่ระบบแจ้งมาตรง ๆ</pre></div></div>
+      <div class="fq"><h5>T5 ตอบเองโดยไม่ใช้ Sub Agent</h5><p class="why"><b>ทำไม:</b> Prompt ไม่ชัดพอ AI เลยทำงานเองในแชทหลัก</p><div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">S·5</b>สั่งให้ใช้ Sub Agent ชัด ๆ</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>สร้าง Sub Agent 1 ตัว ส่งงานนี้ให้ Sub Agent ทำแยก ห้ามทำเองในแชทหลัก:
+"อ่าน src/Spec_Sheet.xlsx Sheet Spec แล้วรายงานเกรดทั้งหมดและค่า Burst min ของแต่ละเกรด"
+เมื่อ Sub Agent ส่งผลกลับมา ให้แสดงผลนั้น และบอกว่าได้มาจาก Sub Agent</pre></div></div>
+    </details>
+</section>
+
+<!-- LAB A -->
+<section class="wrap lab A" id="labA">
+  <div class="lab-hero">
+    <div class="letter">A</div>
+    <div class="kicker" style="color:rgba(255,255,255,.8)">LAB A · 10:00–10:45 · 45 นาที</div>
+    <h2>Standard &amp; Manual → Work Instruction</h2>
+    <p>แปลง Test Method และคู่มือเครื่อง (ภาษาอังกฤษ) เป็น Work Instruction<span class="gl"> (เอกสารขั้นตอนการทำงานหน้างาน)</span> ภาษาไทยของเครื่อง Bursting Strength Tester ที่ติดตั้งใหม่ (QC-BST-07) โดยทุกค่า Parameter<span class="gl"> (ค่าที่ต้องตั้งหรือควบคุมในการทดสอบ)</span> อ้างแหล่งที่มาได้ และสรุปว่า WI ฉบับเก่าต้องแก้อะไร</p>
+    <div class="chips"><span class="chip">5 Prompt</span><span class="chip">Checker เปิดตรวจ 5 จุด</span><span class="chip">Safety ต้องครบ</span></div>
+  </div>
+  <div class="lab-body">
+<div class="tbl"><table><thead><tr><th>ไฟล์ใน src/ (Equipment Doc Pack)</th><th>คืออะไร</th></tr></thead><tbody><tr><td><code>TestMethod_TM-201.pdf</code></td><td>Test Method ภายใน เขียนตามแนว ISO 2758 / TAPPI T 403 (อังกฤษ 3 หน้า)</td></tr><tr><td><code>Manual_BST-1400_EN.pdf</code></td><td>คู่มือการใช้งานและบำรุงรักษาเครื่อง BST-1400 (อังกฤษ 7 หน้า)</td></tr><tr><td><code>Datasheet_Consumables.pdf</code></td><td>Datasheet แผ่นยาง (Diaphragm) น้ำมันไฮดรอลิก และแหวนแคลมป์</td></tr><tr><td><code>WI_Old_BST-001.docx</code></td><td>WI ฉบับเก่า (ปี 2562) ของเครื่องรุ่นเก่า ใช้เป็นแบบฟอร์มหัวกระดาษ และหาจุดที่ล้าสมัย</td></tr></tbody></table></div>
+    <div class="note">ทุกไฟล์เป็นเอกสารจำลองเพื่อการอบรม ยี่ห้อ BTD Instruments ไม่มีอยู่จริง</div>
+    <div class="lstep">
+      <div class="lstep-head"><h4><span class="num">0</span>เปิด Project LabA</h4></div>
+      <p style="margin:10px 0 0">เปิดโฟลเดอร์ <code>LabA</code> เป็น Cowork Project ใส่ Instruction กลาง แล้วส่ง Prompt นี้เพื่อตรวจไฟล์และสร้างโฟลเดอร์ผลลัพธ์ <strong>ทำทุก Prompt ของ Lab นี้ต่อกันในแชทเดียว</strong> เพราะบาง Prompt อ้างถึงผลในแชทก่อนหน้า และอย่าลืมสลับบทบาท Driver / Checker / Recorder กับ API Key ของ Lab นี้</p>
+      <div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">A0</b>ตรวจไฟล์ + สร้างโฟลเดอร์</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>แสดงรายชื่อไฟล์ใน src/ (ต้องมี 4 ไฟล์: TestMethod_TM-201.pdf, Manual_BST-1400_EN.pdf, Datasheet_Consumables.pdf, WI_Old_BST-001.docx)
+ยืนยันว่าครบตามนี้ ยังไม่ต้องอ่านเนื้อหาไฟล์
+จากนั้นสร้างโฟลเดอร์ output/ ไว้เก็บผลลัพธ์ของ Lab นี้
+ถ้าไฟล์ไม่ครบหรือเปิดไม่ได้ ให้แจ้งชื่อไฟล์</pre></div>
+    </div>
+    <div class="lstep">
+      <div class="lstep-head"><h4><span class="num">1</span>สกัด Parameter พร้อมแหล่งที่มา</h4></div>
+      <div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">A1</b>Parameter Table</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>อ่าน 3 ไฟล์นี้ใน src/:
+- TestMethod_TM-201.pdf
+- Manual_BST-1400_EN.pdf
+- Datasheet_Consumables.pdf
+
+สร้างตาราง Parameter ของการทดสอบ Bursting Strength โหมด PAPER
+คอลัมน์: Parameter | ค่า | หน่วย | ชื่อไฟล์ | หน้า | หัวข้อ
+
+ต้องมีอย่างน้อย:
+- สภาวะปรับสภาพ
+- จำนวนและขนาดชิ้นทดสอบ
+- ช่วงวัด
+- อัตราปั๊ม
+- วิธีจับยึด
+- เกณฑ์ตรวจแผ่นยาง
+- หน่วยแสดงผล
+- เกณฑ์ชิ้นทดสอบที่ใช้ไม่ได้
+- การแปลงหน่วย
+- รอบการเปลี่ยนแผ่นยางและน้ำมัน
+- เวลาอุ่นเครื่อง
+
+กติกา:
+- ทุกค่าต้องมีชื่อไฟล์ หน้า และหัวข้อ ถ้าหาไม่พบให้เขียนว่า "ไม่พบในเอกสาร"
+- ถ้าเอกสาร 2 ฉบับให้ค่าไม่ตรงกัน ให้แสดงทั้ง 2 ค่าในตาราง "ข้อขัดแย้งระหว่างเอกสาร" ห้ามเลือกค่าเอง
+- แยกรายการคำเตือนด้าน Safety ทั้งหมดเป็นอีกตาราง พร้อมแหล่งที่มา
+
+แสดงผลในแชท และบันทึกเป็นไฟล์ output/LabA_Step1_Parameters.md (ขั้นที่ 2–3 จะใช้ไฟล์นี้)</pre></div>
+      <div class="cp"><strong><span class="chip human">คนทำเอง</span> Checkpoint 1 · Checker</strong><p>สุ่ม 5 ค่าจากตาราง แล้วเปิดหน้าต้นฉบับตามที่ AI อ้าง ถ้าผิดเกิน 1 ค่า ให้สั่งแก้ก่อนไปต่อ และตรวจว่ามีตาราง "ข้อขัดแย้งระหว่างเอกสาร" ถ้า AI บอกว่าไม่มีเลย ให้ถามกลับว่า "ตรวจอายุการใช้งานแผ่นยางในทุกไฟล์แล้วหรือยัง"</p></div>
+    </div>
+    <div class="lstep">
+      <div class="lstep-head"><h4><span class="num">2</span>ร่าง Work Instruction (Word)</h4></div>
+      <div class="tools"><span class="tool"><i style="background:#2b7cd3;color:#fff">W</i>Word</span></div>
+      <div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">A2</b>WI Draft</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>ใช้ output/LabA_Step1_Parameters.md และไฟล์ src/WI_Old_BST-001.docx เป็นแบบฟอร์มหัวกระดาษ (คงตารางหัวกระดาษเดิม เปลี่ยนเฉพาะข้อความ)
+
+สร้าง Work Instruction ภาษาไทยไฟล์ output/LabA_WI-QC-BST-002_Draft.docx
+- เลขที่เอกสาร WI-QC-BST-002 Rev.00
+- เครื่อง BTD BST-1400 รหัส QC-BST-07 โหมด PAPER
+- หัวข้อ:
+  - วัตถุประสงค์
+  - ขอบเขต
+  - เอกสารอ้างอิง
+  - ความปลอดภัย
+  - พารามิเตอร์
+  - ขั้นตอน
+  - การคำนวณ
+  - การบันทึกผล
+  - การบำรุงรักษาโดยผู้ใช้
+  - ประวัติการแก้ไข
+- ขั้นตอนเป็นข้อสั้น 1 การกระทำต่อ 1 ข้อ ภาษาที่พนักงานหน้างานอ่านเข้าใจ
+- คำเตือน Safety ใส่กรอบและเครื่องหมาย ⚠ ไว้ก่อนขั้นตอนที่เกี่ยวข้อง
+- ท้ายทุกขั้นตอนและทุกค่าใส่อ้างอิงแบบสั้น เช่น [TM 6.2] หรือ [OM 5.2] และในหัวข้อเอกสารอ้างอิงต้องมีตารางบอกว่า [TM] [OM] [DS] คือไฟล์ใด
+- ข้อขัดแย้งระหว่างเอกสาร ให้ใส่หมายเหตุ "รอหัวหน้าห้องแล็บตัดสิน" ห้ามเลือกเอง
+- หัวกระดาษติดป้าย "DRAFT — ต้องให้เจ้าของกระบวนการตรวจก่อนใช้จริง"
+
+ห้ามเพิ่มขั้นตอน ค่า หรือเกณฑ์ที่ไม่มีในเอกสาร src/</pre></div>
+    </div>
+    <div class="lstep">
+      <div class="lstep-head"><h4><span class="num">3</span>Pre-use Checklist และตาราง Parameter (Excel)</h4></div>
+      <div class="tools"><span class="tool"><i style="background:#21a366;color:#fff">X</i>Excel</span></div>
+      <div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">A3</b>Checklist + Parameters</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>จาก WI ที่เพิ่งสร้าง ทำไฟล์ output/LabA_PreUse_Checklist_and_Parameters.xlsx มี 2 Sheet
+1) Pre-use_Checklist: ข้อ | รายการตรวจ | เกณฑ์ | อ้างอิง | ผล (✓/✗) | ค่าที่อ่านได้ สำหรับใช้ทุกวันก่อนทดสอบชิ้นแรก
+2) Parameters: ตาราง Parameter จาก output/LabA_Step1_Parameters.md พร้อมแหล่งที่มา</pre></div>
+    </div>
+    <div class="lstep">
+      <div class="lstep-head"><h4><span class="num">4</span>สรุปจุดที่ WI ฉบับเก่าต้องแก้</h4></div>
+      <div class="tools"><span class="tool"><i style="background:#21a366;color:#fff">X</i>Excel</span></div>
+      <div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">A4</b>Old WI Gap List</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>เปรียบเทียบ src/WI_Old_BST-001.docx กับเอกสาร 3 ไฟล์ใน src/ และ WI Draft ที่เพิ่งสร้าง
+ทำตาราง: ข้อใน WI เก่า | ข้อความเดิม | ปัญหา (ล้าสมัย / ไม่ตรงมาตรฐาน / ขาดความปลอดภัย / ไม่ชัด) | ค่าหรือข้อความใหม่ | แหล่งอ้างอิง
+บันทึกเป็น output/LabA_OldWI_Gap_List.xlsx และสรุป 3 เรื่องที่เสี่ยงที่สุดต่อคุณภาพผลทดสอบหรือความปลอดภัย</pre></div>
+      <div class="cp"><strong><span class="chip human">คนทำเอง</span> ส่งต่อไฟล์</strong><p>คัดลอก <code>LabA/output/LabA_WI-QC-BST-002_Draft.docx</code> ไปวางใน <code>LabB/prev/</code> เพื่อใช้เทียบกับวิดีโอใน Lab B</p></div>
+    </div>
+
+    <details class="faq">
+      <summary>วิธีแก้ปัญหาที่พบบ่อย · Lab A</summary>
+      <div class="fq"><h5>AI บอกว่าไม่มีข้อขัดแย้งระหว่างเอกสารเลย</h5><p class="why"><b>ทำไม:</b> AI มักเลือกค่าจากไฟล์เดียวแล้วไม่ได้เทียบทุกไฟล์ ชุดเอกสารนี้ตั้งใจให้มีค่าที่ไม่ตรงกัน เช่น อายุการใช้งานแผ่นยาง</p><div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">A·1</b>ตรวจข้อขัดแย้งใหม่</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>ตรวจ Parameter ทุกตัวใน output/LabA_Step1_Parameters.md เทียบกันทั้ง 3 ไฟล์ใน src/ ทีละตัว
+โดยเฉพาะ
+- อายุการใช้งานแผ่นยาง
+- รอบเปลี่ยนน้ำมัน
+- อัตราปั๊ม
+- และเกณฑ์ชิ้นทดสอบที่ใช้ไม่ได้
+
+ค่าที่ต่างกันให้ใส่ในตาราง "ข้อขัดแย้งระหว่างเอกสาร":
+Parameter | ค่าใน TM [หน้า] | ค่าใน OM [หน้า] | ค่าใน DS [หน้า] | หมายเหตุ "รอหัวหน้าห้องแล็บตัดสิน"
+
+ห้ามเลือกค่าเอง
+แล้วบันทึกทับ output/LabA_Step1_Parameters.md</pre></div></div>
+      <div class="fq"><h5>WI มีค่าหรือขั้นตอนที่ไม่มีในเอกสาร</h5><p class="why"><b>ทำไม:</b> AI เติมจากความรู้ทั่วไปเรื่องเครื่องทดสอบ ซึ่งอาจไม่ตรงกับเครื่องนี้</p><div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">A·2</b>ตรวจหาค่าที่ไม่มีแหล่ง</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>ตรวจ output/LabA_WI-QC-BST-002_Draft.docx ทุกขั้นตอนและทุกตัวเลข ว่ามีอ้างอิง [TM] [OM] [DS] และหาเจอในไฟล์ src/ จริง
+รายการที่หาแหล่งไม่เจอ ให้ลบออก หรือเขียน "ไม่พบในเอกสาร — ต้องยืนยันกับหน้างาน" แล้วสรุปรายการที่แก้ให้ Recorder จด</pre></div></div>
+      <div class="fq"><h5>คำเตือน Safety ใน WI ไม่ครบ</h5><p class="why"><b>ทำไม:</b> Safety กระจายอยู่หลายหน้าในคู่มือเครื่อง AI อาจรวบหรือข้ามบางข้อ</p><div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">A·3</b>เติม Safety ให้ครบ</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>อ่าน src/Manual_BST-1400_EN.pdf และ src/TestMethod_TM-201.pdf หาคำเตือนด้านความปลอดภัยทุกข้อ (Warning / Caution / Danger) พร้อมหน้า
+เทียบกับหัวข้อความปลอดภัยและกรอบ ⚠ ใน output/LabA_WI-QC-BST-002_Draft.docx เติมข้อที่ขาดไว้ก่อนขั้นตอนที่เกี่ยวข้อง แล้วสรุปว่าเติมกี่ข้อ</pre></div></div>
+      <div class="fq"><h5>หัวกระดาษของ WI ใหม่ไม่เหมือนแบบฟอร์มเดิม</h5><p class="why"><b>ทำไม:</b> AI สร้างเอกสารใหม่ทั้งฉบับแทนการใช้ไฟล์เดิมเป็นแม่แบบ</p><div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">A·4</b>ใช้หัวกระดาษเดิม</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>สร้าง output/LabA_WI-QC-BST-002_Draft.docx ใหม่ โดยคัดลอก src/WI_Old_BST-001.docx เป็นจุดเริ่มต้น
+คงตารางหัวกระดาษและรูปแบบเดิมทั้งหมด
+
+เปลี่ยนเฉพาะข้อความในหัวกระดาษ (เลขที่เอกสาร WI-QC-BST-002 Rev.00, เครื่อง BST-1400, รหัส QC-BST-07)
+และแทนเนื้อหาด้วย WI ฉบับใหม่ที่ร่างไว้ในแชทนี้</pre></div></div>
+      <div class="fq short"><h5>ตามไม่ทัน? ใช้ Prompt ทางลัดชุดเดียวจบ Lab</h5><p class="why">ใช้เมื่อเวลาเหลือน้อย ทำครบ 4 ขั้นในรอบเดียว แต่ Checker ยังต้องเปิดตรวจ 5 จุดเหมือนเดิม</p><div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">A★</b>ทางลัด Lab A</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>ทำ Lab A ทั้งหมดตามลำดับ บันทึกไฟล์ทุกขั้นก่อนไปขั้นถัดไป:
+
+1) อ่าน
+  - src/TestMethod_TM-201.pdf
+  - src/Manual_BST-1400_EN.pdf
+  - src/Datasheet_Consumables.pdf
+  สร้างตาราง Parameter การทดสอบ Bursting Strength โหมด PAPER:
+  Parameter | ค่า | หน่วย | ชื่อไฟล์ | หน้า | หัวข้อ
+  (
+    - สภาวะปรับสภาพ
+    - จำนวนและขนาดชิ้นทดสอบ
+    - ช่วงวัด
+    - อัตราปั๊ม
+    - วิธีจับยึด
+    - เกณฑ์ตรวจแผ่นยาง
+    - หน่วยแสดงผล
+    - เกณฑ์ชิ้นทดสอบที่ใช้ไม่ได้
+    - การแปลงหน่วย
+    - รอบเปลี่ยนแผ่นยางและน้ำมัน
+    - เวลาอุ่นเครื่อง
+  )
+  พร้อมตาราง "ข้อขัดแย้งระหว่างเอกสาร" (เทียบทุก Parameter ทั้ง 3 ไฟล์ ห้ามเลือกค่าเอง)
+  และตารางคำเตือน Safety
+  บันทึกเป็น output/LabA_Step1_Parameters.md
+
+2) ใช้ src/WI_Old_BST-001.docx เป็นแม่แบบ (คงหัวกระดาษเดิม) สร้าง output/LabA_WI-QC-BST-002_Draft.docx:
+  WI-QC-BST-002 Rev.00 เครื่อง BTD BST-1400 รหัส QC-BST-07 โหมด PAPER
+  หัวข้อ
+  - วัตถุประสงค์
+  - ขอบเขต
+  - เอกสารอ้างอิง (ตาราง [TM] [OM] [DS])
+  - ความปลอดภัย
+  - พารามิเตอร์
+  - ขั้นตอน (1 การกระทำต่อ 1 ข้อ)
+  - การคำนวณ
+  - การบันทึกผล
+  - การบำรุงรักษาโดยผู้ใช้
+  - ประวัติการแก้ไข
+  - Safety ใส่กรอบ ⚠ ก่อนขั้นที่เกี่ยวข้อง
+  - ทุกขั้นและทุกค่ามีอ้างอิงสั้น
+  - ข้อขัดแย้งเขียน "รอหัวหน้าห้องแล็บตัดสิน"
+  - หัวกระดาษติด "DRAFT — ต้องให้เจ้าของกระบวนการตรวจก่อนใช้จริง"
+  - ห้ามเพิ่มสิ่งที่ไม่มีใน src/
+
+3) สร้าง output/LabA_PreUse_Checklist_and_Parameters.xlsx:
+  - Sheet Pre-use_Checklist (ข้อ | รายการตรวจ | เกณฑ์ | อ้างอิง | ผล ✓/✗ | ค่าที่อ่านได้)
+  - และ Sheet Parameters
+
+4) เทียบ src/WI_Old_BST-001.docx กับเอกสารใน src/ และ WI ใหม่ ทำ output/LabA_OldWI_Gap_List.xlsx:
+  ข้อใน WI เก่า | ข้อความเดิม | ปัญหา (ล้าสมัย / ไม่ตรงมาตรฐาน / ขาดความปลอดภัย / ไม่ชัด) | ค่าหรือข้อความใหม่ | แหล่งอ้างอิง
+  และสรุป 3 เรื่องที่เสี่ยงที่สุด
+
+จบแล้วแสดงรายการไฟล์ใน output/</pre></div></div>
+    </details>
+    <div class="grid2"><div class="panel"><h4>Checkpoint ก่อนจบ Lab</h4><ul class="check"><li><input type="checkbox" id="a1"><label for="a1">WI ทุกขั้นตอนมีอ้างอิง และ Checker เปิดตรวจแล้วอย่างน้อย 5 จุด</label></li><li><input type="checkbox" id="a2"><label for="a2">ไม่มีค่าที่ AI แต่งเพิ่ม (ถ้าพบ ให้ Recorder จดไว้เป็นตัวอย่างแลกเปลี่ยนในคลาส)</label></li><li><input type="checkbox" id="a3"><label for="a3">คำเตือน Safety ทุกข้อจากคู่มืออยู่ใน WI</label></li><li><input type="checkbox" id="a4"><label for="a4">ข้อขัดแย้งระหว่างเอกสารถูกแจ้ง ไม่ได้ถูกเลือกเงียบ ๆ</label></li><li><input type="checkbox" id="a5"><label for="a5">ไฟล์ WI ติดป้าย DRAFT</label></li></ul></div><div class="panel"><h4>ผลลัพธ์ที่ต้องได้</h4><div class="outputs" style="margin-top:12px"><code>output/LabA_WI-QC-BST-002_Draft.docx</code><code>output/LabA_PreUse_Checklist_and_Parameters.xlsx</code><code>output/LabA_OldWI_Gap_List.xlsx</code></div><p class="muted" style="font-size:14px;margin:12px 0 0">ค่าเกณฑ์ด้าน Safety และเกณฑ์ผ่าน/ไม่ผ่าน คนต้องเป็นผู้ตัดสิน AI ร่างได้เท่านั้น</p></div></div>
+  </div>
+</section>
+
+<!-- LAB B -->
+<section class="wrap lab B" id="labB">
+  <div class="lab-hero">
+    <div class="letter">B</div>
+    <div class="kicker" style="color:rgba(255,255,255,.8)">LAB B · 11:00–12:00 · 60 นาที</div>
+    <h2>Video → Work Procedure</h2>
+    <p>สกัดขั้นตอนการใช้เครื่องจากวิดีโอเป็น Work Procedure<span class="gl"> (ขั้นตอนการทำงานที่เขียนจากสิ่งที่เห็นจริง)</span> พร้อม Timestamp<span class="gl"> (เวลาในวิดีโอ)</span> และภาพประกอบ แล้วเทียบกับ WI เพื่อทำ Gap List<span class="gl"> (รายการจุดที่ไม่ตรงกัน)</span></p>
+    <div class="chips"><span class="chip">5 Prompt</span><span class="chip">เลือกทาง A หรือ B</span><span class="chip">แยกความต่างของรุ่นเครื่อง</span></div>
+  </div>
+  <div class="lab-body">
+<div class="tbl"><table><thead><tr><th>ไฟล์ใน LabB/</th><th>คืออะไร</th></tr></thead><tbody><tr><td><code>src/Video_BST_Demo.mp4</code></td><td>วิดีโอสาธิตเครื่อง Bursting Strength Tester แบบ Manual Clamping Digital ของ Presto (1:56 นาที) <strong>ช่วงใช้งานเครื่องจริงคือ 00:00:08–00:00:58</strong> ช่วงหลังเป็นโฆษณาบริษัท</td></tr><tr><td><code>src/keyframes/keyframe_00-00-08.jpg</code> … <code>_00-00-58.jpg</code></td><td>ภาพนิ่งจากวิดีโอทุก 2 วินาที (26 ภาพ) ชื่อไฟล์คือ Timestamp ชม.-นาที-วินาที</td></tr><tr><td><code>prev/WI_BST-002_Rev00.docx</code></td><td>WI สำรอง ใช้เมื่อกลุ่มไม่มี WI จาก Lab A ถ้ามี ให้วาง <code>LabA_WI-QC-BST-002_Draft.docx</code> ไว้ในโฟลเดอร์นี้ด้วย</td></tr></tbody></table></div>
+    <div class="note">วิดีโอเป็นเครื่องคนละยี่ห้อกับเครื่องในโครงการจำลอง (BTD BST-1400) แต่เป็นเครื่องประเภทเดียวกัน ให้ AI แยก "ความต่างของรุ่นเครื่อง" ออกจาก "การปฏิบัติที่ไม่ตรง WI" · วิดีโอเป็นของผู้ผลิต ใช้เพื่อการอบรมภายในเท่านั้น ห้ามเผยแพร่ต่อ</div>
+    <div class="lstep">
+      <div class="lstep-head"><h4><span class="num">0</span>เปิด Project LabB</h4></div>
+      <p style="margin:10px 0 0">เปิดโฟลเดอร์ <code>LabB</code> เป็น Cowork Project ใส่ Instruction กลาง แล้วส่ง Prompt นี้เพื่อตรวจไฟล์และสร้างโฟลเดอร์ผลลัพธ์ <strong>ทำทุก Prompt ของ Lab นี้ต่อกันในแชทเดียว</strong> เพราะบาง Prompt อ้างถึงผลในแชทก่อนหน้า และอย่าลืมสลับบทบาท Driver / Checker / Recorder กับ API Key ของ Lab นี้</p>
+      <div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">B0</b>ตรวจไฟล์ + สร้างโฟลเดอร์</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>แสดงรายชื่อไฟล์ใน src/ รวมโฟลเดอร์ย่อย และ prev/
+(src/Video_BST_Demo.mp4, src/keyframes/ 26 ภาพ, prev/WI_BST-002_Rev00.docx)
+ยืนยันว่าครบตามนี้ ยังไม่ต้องอ่านเนื้อหาไฟล์
+
+จากนั้นสร้างโฟลเดอร์ output/ ไว้เก็บผลลัพธ์ของ Lab นี้
+
+ถ้าไฟล์ไม่ครบหรือเปิดไม่ได้ ให้แจ้งชื่อไฟล์</pre></div>
+    </div>
+    <div class="lstep">
+      <div class="lstep-head"><h4><span class="num">1</span>สกัดขั้นตอนจากวิดีโอ</h4></div>
+      <p style="margin:10px 0 0">เลือก <strong>ทางใดทางหนึ่ง</strong> ถ้าองค์กรไม่อนุญาต Gemini / NotebookLM ให้ใช้ทาง B</p>
+      <h4 style="margin:16px 0 0">ทาง A · Gemini / NotebookLM <span class="muted" style="font-weight:400;font-size:14px">(เฉพาะเมื่อองค์กรอนุญาต)</span></h4>
+      <div class="tools"><span class="tool"><i style="background:#4285f4;color:#fff">G</i>Gemini / NotebookLM</span></div>
+      <p style="margin:8px 0 0">อัปโหลด <code>Video_BST_Demo.mp4</code> เข้า Gemini หรือ NotebookLM แล้วส่ง Prompt นี้</p>
+      <div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">B1a</b>สกัดจากวิดีโอ (Gemini / NotebookLM)</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>วิดีโอนี้สาธิตการใช้เครื่อง Bursting Strength Tester
+ช่วงใช้งานเครื่องคือ 00:00:08–00:00:58
+ไม่ต้องสรุปช่วงหลังที่เป็นโฆษณาบริษัท
+
+ทำตารางขั้นตอนที่เห็นจริง คอลัมน์:
+ลำดับ | Timestamp (HH:MM:SS) | สิ่งที่เห็นในภาพ | ข้อความหรือค่าบนหน้าจอเครื่อง (ถ้าอ่านได้) | ความมั่นใจ (สูง/กลาง/ต่ำ)
+
+กติกา:
+- เขียนเฉพาะสิ่งที่เห็นหรือได้ยินจริง
+- ถ้าเป็นการตีความให้ขึ้นต้นว่า "ตีความ:"
+- ถ้าอ่านค่าไม่ชัดให้เขียนว่า "อ่านไม่ชัด"
+- ห้ามเดา</pre></div>
+      <p style="margin:10px 0 0">คัดลอกตารางที่ได้กลับมาวางใน Cowork แล้วส่ง Prompt นี้</p>
+      <div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">B1a·2</b>บันทึกตารางเข้า Cowork</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>บันทึกตารางที่ฉันวางไว้ด้านล่างนี้เป็นไฟล์ output/LabB_Step1_Frame_Table.md โดยไม่แก้เนื้อหา
+(วางตารางจาก Gemini / NotebookLM ต่อท้ายข้อความนี้)</pre></div>
+      <h4 style="margin:18px 0 0">ทาง B · Cowork + ภาพ Key Frame</h4>
+      <div class="tools"><span class="tool"><i style="background:#9aa0a6;color:#111">KF</i>ภาพ Key Frame</span></div>
+      <div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">B1b</b>สกัดจากภาพ Key Frame</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>ดูภาพทั้ง 26 ภาพในโฟลเดอร์ src/keyframes/ ตามลำดับชื่อไฟล์
+ชื่อไฟล์คือ Timestamp ของวิดีโอ (เช่น keyframe_00-00-36.jpg = 00:00:36)
+
+ทำตารางขั้นตอนที่เห็นจริง
+คอลัมน์: ลำดับ | Timestamp | ไฟล์ภาพ | สิ่งที่เห็นในภาพ | ข้อความหรือค่าบนหน้าจอเครื่อง (ถ้าอ่านได้) | ความมั่นใจ (สูง/กลาง/ต่ำ)
+
+กติกา:
+- เขียนเฉพาะสิ่งที่เห็นในภาพ
+- ถ้าเป็นการตีความให้ขึ้นต้นว่า "ตีความ:"
+- ภาพนิ่งไม่เห็นสิ่งที่เกิดระหว่างภาพ ให้ระบุช่วงที่ไม่มีหลักฐานด้วย
+- ถ้าอ่านค่าไม่ชัดให้เขียนว่า "อ่านไม่ชัด" ห้ามเดา
+
+บันทึกตารางเป็นไฟล์ output/LabB_Step1_Frame_Table.md (ขั้นที่ 2 จะใช้ไฟล์นี้)</pre></div>
+      <div class="cp"><strong><span class="chip human">คนทำเอง</span> Checkpoint 1 · Checker</strong><p>เปิดวิดีโอหรือภาพ 3 Timestamp ที่ AI ให้ความมั่นใจ "สูง" ว่าตรงจริงหรือไม่ และอ่านค่าบนหน้าจอเครื่องที่ 00:00:36 และ 00:00:40 เองเทียบกับที่ AI อ่าน</p></div>
+    </div>
+    <div class="lstep">
+      <div class="lstep-head"><h4><span class="num">2</span>เขียน Work Procedure จากวิดีโอ</h4></div>
+      <div class="tools"><span class="tool"><i style="background:#2b7cd3;color:#fff">W</i>Word</span><span class="tool"><i style="background:#9aa0a6;color:#111">KF</i>ภาพ Key Frame</span></div>
+      <div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">B2</b>Video Work Procedure</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>จาก output/LabB_Step1_Frame_Table.md เขียน Work Procedure ทีละขั้น ภาษาไทย บันทึกเป็น output/LabB_Video_Work_Procedure.docx
+- แต่ละขั้นมี Timestamp และแทรกภาพจาก src/keyframes/ ที่ตรงกับขั้นนั้น
+- ขั้นที่วิดีโอไม่แสดง ห้ามเติมเอง ให้เขียนว่า "ไม่ปรากฏในวิดีโอ"
+- ท้ายเอกสารสรุป: จำนวนชิ้นทดสอบที่เห็น, หน่วยที่เครื่องแสดง, โหมดที่เลือก, อุปกรณ์ป้องกันที่ผู้ปฏิบัติใส่</pre></div>
+    </div>
+    <div class="lstep">
+      <div class="lstep-head"><h4><span class="num">3</span>เทียบกับ WI และทำ Gap List</h4></div>
+      <div class="tools"><span class="tool"><i style="background:#21a366;color:#fff">X</i>Excel</span></div>
+      <div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">B3</b>Gap List</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>เทียบ output/LabB_Video_Work_Procedure.docx กับ WI ในโฟลเดอร์ prev/
+(ถ้ามีไฟล์ LabA_WI-QC-BST-002_Draft.docx ให้ใช้ไฟล์นี้ ถ้าไม่มีให้ใช้ WI_BST-002_Rev00.docx และบอกว่าใช้ไฟล์ไหน)
+
+ทำ Gap List เป็นไฟล์ output/LabB_Gap_List.xlsx
+คอลัมน์: ลำดับ | ประเภท | ข้อใน WI | สิ่งที่เห็นในวิดีโอ (Timestamp) | ผลกระทบต่อผลทดสอบหรือความปลอดภัย | ข้อเสนอ
+
+ประเภทให้เลือก 1 อย่าง:
+1) ทำจริงแต่ไม่มีใน WI
+2) มีใน WI แต่ไม่เห็นในวิดีโอ (ไม่ได้แปลว่าไม่ได้ทำ ต้องยืนยันกับหน้างาน)
+3) ปฏิบัติไม่ตรง WI หรือมาตรฐาน
+4) ความต่างของรุ่นเครื่อง (ไม่ใช่ความผิดของผู้ปฏิบัติ)
+
+เรียงตามความเสี่ยง และสรุป 3 ข้อที่ต้องแก้ WI หรือต้องสอนงานเพิ่ม</pre></div>
+    </div>
+
+    <details class="faq">
+      <summary>วิธีแก้ปัญหาที่พบบ่อย · Lab B</summary>
+      <div class="fq"><h5>องค์กรไม่อนุญาต Gemini / NotebookLM หรืออัปโหลดวิดีโอไม่ได้</h5><p class="why"><b>ทำไม:</b> วิดีโอห้ามเข้าเครื่องมือที่องค์กรไม่อนุญาต ทาง B ให้ผลใกล้เคียงกันโดยใช้ภาพนิ่ง</p><p class="why"><b>วิธีแก้:</b> ข้ามทาง A ไปใช้ Prompt B1b ได้เลย ภาพ Key Frame<span class="gl"> (ภาพนิ่งที่ตัดจากวิดีโอ)</span> ทั้ง 26 ภาพอยู่ใน <code>src/keyframes/</code> แล้ว</p></div>
+      <div class="fq"><h5>AI อ่านค่าบนหน้าจอเครื่องแบบมั่นใจเกินจริง</h5><p class="why"><b>ทำไม:</b> ภาพจากวิดีโอมีความละเอียดต่ำ ตัวเลขบนจอเล็ก AI มักเดาให้ครบแทนการบอกว่าอ่านไม่ได้</p><div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">B·1</b>อ่านค่าใหม่แบบระวัง</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>ดูภาพ src/keyframes/keyframe_00-00-36.jpg และ keyframe_00-00-40.jpg อีกครั้ง อ่านเฉพาะตัวเลขและหน่วยบนหน้าจอเครื่อง
+ทุกตัวอักษรที่ไม่แน่ใจ ให้แทนด้วย ? และให้ความมั่นใจ (สูง/กลาง/ต่ำ) แยกต่อค่า ถ้าอ่านไม่ได้ทั้งค่าให้เขียน "อ่านไม่ชัด"
+แล้วแก้แถวที่เกี่ยวข้องใน output/LabB_Step1_Frame_Table.md</pre></div></div>
+      <div class="fq"><h5>Gap List สรุปว่าผู้ปฏิบัติ "ไม่ได้ทำ" บางขั้น</h5><p class="why"><b>ทำไม:</b> ภาพนิ่งทุก 2 วินาทีมองไม่เห็นทุกอย่าง เช่น แรงขันแคลมป์หรือเสียงคลิก สิ่งที่ไม่เห็นจึงไม่ได้แปลว่าไม่ได้ทำ</p><div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">B·2</b>แก้ข้อสรุปที่เกินหลักฐาน</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>ตรวจ output/LabB_Gap_List.xlsx ทุกแถว 
+แถวที่สรุปว่า "ไม่ได้ทำ" เพราะไม่เห็นในภาพหรือวิดีโอ 
+ให้เปลี่ยนประเภทเป็น "2) มีใน WI แต่ไม่เห็นในวิดีโอ"
+และเขียนข้อเสนอว่า "ต้องยืนยันกับหน้างาน" 
+แล้วสรุปจำนวนแถวที่แก้</pre></div></div>
+      <div class="fq"><h5>Work Procedure ไม่มีภาพประกอบ</h5><p class="why"><b>ทำไม:</b> AI เขียนชื่อไฟล์ภาพไว้แต่ไม่ได้แทรกภาพจริงลงใน Word</p><div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">B·3</b>แทรกภาพลง Word</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>แก้ output/LabB_Video_Work_Procedure.docx
+ให้แทรกภาพจริงจาก src/keyframes/ ใต้แต่ละขั้น (กว้างประมาณ 8 ซม.) พร้อมคำบรรยายใต้ภาพเป็น Timestamp
+
+ใช้ภาพที่ตรงกับ Timestamp ของขั้นนั้นตาม output/LabB_Step1_Frame_Table.md
+แล้วยืนยันจำนวนภาพที่แทรก</pre></div></div>
+      <div class="fq"><h5>ค่าบนหน้าจอเครื่องเป็นหน่วยอื่น แต่ถูกเทียบกับ WI ตรง ๆ</h5><p class="why"><b>ทำไม:</b> เครื่องในวิดีโออาจแสดงหน่วยไม่ใช่ kPa ต้องแปลงก่อนเทียบ</p><div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">B·4</b>แปลงหน่วยก่อนเทียบ</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>ตรวจหน่วยของค่าที่อ่านได้จากหน้าจอเครื่องใน output/LabB_Step1_Frame_Table.md
+ถ้าไม่ใช่ kPa ให้แปลงเป็น kPa ด้วยค่าแปลงจาก WI ใน prev/ (แสดงสูตร)
+
+แล้วแก้แถวใน output/LabB_Gap_List.xlsx ที่เทียบค่าเหล่านี้
+ถ้าอ่านหน่วยไม่ชัด ห้ามแปลง ให้เขียนว่า "อ่านหน่วยไม่ชัด"</pre></div></div>
+      <div class="fq short"><h5>ตามไม่ทัน? ใช้ Prompt ทางลัดชุดเดียวจบ Lab</h5><p class="why">ใช้เมื่อเวลาเหลือน้อย ทำครบ 3 ขั้นด้วยภาพ Key Frame ในรอบเดียว แต่ Checker ยังต้องเปิดดู 3 Timestamp และค่าที่ 00:00:36 / 00:00:40 เหมือนเดิม</p><div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">B★</b>ทางลัด Lab B (ทาง B)</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>ทำ Lab B ทั้งหมดตามลำดับ บันทึกไฟล์ทุกขั้นก่อนไปขั้นถัดไป:
+
+1) ดูภาพ 26 ภาพใน src/keyframes/ ตามลำดับชื่อไฟล์ (ชื่อไฟล์ = Timestamp)
+  ทำตาราง: ลำดับ | Timestamp | ไฟล์ภาพ | สิ่งที่เห็น | ข้อความหรือค่าบนหน้าจอ | ความมั่นใจ
+  - เขียนเฉพาะสิ่งที่เห็น
+  - การตีความขึ้นต้นด้วย "ตีความ:"
+  - ระบุช่วงที่ไม่มีหลักฐาน
+  - ค่าที่อ่านไม่ชัดเขียน "อ่านไม่ชัด"
+  บันทึกเป็น output/LabB_Step1_Frame_Table.md
+
+2) เขียน Work Procedure ภาษาไทยทีละขั้น มี Timestamp และแทรกภาพจริงจาก src/keyframes/ ใต้แต่ละขั้น
+  - ขั้นที่ไม่เห็นเขียน "ไม่ปรากฏในวิดีโอ"
+  - ท้ายเอกสารสรุป
+    - จำนวนชิ้นทดสอบที่เห็น
+    - หน่วยที่เครื่องแสดง
+    - โหมดที่เลือก
+    - และอุปกรณ์ป้องกันที่ผู้ปฏิบัติใส่
+  บันทึกเป็น output/LabB_Video_Work_Procedure.docx
+
+3) เทียบกับ WI ใน prev/
+  (ใช้ LabA_WI-QC-BST-002_Draft.docx ถ้ามี ไม่มีใช้ WI_BST-002_Rev00.docx และบอกว่าใช้ไฟล์ไหน)
+  ทำ output/LabB_Gap_List.xlsx:
+  ลำดับ | ประเภท | ข้อใน WI | สิ่งที่เห็นในวิดีโอ (Timestamp) | ผลกระทบ | ข้อเสนอ
+  ประเภท:
+  1) ทำจริงแต่ไม่มีใน WI
+  2) มีใน WI แต่ไม่เห็นในวิดีโอ (ต้องยืนยันกับหน้างาน)
+  3) ปฏิบัติไม่ตรง WI หรือมาตรฐาน
+  4) ความต่างของรุ่นเครื่อง
+  - แปลงหน่วยค่าบนจอเป็น kPa ก่อนเทียบ
+  - ห้ามสรุปว่า "ไม่ได้ทำ" จากการที่ภาพไม่แสดง
+  - เรียงตามความเสี่ยง และสรุป 3 ข้อที่ต้องแก้ WI หรือสอนงานเพิ่ม
+
+จบแล้วแสดงรายการไฟล์ใน output/</pre></div></div>
+    </details>
+    <div class="grid2"><div class="panel"><h4>Checkpoint ก่อนจบ Lab</h4><ul class="check"><li><input type="checkbox" id="b1"><label for="b1">ทุกแถวใน Gap List ประเภท 3 มี Timestamp ที่ Checker เปิดดูแล้ว</label></li><li><input type="checkbox" id="b2"><label for="b2">ไม่มีแถวที่สรุปว่า "ไม่ได้ทำ" จากการที่ภาพไม่แสดง</label></li><li><input type="checkbox" id="b3"><label for="b3">ค่าบนหน้าจอเครื่องถูกแปลงหน่วยก่อนเทียบกับ WI (ถ้ามี)</label></li><li><input type="checkbox" id="b4"><label for="b4">แยกความต่างของรุ่นเครื่องออกจากการปฏิบัติผิด</label></li></ul></div><div class="panel"><h4>ผลลัพธ์ที่ต้องได้</h4><div class="outputs" style="margin-top:12px"><code>output/LabB_Video_Work_Procedure.docx</code><code>output/LabB_Gap_List.xlsx</code></div><p class="muted" style="font-size:14px;margin:12px 0 0">ห้ามอัปโหลดวิดีโอที่เห็นพื้นที่หรือกระบวนการผลิตที่เป็นความลับเข้า Public AI · AI มองไม่เห็นแรงขันแคลมป์ เสียงคลิก หรือสิ่งที่อยู่นอกกล้อง ขั้นเหล่านี้ต้องยืนยันกับหน้างานจริง</p></div></div>
+  </div>
+</section>
+
+<!-- LAB C -->
+<section class="wrap lab C" id="labC">
+  <div class="lab-hero">
+    <div class="letter">C</div>
+    <div class="kicker" style="color:rgba(255,255,255,.8)">LAB C · 13:00–14:00 · 60 นาที</div>
+    <h2>Test Data → Test Report</h2>
+    <p>แปลงข้อมูลดิบจากเครื่องทดสอบ 2 วัน (6 Lot<span class="gl"> (ชุดการผลิตเดียวกัน)</span>) ที่มีปัญหาแบบหน้างานจริง เป็น Test Report ที่คำนวณถูก ตัดสิน Pass/Fail ตาม Spec และมี Data Log<span class="gl"> (บันทึกว่าแปลง ตัด หรือทำเครื่องหมายข้อมูลใดบ้าง)</span> ตรวจย้อนได้</p>
+    <div class="chips"><span class="chip">4 Prompt</span><span class="chip">Cowork + Excel</span><span class="chip">กฎเหล็ก: Checker คำนวณซ้ำ</span></div>
+  </div>
+  <div class="lab-body">
+<div class="tbl"><table><thead><tr><th>ไฟล์ใน src/</th><th>คืออะไร</th></tr></thead><tbody><tr><td><code>Data_Export_2026-10-20.csv</code></td><td>ไฟล์ Export จากเครื่อง QC-BST-07 วันที่ 20 ต.ค. (3 Lot) บรรทัดที่ขึ้นต้นด้วย <code>#</code> เป็นข้อมูลหัวไฟล์</td></tr><tr><td><code>Data_ManualLog_2026-10-21.xlsx</code></td><td>บันทึกผลกะ B วันที่ 21 ต.ค. (3 Lot) พิมพ์จากใบบันทึกมือ</td></tr><tr><td><code>Spec_Sheet.xlsx</code></td><td>ข้อกำหนดของแต่ละเกรด (Sheet <code>Spec</code>) และกติกาการตัดสิน Lot (Sheet <code>Decision_Rules</code>)</td></tr><tr><td><code>Template_TestReport.docx</code></td><td>แบบฟอร์ม Test Report ของห้องแล็บ</td></tr><tr><td><code>TestMethod_TM-201.pdf</code></td><td>วิธีทดสอบ (ชุดเดียวกับ Lab A) ใช้อ้างอิงเกณฑ์ชิ้นทดสอบที่ใช้ไม่ได้ การคำนวณ และการแปลงหน่วย</td></tr></tbody></table></div>
+    <div class="note">ข้อมูลทั้งหมดเป็นข้อมูลจำลองที่ใกล้เคียงกระดาษผิวกล่องจริง</div>
+    <div class="lstep">
+      <div class="lstep-head"><h4><span class="num">0</span>เปิด Project LabC</h4></div>
+      <p style="margin:10px 0 0">เปิดโฟลเดอร์ <code>LabC</code> เป็น Cowork Project ใส่ Instruction กลาง แล้วส่ง Prompt นี้เพื่อตรวจไฟล์และสร้างโฟลเดอร์ผลลัพธ์ <strong>ทำทุก Prompt ของ Lab นี้ต่อกันในแชทเดียว</strong> เพราะบาง Prompt อ้างถึงผลในแชทก่อนหน้า และอย่าลืมสลับบทบาท Driver / Checker / Recorder กับ API Key ของ Lab นี้</p>
+      <div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">C0</b>ตรวจไฟล์ + สร้างโฟลเดอร์</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>แสดงรายชื่อไฟล์ใน src/ (ต้องมี 5 ไฟล์:
+  Data_Export_2026-10-20.csv, Data_ManualLog_2026-10-21.xlsx, Spec_Sheet.xlsx, Template_TestReport.docx, TestMethod_TM-201.pdf)
+ยืนยันว่าครบตามนี้ ยังไม่ต้องอ่านเนื้อหาไฟล์
+
+จากนั้นสร้างโฟลเดอร์ output/ ไว้เก็บผลลัพธ์ของ Lab นี้
+
+ถ้าไฟล์ไม่ครบหรือเปิดไม่ได้ ให้แจ้งชื่อไฟล์</pre></div>
+    </div>
+    <div class="lstep">
+      <div class="lstep-head"><h4><span class="num">1</span>ตรวจคุณภาพข้อมูล</h4></div>
+      <div class="tools"><span class="tool"><i style="background:#21a366;color:#fff">X</i>Excel</span></div>
+      <div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">C1</b>Data Quality Log</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>อ่าน 2 ไฟล์ข้อมูลดิบใน src/:
+- Data_Export_2026-10-20.csv
+- Data_ManualLog_2026-10-21.xlsx
+และ src/Spec_Sheet.xlsx (ทั้ง 2 Sheet), src/TestMethod_TM-201.pdf
+
+ยังไม่ต้องคำนวณ ให้ตรวจคุณภาพข้อมูลก่อน แล้วทำ Data Quality Log คอลัมน์:
+ไฟล์ | แถว / Test_ID | Lot | ฟิลด์ | ปัญหาที่พบ | ค่าเดิม |
+การดำเนินการที่เสนอ (แปลง / ตัดออก / ทำเครื่องหมาย / ถามผู้ทดสอบ) | เหตุผลและอ้างอิง
+
+ตรวจอย่างน้อย:
+- หน่วยที่ปนกัน
+- ค่าว่าง
+- แถวซ้ำ
+- สถานะชิ้นทดสอบที่ไม่ใช่ OK
+- ค่าผิดปกติ
+- ชื่อด้าน (Side) ที่เขียนไม่เหมือนกัน
+- เครื่องที่ใช้ทดสอบ
+- จำนวนชิ้นที่ใช้ได้ต่อ Lot
+
+กติกา:
+- ห้ามแก้ไฟล์ต้นฉบับ
+- ห้ามแก้ค่าที่สงสัยว่าพิมพ์ผิดเอง ให้ทำเครื่องหมายและเสนอให้ถามผู้ทดสอบ
+
+บันทึกเป็นไฟล์ output/LabC_Data_Quality_Log.xlsx</pre></div>
+      <div class="cp"><strong><span class="chip human">คนทำเอง</span> Checkpoint 1 · ทั้งกลุ่ม</strong><p>อ่าน Data Quality Log<span class="gl"> (บันทึกปัญหาของข้อมูลและวิธีจัดการ)</span> ทุกแถว แล้วตัดสินเองว่าเห็นด้วยกับการดำเนินการที่ AI เสนอหรือไม่ (คนเป็นผู้ตัดสินว่าตัดข้อมูลใดทิ้ง)</p></div>
+    </div>
+    <div class="lstep">
+      <div class="lstep-head"><h4><span class="num">2</span>คำนวณ</h4></div>
+      <div class="tools"><span class="tool"><i style="background:#21a366;color:#fff">X</i>Excel</span></div>
+      <div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">C2</b>Clean Data + Lot Summary</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>ใช้การดำเนินการตาม output/LabC_Data_Quality_Log.xlsx ที่กลุ่มอนุมัติแล้ว
+(แก้ตามนี้: <mark>&lt;ใส่ข้อที่กลุ่มไม่เห็นด้วย ถ้ามี&gt;</mark>)
+
+สร้างไฟล์ output/LabC_Test_Data_Clean.xlsx มี Sheet:
+
+1) Clean_Data: ข้อมูลทุกแถวจากทั้ง 2 ไฟล์
+   เพิ่มคอลัมน์
+   - ไฟล์ต้นทาง
+   - แถวต้นทาง
+   - ค่าเดิม
+   - หน่วยเดิม
+   - Burst_kPa
+   - ใช้คำนวณ (Y/N)
+   - เหตุผล
+
+2) Lot_Summary: ต่อ Lot แสดง
+   - n ที่ใช้ได้
+   - Mean
+   - SD
+   - CV%
+   - แกรมเมจเฉลี่ย
+   - Burst Index
+   - ค่า min ตาม Spec
+   - % ที่สูงกว่าค่า min
+   - และผลตัดสินตาม Sheet Decision_Rules
+
+   ใช้สูตร Excel จริง
+   (เช่น COUNTIFS, AVERAGEIFS และ SD จากคอลัมน์ช่วย (x−Mean)² หรือ STDEV.S บนช่วงที่กรองแล้ว)
+   อ้างไปที่ Sheet Clean_Data ห้ามใส่เป็นตัวเลขตายตัว
+   ช่องที่ไม่มีค่าห้ามทำให้สูตรขึ้น #VALUE! หรือ #DIV/0! — ตรวจทุกช่องก่อนส่ง
+   ผลตัดสินใช้ลำดับการตรวจที่เขียนไว้ท้าย Sheet Decision_Rules
+
+3) Data_Log: จาก Data Quality Log ที่อนุมัติแล้ว
+
+แสดงสูตรที่ใช้ในแชทด้วย:
+- Mean
+- SD
+- CV
+- Burst Index
+- การแปลงหน่วย</pre></div>
+      <details class="ex"><summary>ดูตัวอย่าง Prompt C2 ที่กรอกครบแล้ว</summary><p class="muted" style="font-size:13.5px;margin:10px 0 0">ใช้เมื่อกลุ่มเห็นด้วยกับ Data Quality Log ทุกข้อ ถ้ามีข้อที่ไม่เห็นด้วย ให้เขียนแทนข้อความในวงเล็บ เช่น "Test_ID 0031 ให้นับเป็นชิ้นทดแทนของชิ้นที่ 4"</p><div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">C2</b>ตัวอย่างที่กรอกแล้ว</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>ใช้การดำเนินการตาม output/LabC_Data_Quality_Log.xlsx ที่กลุ่มอนุมัติแล้ว (กลุ่มอนุมัติทุกข้อตามที่เสนอ ไม่มีข้อแก้ไข)
+
+สร้างไฟล์ output/LabC_Test_Data_Clean.xlsx มี Sheet:
+1) Clean_Data: ข้อมูลทุกแถวจากทั้ง 2 ไฟล์
+  เพิ่มคอลัมน์ ไฟล์ต้นทาง, แถวต้นทาง, ค่าเดิม, หน่วยเดิม, Burst_kPa, ใช้คำนวณ (Y/N), เหตุผล
+
+2) Lot_Summary: ต่อ Lot แสดง
+  - n ที่ใช้ได้
+  - Mean
+  - SD
+  - CV%
+  - แกรมเมจเฉลี่ย
+  - Burst Index
+  - ค่า min ตาม Spec
+  - % ที่สูงกว่าค่า min
+  - และผลตัดสินตาม Sheet Decision_Rules
+  - ใช้สูตร Excel จริง (เช่น COUNTIFS, AVERAGEIFS และ SD จากคอลัมน์ช่วย (x−Mean)² หรือ STDEV.S บนช่วงที่กรองแล้ว)
+    อ้างไปที่ Sheet Clean_Data ห้ามใส่เป็นตัวเลขตายตัว
+  - ช่องที่ไม่มีค่าห้ามทำให้สูตรขึ้น #VALUE! หรือ #DIV/0! — ตรวจทุกช่องก่อนส่ง
+  - ผลตัดสินใช้ลำดับการตรวจที่เขียนไว้ท้าย Sheet Decision_Rules
+
+3) Data_Log: จาก Data Quality Log ที่อนุมัติแล้ว
+
+แสดงสูตรที่ใช้ในแชทด้วย: Mean, SD, CV, Burst Index, การแปลงหน่วย</pre></div></details>
+    </div>
+    <div class="lstep">
+      <div class="lstep-head"><h4><span class="num">3</span>ออก Test Report</h4></div>
+      <div class="tools"><span class="tool"><i style="background:#2b7cd3;color:#fff">W</i>Word</span></div>
+      <div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">C3</b>Test Report</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>สร้าง Test Report ตามแบบฟอร์ม src/Template_TestReport.docx บันทึกเป็น output/LabC_Test_Report_TR-BST-2610.docx
+- ใช้ตัวเลขจาก output/LabC_Test_Data_Clean.xlsx เท่านั้น
+- ช่องผลตัดสินใช้คำตาม Sheet Decision_Rules เท่านั้น (Pass / Fail / Borderline → ทดสอบซ้ำ / ทดสอบซ้ำ / ยังตัดสินไม่ได้)
+- Lot ที่ต้องให้คนตัดสินหรือยืนยันข้อมูล ให้เขียนว่า "รอหัวหน้าห้องแล็บ" พร้อมเหตุผล
+- ส่วน Data Log ให้มีทุกค่าที่ถูกแปลง ตัดออก หรือทำเครื่องหมาย
+- ข้อมูลที่แบบฟอร์มต้องการแต่ไม่มีในไฟล์ (เช่น สภาวะปรับสภาพ) ให้เขียน "ไม่มีข้อมูล — ต้องกรอก" ห้ามเดา
+- ติดป้าย DRAFT จนกว่าจะผ่านการตรวจของ Checker</pre></div>
+    </div>
+    <div class="lstep">
+      <div class="lstep-head"><h4><span class="num">4</span>ตรวจสอบ (กฎเหล็กงานหน้างาน)</h4><span class="chip human">คนทำเอง</span></div>
+      <div class="tools"><span class="tool"><i style="background:#21a366;color:#fff">X</i>Excel</span></div>
+      <p style="margin:10px 0 0">Checker ทำเองใน Excel โดยไม่ใช้ AI</p>
+      <ul class="check"><li><input type="checkbox" id="c1"><label for="c1">คำนวณค่าเฉลี่ย Burst ของ 1 Lot ที่มีการแปลงหน่วย ด้วยตัวเองจากไฟล์ต้นฉบับ</label></li><li><input type="checkbox" id="c2"><label for="c2">คำนวณ Burst Index<span class="gl"> (ค่า Burst หารด้วยแกรมเมจ)</span> ของ 1 Lot ที่อยู่ใกล้ขอบ Spec ด้วยตัวเอง</label></li><li><input type="checkbox" id="c3"><label for="c3">ตรวจผลตัดสินของ <strong>ทุก Lot</strong> ที่ค่าเฉลี่ยห่างจากค่า min ไม่เกิน 5 %</label></li><li><input type="checkbox" id="c4"><label for="c4">ตรวจว่าแถวที่ซ้ำและชิ้นทดสอบที่ไม่ใช่ OK ไม่ถูกนับในการคำนวณ</label></li><li><input type="checkbox" id="c5"><label for="c5">ตรวจว่า Lot ที่ทดสอบด้วยเครื่องอื่นถูกระบุใน Report</label></li></ul>
+      <div class="note warn" style="margin-top:14px">ถ้าค่าที่ Checker คำนวณไม่ตรงกับ AI ต้องหาสาเหตุให้ได้ก่อนออก Report และให้ Recorder จดว่าผิดที่ขั้นไหน</div>
+    </div>
+
+    <details class="faq">
+      <summary>วิธีแก้ปัญหาที่พบบ่อย · Lab C</summary>
+      <div class="fq"><h5>ค่า Burst บางแถวเป็นตัวเลขเล็กผิดปกติ (ราว 5–6 หรือ 50–60)</h5><p class="why"><b>ทำไม:</b> Lot L2611-KL150-04 บันทึกเป็น kgf/cm² และชิ้นด้าน W ของ L2611-KL125-05 บันทึกเป็น psi ต้องแปลงเป็น kPa ก่อนคำนวณ ห้ามตัดทิ้งเพราะค่าเล็ก</p><div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">C·1</b>แปลงหน่วยเป็น kPa</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>ตรวจคอลัมน์หน่วยของค่า Burst 
+ทุกแถวใน src/Data_ManualLog_2026-10-21.xlsx 
+แปลงเป็น kPa ตามหมายเหตุใน Sheet Decision_Rules ของ src/Spec_Sheet.xlsx:
+1 kgf/cm² = 98.0665 kPa และ 1 psi = 6.89476 kPa
+
+เก็บค่าเดิมและหน่วยเดิมไว้คู่กัน
+บันทึกทุกแถวที่แปลงใน Data Log พร้อมสูตร ห้ามปัดค่ากลางทาง</pre></div></div>
+      <div class="fq"><h5>มี Test_ID ซ้ำในไฟล์ CSV</h5><p class="why"><b>ทำไม:</b> ไฟล์ Export มีแถว Test_ID 0016–0020 ซ้ำท้ายไฟล์ ถ้านับซ้ำจะทำให้ค่าเฉลี่ยและ n ผิด</p><div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">C·2</b>ตัดแถวซ้ำ</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>ตรวจ Test_ID ใน src/Data_Export_2026-10-20.csv แถวที่ Test_ID และค่าทุกช่องซ้ำกับแถวก่อนหน้า ให้ตั้ง "ใช้คำนวณ" = N พร้อมเหตุผล "แถวซ้ำ"
+ใช้เฉพาะแถวแรกของแต่ละ Test_ID แล้วสรุปจำนวนแถวที่ตัด</pre></div></div>
+      <div class="fq"><h5>ไม่แน่ใจว่าชิ้น SLIP และชิ้นทดแทนต้องนับอย่างไร</h5><p class="why"><b>ทำไม:</b> ชิ้น Status = SLIP ใช้ไม่ได้ และมีชิ้นทดแทนต่อท้าย (เช่น Test_ID 0031 "ชิ้นทดแทน #4") ซึ่งต้องนับแทนชิ้นเดิม</p><div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">C·3</b>จัดการชิ้นที่ใช้ไม่ได้</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>ชิ้นทดสอบที่ Status ไม่ใช่ OK หรือค่าว่างเพราะเครื่อง Error ให้ตั้ง "ใช้คำนวณ" = N พร้อมเหตุผลตาม src/TestMethod_TM-201.pdf
+ชิ้นที่ Remark ระบุว่าเป็น "ชิ้นทดแทน" ให้นับแทนชิ้นเดิมใน Lot เดียวกัน แล้วสรุปจำนวนชิ้นที่ใช้ได้ต่อ Lot เทียบกับจำนวนที่ Spec กำหนด</pre></div></div>
+      <div class="fq"><h5>มีค่าที่น่าจะพิมพ์ผิด เช่น 3120 kPa</h5><p class="why"><b>ทำไม:</b> ค่านี้สูงกว่าชิ้นอื่นราว 10 เท่า แต่กติกาห้ามแก้เป็นค่าที่ "น่าจะถูก" เอง ต้องถามผู้ทดสอบ</p><div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">C·4</b>ทำเครื่องหมายค่าที่สงสัย</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>แถวที่ค่าน่าจะพิมพ์ผิด (เช่น Burst 3120 kPa ของ L2611-TL125-06 ชิ้นที่ 8)
+ห้ามแก้ค่า ให้ตั้ง "ใช้คำนวณ" = N และการดำเนินการ = "ถามผู้ทดสอบ"
+
+ใน Lot_Summary ให้คำนวณจากชิ้นที่เหลือ
+และถ้าจำนวนชิ้นที่ใช้ได้ไม่ครบตาม Spec ให้ตัดสินตาม Decision_Rules ข้อ 5 พร้อมหมายเหตุ "รอหัวหน้าห้องแล็บ"</pre></div></div>
+      <div class="fq"><h5>สูตรใน Excel ขึ้น #VALUE! หรือ #DIV/0!</h5><p class="why"><b>ทำไม:</b> มีเซลล์ว่าง (เช่น แกรมเมจที่ลืมชั่ง) หรือ Lot ที่ไม่มีชิ้นที่ใช้ได้ ทำให้สูตรหารด้วยศูนย์</p><div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">C·5</b>แก้สูตรให้รับค่าว่าง</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>แก้สูตรทุกช่องใน Sheet Lot_Summary ของ output/LabC_Test_Data_Clean.xlsx ให้ข้ามเซลล์ว่าง
+(ใช้ AVERAGEIFS / COUNTIFS กับเงื่อนไข "&lt;&gt;" และ IFERROR เฉพาะกรณีไม่มีข้อมูล)
+
+แกรมเมจเฉลี่ยให้คิดจากชิ้นที่มีค่าแกรมเมจเท่านั้น
+แล้วเปิดไฟล์ตรวจว่าไม่มีช่อง Error เหลือ</pre></div></div>
+      <div class="fq"><h5>Lot หนึ่งทดสอบด้วยเครื่องเก่า QC-BST-03</h5><p class="why"><b>ทำไม:</b> หมายเหตุกะในไฟล์บันทึกมือบอกว่าช่วงเปลี่ยนแผ่นยางใช้เครื่องเก่า และ Spec Sheet กำหนดว่าผลจากเครื่องที่ไม่ใช่ QC-BST-07 ต้องให้หัวหน้าห้องแล็บรับรอง</p><p class="why"><b>วิธีแก้:</b> ใน Test Report ช่องผลตัดสินของ Lot นั้นต้องเขียน "รอหัวหน้าห้องแล็บ" พร้อมเหตุผลว่าทดสอบด้วย QC-BST-03 ถ้า AI ตัดสิน Pass / Fail ไปเลย ให้สั่งแก้</p></div>
+      <div class="fq"><h5>Checker คำนวณ Burst Index ใน Excel ไม่เป็น</h5><p class="why"><b>ทำไม:</b> ต้องรู้สูตรก่อนคำนวณซ้ำ</p><p class="why"><b>สูตร:</b> Burst Index = Burst เฉลี่ย (kPa) ÷ แกรมเมจเฉลี่ย (g/m²) หน่วยเป็น kPa·m²/g · CV<span class="gl"> (ความกระจายของค่าเทียบค่าเฉลี่ย เป็น %)</span>% = SD<span class="gl"> (ส่วนเบี่ยงเบนมาตรฐาน)</span> ÷ Mean × 100 (SD ใช้ <code>=STDEV.S()</code>) · แปลงหน่วยก่อนเฉลี่ยเสมอ</p></div>
+      <div class="fq short"><h5>ตามไม่ทัน? ใช้ Prompt ทางลัดชุดเดียวจบ Lab</h5><p class="why">ใช้เมื่อเวลาเหลือน้อย ใช้กติกาจัดการข้อมูลมาตรฐานแทนการอนุมัติทีละแถว ได้ไฟล์ครบทุกตัว แต่ Checker ยังต้องคำนวณซ้ำในขั้นที่ 4 เหมือนเดิม</p><div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">C★</b>ทางลัด Lab C</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>ทำ Lab C ทั้งหมดตามลำดับ:
+
+1) อ่าน
+  - src/Data_Export_2026-10-20.csv (ข้ามบรรทัด #)
+  - src/Data_ManualLog_2026-10-21.xlsx
+  - src/Spec_Sheet.xlsx (Spec และ Decision_Rules)
+  - และ src/TestMethod_TM-201.pdf
+  แล้วจัดการข้อมูลตามกติกานี้ บันทึกทุกรายการใน output/LabC_Data_Quality_Log.xlsx
+  (ไฟล์ | แถว / Test_ID | Lot | ฟิลด์ | ปัญหา | ค่าเดิม | การดำเนินการ | เหตุผลและอ้างอิง):
+  - แปลง kgf/cm² และ psi เป็น kPa ตามหมายเหตุใน Decision_Rules (1 kgf/cm² = 98.0665 kPa, 1 psi = 6.89476 kPa)
+  - Test_ID ที่ซ้ำ ใช้เฉพาะแถวแรก
+  - ชิ้นที่ Status ไม่ใช่ OK หรือค่าว่างเพราะเครื่อง Error ไม่นับ และนับชิ้นที่ Remark ระบุว่าเป็นชิ้นทดแทนแทนชิ้นเดิม
+  - ชื่อด้าน T / Top และ W / Wire ให้รวมเป็นค่าเดียวกัน
+  - ค่าที่น่าจะพิมพ์ผิด (เช่น สูงกว่าชิ้นอื่นราว 10 เท่า) ห้ามแก้ ไม่นับ และให้ดำเนินการ "ถามผู้ทดสอบ"
+  - แกรมเมจที่ว่าง ไม่นับในแกรมเมจเฉลี่ย แต่ยังใช้ค่า Burst ได้
+  - Lot ที่ทดสอบด้วยเครื่องที่ไม่ใช่ QC-BST-07 ให้ทำเครื่องหมายว่าต้องให้หัวหน้าห้องแล็บรับรอง
+
+2) สร้าง output/LabC_Test_Data_Clean.xlsx:
+  - Sheet Clean_Data (ทุกแถว + ไฟล์ต้นทาง, แถวต้นทาง, ค่าเดิม, หน่วยเดิม, Burst_kPa, ใช้คำนวณ Y/N, เหตุผล)
+  - Sheet Lot_Summary (
+    - n ที่ใช้ได้
+    - Mean
+    - SD
+    - CV%
+    - แกรมเมจเฉลี่ย
+    - Burst Index
+    - ค่า min ตาม Spec
+    - % ที่สูงกว่าค่า min
+    - ผลตัดสินตามลำดับใน Decision_Rules
+  ) ด้วยสูตร Excel จริงที่อ้าง Clean_Data ไม่มีช่อง #VALUE! หรือ #DIV/0!
+  - และ Sheet Data_Log
+
+3) สร้าง output/LabC_Test_Report_TR-BST-2610.docx ตามแบบฟอร์ม src/Template_TestReport.docx
+  - ใช้ตัวเลขจาก LabC_Test_Data_Clean.xlsx เท่านั้น
+  - ผลตัดสินใช้คำตาม Decision_Rules
+  - Lot ที่ต้องยืนยันเขียน "รอหัวหน้าห้องแล็บ" พร้อมเหตุผล
+  - ข้อมูลที่ไม่มีเขียน "ไม่มีข้อมูล — ต้องกรอก"
+  - มีส่วน Data Log และติดป้าย DRAFT
+
+จบแล้วแสดงสูตรที่ใช้ (Mean, SD, CV, Burst Index, การแปลงหน่วย) และสรุปผลตัดสินทุก Lot</pre></div></div>
+    </details>
+    <div class="panel"><h4>ผลลัพธ์ที่ต้องได้</h4><div class="outputs" style="margin-top:12px"><code>output/LabC_Data_Quality_Log.xlsx</code><code>output/LabC_Test_Data_Clean.xlsx</code><code>output/LabC_Test_Report_TR-BST-2610.docx</code></div><p class="muted" style="font-size:14px;margin:12px 0 0">AI ห้ามตัดสินผ่าน/ไม่ผ่านจากเกณฑ์ที่ไม่มีใน Spec Sheet · ค่าที่สงสัยว่าพิมพ์ผิดต้องยืนยันกับผู้ทดสอบ ห้ามแก้เป็นค่าที่ "น่าจะถูก" เอง</p></div>
+  </div>
+</section>
+
+<!-- LAB D -->
+<section class="wrap lab D" id="labD">
+  <div class="lab-hero">
+    <div class="letter">D</div>
+    <div class="kicker" style="color:rgba(255,255,255,.8)">LAB D · 14:15–15:05 · 50 นาที</div>
+    <h2>Flowchart, Visual &amp; Training Media</h2>
+    <p>แปลง WI ฉบับเดียว (Single Source<span class="gl"> (ทำสื่อทุกแบบจากเอกสารต้นฉบับเดียว)</span>) เป็นสื่อหลายแบบโดยเนื้อหาไม่คลาดกัน: Flowchart<span class="gl"> (แผนผังลำดับขั้นตอน)</span>, One-Point Lesson<span class="gl"> (เอกสารสอนงาน 1 หน้า 1 เรื่อง)</span> (OPL), Quick Reference Card<span class="gl"> (การ์ดสรุปสั้นติดหน้าเครื่อง)</span>, สไลด์สอนงาน และแบบทดสอบ 10 ข้อ</p>
+    <div class="chips"><span class="chip">5 Prompt</span><span class="chip">Sub Agent: ผู้ตรวจความสอดคล้อง</span></div>
+  </div>
+  <div class="lab-body">
+<div class="tbl"><table><thead><tr><th>ไฟล์ใน src/</th><th>คืออะไร</th></tr></thead><tbody><tr><td><code>WI_BST-002_Rev00.docx</code></td><td>WI ฉบับอนุมัติ (ฉบับฝึกอบรม) ของเครื่อง QC-BST-07 เป็นแหล่งข้อมูลเดียวของ Lab นี้</td></tr></tbody></table></div>
+    <div class="note">ใช้ไฟล์นี้แทน WI Draft จาก Lab A เพราะสื่อสอนงานต้องทำจาก WI ที่อนุมัติแล้วเท่านั้น</div>
+    <div class="lstep">
+      <div class="lstep-head"><h4><span class="num">0</span>เปิด Project LabD</h4></div>
+      <p style="margin:10px 0 0">เปิดโฟลเดอร์ <code>LabD</code> เป็น Cowork Project ใส่ Instruction กลาง แล้วส่ง Prompt นี้เพื่อตรวจไฟล์และสร้างโฟลเดอร์ผลลัพธ์ <strong>ทำทุก Prompt ของ Lab นี้ต่อกันในแชทเดียว</strong> เพราะบาง Prompt อ้างถึงผลในแชทก่อนหน้า และอย่าลืมสลับบทบาท Driver / Checker / Recorder กับ API Key ของ Lab นี้</p>
+      <div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">D0</b>ตรวจไฟล์ + สร้างโฟลเดอร์</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>แสดงรายชื่อไฟล์ใน src/ (ต้องมี 1 ไฟล์: WI_BST-002_Rev00.docx) ยืนยันว่าครบตามนี้ ยังไม่ต้องอ่านเนื้อหาไฟล์
+จากนั้นสร้างโฟลเดอร์ output/ ไว้เก็บผลลัพธ์ของ Lab นี้
+ถ้าไฟล์ไม่ครบหรือเปิดไม่ได้ ให้แจ้งชื่อไฟล์</pre></div>
+    </div>
+    <div class="lstep">
+      <div class="lstep-head"><h4><span class="num">1</span>Flowchart พร้อมจุดตัดสินใจ</h4></div>
+      <div class="tools"><span class="tool"><i style="background:#e44d26;color:#fff">&lt;/&gt;</i>HTML / Mermaid</span></div>
+      <div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">D1</b>Flowchart</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>อ่าน src/WI_BST-002_Rev00.docx เป็นแหล่งข้อมูลเดียว ห้ามใช้ความรู้ภายนอกเพิ่มขั้นตอน
+
+สร้าง Flowchart ขั้นตอนการทดสอบตั้งแต่ตรวจก่อนใช้งานจนถึงออกผล
+บันทึกเป็น output/LabD_Flowchart.html (ใช้ Mermaid เปิดดูในเบราว์เซอร์ได้)
+- จุดตัดสินใจต้องมี:
+  - ผลตรวจแผ่นยางผ่านหรือไม่
+  - ชิ้นทดสอบใช้ได้หรือไม่
+  - ชิ้นที่ใช้ไม่ได้เกิน 2 ใน 10 หรือไม่
+  - CV เกินเกณฑ์หรือไม่
+  - ผลตัดสิน Lot (ผ่าน / ไม่ผ่าน / ทดสอบซ้ำ)
+- ทุกกล่องใส่เลขข้อใน WI เช่น (7.6)
+- กล่องที่มีคำเตือน Safety ใช้สีแดง</pre></div>
+    </div>
+    <div class="lstep">
+      <div class="lstep-head"><h4><span class="num">2</span>OPL และ Quick Reference Card</h4></div>
+      <div class="tools"><span class="tool"><i style="background:#d35230;color:#fff">P</i>PowerPoint</span><span class="tool"><i style="background:#2b7cd3;color:#fff">W</i>Word</span></div>
+      <div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">D2</b>OPL + Quick Reference Card</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>จาก src/WI_BST-002_Rev00.docx สร้าง 2 ไฟล์:
+
+1) output/LabD_OPL.pptx — One-Point Lesson 1 หน้า เรื่อง "การตรวจชิ้นทดสอบที่ใช้ไม่ได้ (Slip / แตกที่ขอบแคลมป์)"
+   มีหัวข้อ:
+   - ทำไมต้องรู้
+   - วิธีดู
+   - สิ่งที่ต้องทำ
+   - ข้อห้าม
+   และเว้นกรอบ [ภาพตัวอย่าง] ไว้ให้ใส่รูปจริงจากหน้างาน
+
+2) output/LabD_Quick_Reference_Card.docx — การ์ด A5 ติดหน้าเครื่อง มีเฉพาะ:
+   - Pre-use Checklist แบบย่อ
+   - ค่า Parameter หลัก
+   - ขั้นตอนทดสอบไม่เกิน 10 บรรทัด
+   - คำเตือน Safety ครบทุกข้อในหัวข้อความปลอดภัยของ WI
+
+ทุกตัวเลขต้องตรงกับ WI และใส่เลขข้ออ้างอิงตัวเล็กไว้ท้ายบรรทัด</pre></div>
+    </div>
+    <div class="lstep">
+      <div class="lstep-head"><h4><span class="num">3</span>สไลด์สอนงานและแบบทดสอบ</h4></div>
+      <div class="tools"><span class="tool"><i style="background:#d35230;color:#fff">P</i>PowerPoint</span><span class="tool"><i style="background:#2b7cd3;color:#fff">W</i>Word</span></div>
+      <div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">D3</b>Training Slides + Quiz</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>จาก src/WI_BST-002_Rev00.docx สร้าง:
+
+1) output/LabD_Training_Slides.pptx — สไลด์สอนพนักงานใหม่ 8–10 หน้า
+   - ภาษาง่าย 1 ประเด็นต่อหน้า
+   - หน้าแรกบอกขอบเขตงานตาม WI
+   - มีหน้า Safety แยก
+   - และใส่ Speaker Notes ทุกหน้า
+   - เกณฑ์ตัดสินผลให้ใช้ถ้อยคำและเงื่อนไขตาม WI ครบ (เช่น "และ/หรือ", "แจ้งใคร") ห้ามย่อจนความหมายเปลี่ยน
+
+2) output/LabD_Post_Training_Quiz.docx — แบบทดสอบ 10 ข้อแบบปรนัย 4 ตัวเลือก
+   - อย่างน้อย 4 ข้อเป็นคำถามเชิงสถานการณ์ เช่น อ่านค่าได้หน่วยอื่น ชิ้นทดสอบลื่น ค่าเฉลี่ยใกล้เกณฑ์
+   - มีเฉลยแยกท้ายเอกสาร ทุกข้อระบุเลขข้อใน WI ที่เป็นคำตอบ
+   - กระจายตัวเลือกที่ถูกให้ไม่ซ้ำตัวอักษรเดิมเกิน 3 ข้อ และตัวลวงห้ามใช้เนื้อหาที่ไม่มีใน WI</pre></div>
+    </div>
+    <div class="lstep">
+      <div class="lstep-head"><h4><span class="num">4</span>ตรวจความสอดคล้อง (Single Source Check)</h4></div>
+      <div class="tools"><span class="tool"><i style="background:#8b7cf6;color:#fff">SA</i>Sub Agent</span></div>
+      <div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">D4</b>Consistency Check (Sub Agent)</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>ใช้ Sub Agent ในบท "ผู้ตรวจความสอดคล้อง" ตรวจไฟล์ใน output/ ที่ขึ้นต้นด้วย LabD_ ทุกไฟล์ เทียบกับ src/WI_BST-002_Rev00.docx
+ทำตาราง: ไฟล์ | ตำแหน่ง (หน้า/ข้อ) | ข้อความหรือตัวเลขในสื่อ | ข้อใน WI | ตรงกัน (Y/N) | ถ้าไม่ตรง ต้องแก้อย่างไร
+ตรวจทุกตัวเลข หน่วย ลำดับขั้นตอน และคำเตือน Safety แล้วแก้ไฟล์ที่ไม่ตรงให้ถูก</pre></div>
+    </div>
+
+    <details class="faq">
+      <summary>วิธีแก้ปัญหาที่พบบ่อย · Lab D</summary>
+      <div class="fq"><h5>เปิด Flowchart แล้วไม่เห็นแผนผัง</h5><p class="why"><b>ทำไม:</b> ไฟล์ Mermaid<span class="gl"> (ภาษาเขียนสั้น ๆ ที่ใช้วาดแผนผัง)</span> ต้องโหลดตัววาดจาก Internet ซึ่งเครือข่ายองค์กรอาจบล็อก</p><div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">D·1</b>ทำ Flowchart แบบไม่ต้องใช้ Internet</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>สร้าง output/LabD_Flowchart.html ใหม่ โดยวาดแผนผังเป็น SVG ในไฟล์เอง ห้ามโหลด Library จากภายนอก
+เนื้อหา จุดตัดสินใจ เลขข้อใน WI และกล่องสีแดงสำหรับ Safety ต้องเหมือนเดิม แล้วยืนยันว่าไม่มีลิงก์ไปเว็บภายนอก</pre></div></div>
+      <div class="fq"><h5>Quick Reference Card มีคำเตือน Safety ไม่ครบ</h5><p class="why"><b>ทำไม:</b> การ์ดมีพื้นที่จำกัด AI มักตัดคำเตือนบางข้อออกเพื่อให้พอหน้า</p><div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">D·2</b>เติม Safety ให้ครบ</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>นับคำเตือนทุกข้อในหัวข้อความปลอดภัยของ src/WI_BST-002_Rev00.docx แล้วเทียบกับ output/LabD_Quick_Reference_Card.docx
+เติมข้อที่ขาดให้ครบ ถ้าพื้นที่ไม่พอ ให้ย่อขั้นตอนทดสอบหรือลดขนาดตัวอักษร ห้ามตัดคำเตือน Safety แล้วรายงานจำนวนข้อก่อนและหลังแก้</pre></div></div>
+      <div class="fq"><h5>เฉลยแบบทดสอบซ้ำตัวอักษรเดิมหลายข้อ หรือตัวลวงมีเนื้อหานอก WI</h5><p class="why"><b>ทำไม:</b> AI มักวางคำตอบที่ถูกไว้ตัวเลือกเดิม และแต่งตัวลวงจากความรู้ทั่วไป</p><div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">D·3</b>แก้แบบทดสอบ</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>ตรวจ output/LabD_Post_Training_Quiz.docx: นับว่าคำตอบที่ถูกอยู่ตัวเลือก ก ข ค ง อย่างละกี่ข้อ ถ้าตัวอักษรใดเกิน 3 ข้อ ให้สลับลำดับตัวเลือก
+ตัวลวงที่ไม่มีเนื้อหาใน src/WI_BST-002_Rev00.docx ให้เปลี่ยนเป็นค่าหรือขั้นตอนจาก WI ที่ใช้ผิดบริบท แล้วแก้เฉลยให้ตรง</pre></div></div>
+      <div class="fq"><h5>สไลด์ย่อเกณฑ์ตัดสินผลจนความหมายเปลี่ยน</h5><p class="why"><b>ทำไม:</b> AI ชอบย่อประโยคยาว ทำให้คำอย่าง "และ/หรือ" หรือ "แจ้งใคร" หายไป</p><div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">D·4</b>ใช้ถ้อยคำตาม WI</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>หาทุกหน้าใน output/LabD_Training_Slides.pptx ที่พูดถึงเกณฑ์ตัดสินผลหรือการดำเนินการเมื่อไม่ผ่าน
+แทนข้อความด้วยถ้อยคำจาก src/WI_BST-002_Rev00.docx ตามตัวอักษร พร้อมเลขข้อ ถ้าข้อความยาวเกินหน้า ให้แยกเป็น 2 หน้า</pre></div></div>
+      <div class="fq short"><h5>ตามไม่ทัน? ใช้ Prompt ทางลัดชุดเดียวจบ Lab</h5><p class="why">ใช้เมื่อเวลาเหลือน้อย สร้างสื่อทั้ง 5 ไฟล์และตรวจความสอดคล้องในรอบเดียว แต่ Checker ยังต้องตรวจเฉลย 3 ข้อเหมือนเดิม</p><div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">D★</b>ทางลัด Lab D</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>ใช้ src/WI_BST-002_Rev00.docx เป็นแหล่งข้อมูลเดียว ห้ามใช้ความรู้ภายนอก แล้วสร้างไฟล์ตามลำดับ:
+
+1) output/LabD_Flowchart.html: Flowchart ตั้งแต่ตรวจก่อนใช้งานถึงออกผล วาดเป็น SVG ในไฟล์ (ไม่ต้องใช้ Internet)
+  จุดตัดสินใจ:
+  - แผ่นยางผ่านหรือไม่
+  - ชิ้นทดสอบใช้ได้หรือไม่
+  - ชิ้นที่ใช้ไม่ได้เกิน 2 ใน 10 หรือไม่
+  - CV เกินเกณฑ์หรือไม่
+  - ผลตัดสิน Lot
+  - ทุกกล่องมีเลขข้อใน WI
+  - กล่อง Safety สีแดง
+
+2) output/LabD_OPL.pptx: OPL 1 หน้า เรื่องการตรวจชิ้นทดสอบที่ใช้ไม่ได้ (Slip / แตกที่ขอบแคลมป์)
+  หัวข้อ ทำไมต้องรู้, วิธีดู, สิ่งที่ต้องทำ, ข้อห้าม และกรอบ [ภาพตัวอย่าง]
+
+3) output/LabD_Quick_Reference_Card.docx: การ์ด A5 มี
+  - Pre-use Checklist ย่อ
+  - Parameter หลัก
+  - ขั้นตอนไม่เกิน 10 บรรทัด
+  - คำเตือน Safety ครบทุกข้อของ WI
+  ทุกบรรทัดมีเลขข้ออ้างอิง
+
+4) output/LabD_Training_Slides.pptx: 8–10 หน้า 1 ประเด็นต่อหน้า
+  - หน้าแรกบอกขอบเขตงาน
+  - มีหน้า Safety แยก
+  - มี Speaker Notes ทุกหน้า
+  - เกณฑ์ตัดสินใช้ถ้อยคำตาม WI ครบ
+
+5) output/LabD_Post_Training_Quiz.docx: 10 ข้อ ปรนัย 4 ตัวเลือก อย่างน้อย 4 ข้อเชิงสถานการณ์
+  - เฉลยแยกท้ายเอกสารพร้อมเลขข้อใน WI
+  - คำตอบที่ถูกไม่อยู่ตัวอักษรเดิมเกิน 3 ข้อ
+  - ตัวลวงใช้เนื้อหาจาก WI เท่านั้น
+
+6) ใช้ Sub Agent ในบทผู้ตรวจความสอดคล้อง ตรวจทุกไฟล์ LabD_ เทียบ WI
+  (ไฟล์ | ตำแหน่ง | ข้อความหรือตัวเลขในสื่อ | ข้อใน WI | ตรงกัน Y/N | ต้องแก้อย่างไร)
+  แล้วแก้ไฟล์ที่ไม่ตรง
+
+จบแล้วแสดงรายการไฟล์ใน output/ และจำนวนจุดที่แก้</pre></div></div>
+    </details>
+    <div class="grid2"><div class="panel"><h4>Checkpoint ก่อนจบ Lab</h4><ul class="check"><li><input type="checkbox" id="d1"><label for="d1">ไม่มีตัวเลขหรือขั้นตอนในสื่อที่ไม่มีใน WI</label></li><li><input type="checkbox" id="d2"><label for="d2">ลำดับขั้นตอนใน Flowchart, Quick Reference Card และสไลด์ตรงกัน</label></li><li><input type="checkbox" id="d3"><label for="d3">คำเตือน Safety ทุกข้อใน WI ปรากฏในสไลด์และ Quick Reference Card</label></li><li><input type="checkbox" id="d4"><label for="d4">เฉลยแบบทดสอบทุกข้ออ้างเลขข้อใน WI และ Checker ตรวจแล้ว 3 ข้อ</label></li><li><input type="checkbox" id="d5"><label for="d5">ภาพที่ใช้มาจากเครื่องมือที่องค์กรอนุญาตเท่านั้น</label></li></ul></div><div class="panel"><h4>ผลลัพธ์ที่ต้องได้</h4><div class="outputs" style="margin-top:12px"><code>output/LabD_Flowchart.html</code><code>output/LabD_OPL.pptx</code><code>output/LabD_Quick_Reference_Card.docx</code><code>output/LabD_Training_Slides.pptx</code><code>output/LabD_Post_Training_Quiz.docx</code></div></div></div>
+  </div>
+</section>
+
+<!-- LAB E -->
+<section class="wrap lab E" id="labE">
+  <div class="lab-hero">
+    <div class="letter">E</div>
+    <div class="kicker" style="color:rgba(255,255,255,.8)">LAB E · 15:05–15:45 · 40 นาที</div>
+    <h2>Technician Skills Library + Automation</h2>
+    <p>สร้าง Skill<span class="gl"> (ชุดคำสั่งสำเร็จรูปที่เรียกใช้ซ้ำได้)</span> จาก 1 ขั้นตอนใน Canvas นำเข้า Technician Skills Library ทำ Skill Swap<span class="gl"> (สลับให้กลุ่มอื่นลองใช้ Skill ของเรา)</span> กับกลุ่มอื่นบนเครื่องทดสอบอีกชนิด และตั้ง Scheduled Task<span class="gl"> (งานที่ตั้งเวลาให้ทำเองอัตโนมัติ)</span> ที่ตรวจโฟลเดอร์ผลทดสอบทุกวัน</p>
+    <div class="chips"><span class="chip">4 Prompt</span><span class="chip">Skill · Scheduled Task · Live Dashboard</span></div>
+  </div>
+  <div class="lab-body">
+<div class="tbl"><table><thead><tr><th>ไฟล์ใน src/</th><th>คืออะไร</th></tr></thead><tbody><tr><td><code>Skills_Rules.md</code></td><td>กติกากลางของ Library: 5 ส่วนที่ Skill ต้องมี, ชื่อ, Owner, Version, ผู้ตรวจรับรอง และตัวอย่าง Skill ที่อนุมัติแล้ว</td></tr><tr><td><code>Spec_Sheet.xlsx</code></td><td>Spec ของแต่ละเกรด (มีทั้ง Burst และ Cobb60) และกติกาการตัดสิน Lot</td></tr><tr><td><code>cobb/Guide_COBB-100_EN.pdf</code></td><td>คู่มือย่อเครื่องทดสอบอีกชนิด (Cobb Tester) สำหรับ Skill Swap</td></tr><tr><td><code>cobb/Cobb_Export_2026-10-22.csv</code></td><td>ผลทดสอบ Cobb60 จำนวน 2 Lot สำหรับ Skill Swap</td></tr><tr><td><code>inbox/Export_2026-10-26.csv</code> … <code>_2026-10-28.csv</code></td><td>ผลทดสอบ Bursting Strength 3 วัน (วันละ 2 Lot) โฟลเดอร์ที่ Scheduled Task จะตรวจ</td></tr></tbody></table></div>
+    <div class="panel">
+      <h4>กติกา Technician Skills Library ที่ต้องรู้ก่อนเขียน Skill</h4>
+      <div class="grid3" style="margin-top:14px;font-size:14px">
+        <div><strong>5 ส่วนที่ต้องมี</strong><p class="muted" style="margin:6px 0 0">ใช้เมื่อใด · Input · ขั้นตอน · แบบฟอร์มผลลัพธ์ · เกณฑ์ตรวจคุณภาพ + สิ่งที่ห้ามทำ</p></div>
+        <div><strong>Version</strong><p class="muted" style="margin:6px 0 0">แก้คำ/รูปแบบ → PATCH · เพิ่มขั้นตอน/เกณฑ์ → MINOR · เปลี่ยนวิธีคำนวณ/เกณฑ์/แบบฟอร์ม → MAJOR (reviewer ตรวจใหม่) · สถานะ draft → reviewed → approved</p></div>
+        <div><strong>ห้ามทำ 4 ข้อ</strong><p class="muted" style="margin:6px 0 0">สร้างหรือเดาค่า Spec / เกณฑ์ / ค่า Safety · แก้ค่าดิบในไฟล์ต้นฉบับ · ส่งข้อมูลออกนอก Folder ของ Project · เติมค่าเองเมื่อข้อมูลไม่พอ</p></div>
+      </div>
+    </div>
+    <div class="lstep">
+      <div class="lstep-head"><h4><span class="num">0</span>เปิด Project LabE</h4></div>
+      <p style="margin:10px 0 0">เปิดโฟลเดอร์ <code>LabE</code> เป็น Cowork Project ใส่ Instruction กลาง แล้วส่ง Prompt นี้เพื่อตรวจไฟล์และสร้างโฟลเดอร์ผลลัพธ์ <strong>ทำทุก Prompt ของ Lab นี้ต่อกันในแชทเดียว</strong> เพราะบาง Prompt อ้างถึงผลในแชทก่อนหน้า และอย่าลืมสลับบทบาท Driver / Checker / Recorder กับ API Key ของ Lab นี้</p>
+      <div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">E0</b>ตรวจไฟล์ + สร้างโฟลเดอร์</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>แสดงรายชื่อไฟล์ใน src/ รวมโฟลเดอร์ย่อย
+(Skills_Rules.md, Spec_Sheet.xlsx, cobb/Guide_COBB-100_EN.pdf, cobb/Cobb_Export_2026-10-22.csv,
+  inbox/Export_2026-10-26.csv, inbox/Export_2026-10-27.csv, inbox/Export_2026-10-28.csv)
+ยืนยันว่าครบตามนี้ ยังไม่ต้องอ่านเนื้อหาไฟล์
+
+จากนั้นสร้างโฟลเดอร์ output/ และ skills/ ไว้เก็บผลลัพธ์ของ Lab นี้
+
+ถ้าไฟล์ไม่ครบหรือเปิดไม่ได้ ให้แจ้งชื่อไฟล์</pre></div>
+    </div>
+    <div class="lstep">
+      <div class="lstep-head"><h4><span class="num">1</span>สร้าง Skill</h4></div>
+      <div class="tools"><span class="tool"><i style="background:#5b8cff;color:#fff">Sk</i>Skill</span></div>
+      <p style="margin:10px 0 0">เลือก 1 Skill จาก Canvas ของกลุ่ม: <strong>WI Writer</strong>, <strong>Video-to-Procedure</strong>, <strong>Test Report Generator</strong> หรือ <strong>OPL Maker</strong> แล้วแนบ Prompt และผลลัพธ์ที่ดีที่สุดของกลุ่มจาก Lab A–D ที่เกี่ยวข้อง</p>
+      <div class="note" style="margin-top:12px">โฟลเดอร์ LabE มีข้อมูลพร้อมสำหรับ <strong>Test Report Generator</strong> และ Skill Swap ใช้ข้อมูลเครื่อง Cobb ซึ่งเป็นงานออก Report เหมือนกัน ถ้าไม่แน่ใจให้เลือกตัวนี้ และใช้ Prompt สำเร็จรูปในหัวข้อ "วิธีแก้ปัญหาที่พบบ่อย · Lab E" ได้เลย ถ้าเลือก Skill อื่น ให้คัดลอกไฟล์ output จาก Lab นั้นมาไว้ในโฟลเดอร์ LabE ก่อน</div>
+      <div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">E1</b>Create Skill</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>อ่าน src/Skills_Rules.md ให้ครบ
+
+สร้าง Skill ชื่อ tech-<mark>&lt;ชื่อที่เลือก&gt;</mark> จาก Prompt และผลลัพธ์ที่แนบมา (<mark>&lt;ใส่ชื่อไฟล์ output/ ที่ใช้&gt;</mark>)
+- เขียนเป็นไฟล์ skills/tech-<mark>&lt;ชื่อ&gt;</mark>/SKILL.md ตามรูปแบบในข้อ 2 และข้อ 6 ของกติกา
+  - status = draft
+  - version = 0.1.0
+- ต้องมีครบ 5 ส่วน:
+  - ใช้เมื่อใด
+  - Input
+  - ขั้นตอน
+  - แบบฟอร์มผลลัพธ์
+  - เกณฑ์ตรวจคุณภาพ + สิ่งที่ห้ามทำ
+- ห้ามผูกกับเครื่อง BST-1400 อย่างเดียว
+  ให้เขียนขั้นตอนที่ใช้กับเครื่องทดสอบชนิดอื่นได้ แต่ให้ถามผู้ใช้เมื่อไม่พบ Parameter ในเอกสารของเครื่องนั้น
+- เพิ่มแถวของ Skill นี้ในตาราง Register (ข้อ 5) ในไฟล์ skills/REGISTER.md
+
+แล้วตรวจ Skill ของตัวเองตามเช็กลิสต์ในข้อ 1 และ 4 ของกติกา รายงานข้อที่ยังขาด</pre></div>
+      <details class="ex">
+        <summary>ดูตัวอย่าง Prompt E1 ที่กรอกครบแล้ว</summary>
+        <p class="muted" style="font-size:13.5px;margin:10px 0 0">ตัวอย่างนี้เลือก <strong>Test Report Generator</strong> คัดลอกไปรันได้เลย ถ้ากลุ่มทำ Lab C เสร็จ ให้คัดลอก 3 ไฟล์จาก <code>LabC/output/</code> มาไว้ใน <code>LabE/output/</code> ก่อน ถ้าไม่มี Prompt จะใช้ข้อมูลใน <code>src/</code> แทนเอง</p>
+        <div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">E1</b>ตัวอย่างที่กรอกแล้ว</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>อ่าน src/Skills_Rules.md ให้ครบ
+
+สร้าง Skill ชื่อ tech-<mark>test-report-generator</mark> จาก Prompt และผลลัพธ์ที่แนบมา
+(<mark>output/LabC_Data_Quality_Log.xlsx, output/LabC_Test_Data_Clean.xlsx และ output/LabC_Test_Report_TR-BST-2610.docx
+ถ้าไม่พบไฟล์เหล่านี้ ให้ใช้ src/inbox/Export_2026-10-26.csv และ src/Spec_Sheet.xlsx เป็นตัวอย่างแทน</mark>)
+
+งานของ Skill: <mark>แปลงไฟล์ผลทดสอบจากเครื่อง (CSV / Excel) เป็น Test Report Draft พร้อมตัดสินผล Lot ตาม Spec</mark>
+
+- เขียนเป็นไฟล์ skills/tech-<mark>test-report-generator</mark>/SKILL.md ตามรูปแบบในข้อ 2 และข้อ 6 ของกติกา
+  - status = draft
+  - version = 0.1.0
+  - owner = <mark>ทีม LabE</mark>
+- ต้องมีครบ 5 ส่วน:
+  - ใช้เมื่อใด: <mark>มีไฟล์ผลทดสอบและ Spec Sheet ที่มีกติกาตัดสิน Lot
+    ห้ามใช้เมื่อไม่มี Spec</mark>
+  - Input: <mark>ไฟล์ผลทดสอบ (Test_ID, Lot, Grade, ค่า, หน่วย, Status) และ Spec Sheet
+    ถ้าขาดคอลัมน์ใดให้ถามผู้ใช้</mark>
+  - ขั้นตอน: <mark>ตรวจคุณภาพข้อมูล (หน่วย, ค่าว่าง, แถวซ้ำ, Status, ค่าผิดปกติ)
+    → แปลงหน่วยตามเอกสารต้นทาง
+    → คำนวณ n, Mean, SD, CV% และ Index ต่อ Lot
+    → ตัดสินตามลำดับใน Decision Rules
+    → ออก Report</mark>
+  - แบบฟอร์มผลลัพธ์: <mark>Excel (Clean_Data, Lot_Summary, Data_Log) และ Word Test Report ติดป้าย DRAFT</mark>
+  - เกณฑ์ตรวจคุณภาพ + สิ่งที่ห้ามทำ: <mark>Checker คำนวณซ้ำ 2 ค่า
+    ห้ามสร้างค่า Spec เอง
+    ห้ามแก้ค่าที่สงสัยว่าพิมพ์ผิด ให้ถามผู้ทดสอบ</mark>
+- ห้ามผูกกับเครื่อง BST-1400 อย่างเดียว
+  ให้เขียนขั้นตอนที่ใช้กับเครื่องทดสอบชนิดอื่นได้ แต่ให้ถามผู้ใช้เมื่อไม่พบ Parameter ในเอกสารของเครื่องนั้น
+- เพิ่มแถวของ Skill นี้ในตาราง Register (ข้อ 5) ในไฟล์ skills/REGISTER.md
+
+<mark>ทดลองใช้ Skill กับ src/inbox/Export_2026-10-26.csv และ src/Spec_Sheet.xlsx 1 รอบ</mark>
+แล้วตรวจ Skill ของตัวเองตามเช็กลิสต์ในข้อ 1 และ 4 ของกติกา รายงานข้อที่ยังขาด</pre></div>
+      </details>
+    </div>
+    <div class="lstep">
+      <div class="lstep-head"><h4><span class="num">2</span>Skill Swap</h4></div>
+      <div class="tools"><span class="tool"><i style="background:#5b8cff;color:#fff">Sk</i>Skill</span></div>
+      <p style="margin:10px 0 0">ส่งโฟลเดอร์ <code>skills/tech-&lt;ชื่อ&gt;/</code> ให้กลุ่มข้างเคียง กลุ่มที่รับ <strong>ห้ามถามคำอธิบายจากเจ้าของ</strong> ติดตั้ง Skill แล้วรัน:</p>
+      <div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">E2</b>Skill Swap กับเครื่อง Cobb</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>ใช้ Skill tech-<mark>&lt;ชื่อ Skill ที่ได้รับ&gt;</mark> กับเครื่องทดสอบ Cobb
+ไฟล์ที่ใช้: src/cobb/Guide_COBB-100_EN.pdf และ src/cobb/Cobb_Export_2026-10-22.csv
+เกณฑ์ Cobb60 อยู่ใน src/Spec_Sheet.xlsx</pre></div>
+      <div class="cp"><strong><span class="chip human">คนทำเอง</span> บันทึก Feedback 3 ข้อ</strong><p>Skill ทำงานได้ไหม · จุดที่ AI ต้องเดาหรือถาม · ผลลัพธ์ผิดตรงไหน → ส่งคืนเจ้าของ เจ้าของแก้ Skill และเพิ่ม Version ตามกติกาข้อ 3</p></div>
+    </div>
+    <div class="lstep">
+      <div class="lstep-head"><h4><span class="num">3</span>Scheduled Task + Live Dashboard</h4></div>
+      <div class="tools"><span class="tool"><i style="background:#f0656e;color:#fff">ST</i>Scheduled Task</span><span class="tool"><i style="background:#e4f04a;color:#1a1a0a">LA</i>Live Artifact</span><span class="tool"><i style="background:#3776ab;color:#fff">Py</i>Python</span></div>
+      <p style="margin:10px 0 0">วิทยากรสาธิตก่อน แล้วผู้เรียนตั้งค่าตามบนเครื่องของกลุ่ม</p>
+      <div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">E3</b>Daily Test Report Automation</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>ฉันต้องการงานอัตโนมัติทุกวันทำการ เวลา 16:45 น. ทำดังนี้:
+1) ตรวจโฟลเดอร์ src/inbox/ หาไฟล์ Export_*.csv ที่ยังไม่เคยประมวลผล (เก็บรายชื่อไฟล์ที่ทำแล้วใน output/processed_files.json)
+2) ตัดแถวซ้ำ (Test_ID ซ้ำ) และชิ้นทดสอบที่ Status ไม่ใช่ OK ออกจากการคำนวณ และบันทึกไว้ใน Data Log
+3) คำนวณต่อ Lot และตัดสินตาม src/Spec_Sheet.xlsx (Sheet Decision_Rules)
+4) สร้าง Test Report Draft ต่อวันใน output/daily_reports/ ติดป้าย DRAFT
+5) อัปเดต Live Dashboard (output/LabE_Dashboard.html) แสดง:
+  - จำนวน Lot ต่อวัน
+  - Lot ที่ไม่ผ่านหรือต้องทดสอบซ้ำ (เน้นสีแดง)
+  - แนวโน้ม Burst Index ต่อเกรด
+  - เวลาที่อัปเดตล่าสุด
+6) ถ้าไฟล์อ่านไม่ได้หรือคอลัมน์ไม่ครบ ให้หยุดและแจ้งฉัน ห้ามเดาค่า
+7) เขียนขั้นตอนข้อ 1–5 เป็นสคริปต์ output/automation/daily_bst_report.py ให้ Task เรียกสคริปต์นี้ทุกวัน เพื่อให้ผลเหมือนเดิมทุกครั้ง
+  และใน Data Log ให้อ้างเลขบรรทัดจริงของไฟล์ CSV
+
+ก่อนตั้งเวลา ให้รันครั้งแรกกับ 3 ไฟล์ที่มีอยู่ตอนนี้ แล้วสรุปผลให้ฉันตรวจ อย่าเพิ่งตั้งเวลาจนกว่าฉันจะยืนยัน</pre></div>
+      <div class="cp"><strong><span class="chip human">คนทำเอง</span> Checkpoint ก่อนตั้งเวลาจริง</strong><ul class="check"><li><input type="checkbox" id="e1"><label for="e1">Checker คำนวณ Burst Index ของ 1 Lot ใน Dashboard ซ้ำด้วย Excel ได้ค่าตรงกัน</label></li><li><input type="checkbox" id="e2"><label for="e2">ชิ้นทดสอบที่ Status เป็น SLIP ไม่ถูกนับ</label></li><li><input type="checkbox" id="e3"><label for="e3">Lot ที่ไม่ผ่าน Spec แสดงเป็นสีแดงใน Dashboard และมีเหตุผล</label></li><li><input type="checkbox" id="e4"><label for="e4">Task ทำงานเฉพาะในโฟลเดอร์ของ Project ไม่ส่งข้อมูลออกนอกองค์กร</label></li><li><input type="checkbox" id="e5"><label for="e5">ยืนยันแล้วจึงตั้งเวลา และรู้วิธีหยุด Task</label></li></ul></div>
+    </div>
+
+    <details class="faq">
+      <summary>วิธีแก้ปัญหาที่พบบ่อย · Lab E</summary>
+      <div class="fq"><h5>ไม่มีไฟล์ผลลัพธ์จาก Lab ก่อนหน้าให้สร้าง Skill</h5><p class="why"><b>ทำไม:</b> โฟลเดอร์ LabE มีข้อมูลพร้อมสำหรับ Test Report Generator ใช้ Prompt นี้ได้โดยไม่ต้องกรอกอะไร</p><div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">E·1</b>สร้าง Skill Test Report Generator</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>อ่าน src/Skills_Rules.md ให้ครบ
+
+สร้าง Skill ชื่อ tech-test-report-generator สำหรับแปลงไฟล์ผลทดสอบจากเครื่อง (CSV / Excel)
+เป็น Test Report Draft พร้อมตัดสินผลตาม Spec
+- เขียนเป็นไฟล์ skills/tech-test-report-generator/SKILL.md ตามรูปแบบในข้อ 2 และข้อ 6 ของกติกา
+  - status = draft
+  - version = 0.1.0
+  - owner = ชื่อกลุ่มของเรา
+  - equipment_scope = QC-BST-07
+- ต้องมีครบ 5 ส่วน:
+  - ใช้เมื่อใด: มีไฟล์ผลทดสอบและ Spec Sheet ที่มีกติกาตัดสิน Lot
+    ห้ามใช้เมื่อไม่มี Spec
+  - Input: ไฟล์ผลทดสอบ (คอลัมน์ Test_ID, Lot, Grade, ค่า, หน่วย, Status) และ Spec Sheet
+    ถ้าขาดคอลัมน์ใดให้ถามผู้ใช้
+  - ขั้นตอน:
+    ตรวจคุณภาพข้อมูล (หน่วย, ค่าว่าง, แถวซ้ำ, Status, ค่าผิดปกติ)
+    → แปลงหน่วยตามเอกสารต้นทาง
+    → คำนวณ n, Mean, SD, CV% และ Index ต่อ Lot
+    → ตัดสินตามลำดับใน Decision Rules
+    → ออก Report
+  - แบบฟอร์มผลลัพธ์: Excel (Clean_Data, Lot_Summary, Data_Log) และ Word Test Report ติดป้าย DRAFT
+  - เกณฑ์ตรวจคุณภาพ + สิ่งที่ห้ามทำ:
+    Checker คำนวณซ้ำ 2 ค่า
+    ห้ามสร้างค่า Spec เอง
+    ห้ามแก้ค่าที่สงสัยว่าพิมพ์ผิด ให้ถามผู้ทดสอบ
+- เขียนขั้นตอนให้ใช้กับเครื่องทดสอบชนิดอื่นได้ และให้ถามผู้ใช้เมื่อไม่พบ Parameter ในเอกสารของเครื่องนั้น
+- เพิ่มแถวของ Skill นี้ในตาราง Register (ข้อ 5) ในไฟล์ skills/REGISTER.md
+
+ทดลองใช้ Skill กับ src/inbox/Export_2026-10-26.csv และ src/Spec_Sheet.xlsx 
+แล้วตรวจ Skill ตามเช็กลิสต์ในข้อ 1 และ 4 ของกติกา
+รายงานข้อที่ยังขาด</pre></div></div>
+      <div class="fq"><h5>ไม่รู้วิธีติดตั้ง Skill ที่ได้จากกลุ่มอื่น</h5><p class="why"><b>ทำไม:</b> ขั้นตอนติดตั้งขึ้นกับการตั้งค่า Cowork ในเครื่อง ให้วิทยากรสาธิต ระหว่างนี้สั่งให้ AI อ่านไฟล์ SKILL.md แล้วทำตามได้เลยโดยไม่ต้องติดตั้ง</p><p class="why"><b>ถ้าได้ Skill อื่น:</b> เปลี่ยนชื่อโฟลเดอร์ Skill ใน Prompt ให้ตรงกับที่ได้รับ</p><div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">E·2</b>ใช้ Skill โดยไม่ต้องติดตั้ง (Skill Swap กับเครื่อง Cobb)</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>วางโฟลเดอร์ Skill ที่ได้รับไว้ใน skills/ ของ Project นี้แล้ว
+อ่าน skills/tech-test-report-generator/SKILL.md ให้ครบ แล้วทำงานตามขั้นตอนใน Skill นี้ทุกข้อกับเครื่องทดสอบ Cobb:
+ไฟล์ที่ใช้: src/cobb/Guide_COBB-100_EN.pdf และ src/cobb/Cobb_Export_2026-10-22.csv เกณฑ์ Cobb60 อยู่ใน src/Spec_Sheet.xlsx
+ห้ามเพิ่มขั้นตอนที่ Skill ไม่ได้เขียนไว้ ถ้า Skill ไม่ชัดตรงไหนให้จดไว้เป็น Feedback แทนการเดา</pre></div></div>
+      <div class="fq"><h5>AI ตั้งเวลา Scheduled Task จากแชทไม่ได้</h5><p class="why"><b>ทำไม:</b> บางเครื่องต้องตั้งเวลาจากหน้าจอ Cowork เอง ให้ดูตอนวิทยากรสาธิต ระหว่างนี้รันด้วยมือได้เลย</p><div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">E·3</b>รัน Daily Report ด้วยมือ 1 รอบ</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>ทำงาน Daily Report 1 รอบตอนนี้ (ยังไม่ต้องตั้งเวลา):
+
+1) อ่านทุกไฟล์ src/inbox/Export_*.csv (ข้ามบรรทัดที่ขึ้นต้นด้วย #)
+   บันทึกรายชื่อไฟล์ที่ทำแล้วใน output/processed_files.json
+2) ตัดแถว Test_ID ซ้ำ และชิ้นที่ Status ไม่ใช่ OK ออกจากการคำนวณ
+   บันทึกใน Data Log พร้อมเลขบรรทัดจริงของไฟล์ CSV
+3) คำนวณต่อ Lot และตัดสินตาม Sheet Decision_Rules ใน src/Spec_Sheet.xlsx ตามลำดับการตรวจที่เขียนไว้
+4) สร้าง Test Report Draft ต่อวันใน output/daily_reports/ ติดป้าย DRAFT
+5) สร้าง output/LabE_Dashboard.html:
+   - จำนวน Lot ต่อวัน
+   - Lot ที่ไม่ผ่านหรือต้องทดสอบซ้ำเป็นสีแดงพร้อมเหตุผล
+   - แนวโน้ม Burst Index ต่อเกรด
+   - เวลาที่อัปเดตล่าสุด
+6) เขียนข้อ 1–5 เป็นสคริปต์ output/automation/daily_bst_report.py
+   แล้วรันสคริปต์นี้ให้ได้ผลข้างบน</pre></div></div>
+      <div class="fq"><h5>เปิด Dashboard แล้วไม่เห็นกราฟ</h5><p class="why"><b>ทำไม:</b> กราฟอาจโหลดจาก Internet ซึ่งเครือข่ายองค์กรอาจบล็อก</p><div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">E·4</b>ทำ Dashboard แบบไม่ต้องใช้ Internet</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>แก้ output/LabE_Dashboard.html ให้เปิดได้โดยไม่ต้องใช้ Internet: วาดกราฟด้วย SVG หรือ Canvas ในไฟล์เอง ห้ามโหลด Library จากภายนอก
+ข้อมูลทั้งหมดอยู่ในไฟล์ HTML ไฟล์เดียว และแก้ output/automation/daily_bst_report.py ให้สร้าง Dashboard แบบนี้ทุกครั้ง</pre></div></div>
+    </details>
+    <div class="panel"><h4>ผลลัพธ์ที่ต้องได้</h4><div class="outputs" style="margin-top:12px"><code>skills/tech-&lt;ชื่อ&gt;/SKILL.md</code><code>skills/REGISTER.md</code><code>output/daily_reports/</code><code>output/LabE_Dashboard.html</code><code>Scheduled Task 1 งาน</code></div><p class="muted" style="font-size:14px;margin:12px 0 0">อ่านเพิ่ม: <a href="https://academy.claude.com/tutorials/customize-claude-cowork" target="_blank" rel="noopener">Customize Claude Cowork ↗</a> · <a href="https://support.claude.com/en/articles/13854387-schedule-recurring-tasks-in-claude-cowork" target="_blank" rel="noopener">Schedule recurring tasks ↗</a></p></div>
+  </div>
+</section>
+
+<section class="wrap" id="chrome">
+  <div class="sec-head"><div><div class="kicker">BONUS · ใช้ต่อหลังอบรม</div><h2>Claude in Chrome · ให้ Claude ช่วยทำงานบนเว็บ</h2></div></div>
+  <p class="muted" style="margin:0 0 18px">Claude in Chrome คือ Extension<span class="gl"> (ส่วนเสริมของเบราว์เซอร์)</span> ที่ให้ Claude อ่านหน้าเว็บ คลิก พิมพ์ เปลี่ยนหน้า และกรอกฟอร์มใน Google Chrome ให้ได้ ใช้ได้ทั้งจากแถบด้านข้างของ Chrome และสั่งจาก Claude Cowork ให้ไปทำงานบนเว็บแล้วนำผลกลับมาเป็นไฟล์ในเครื่อง</p>
+  <div class="grid2">
+    <div class="panel">
+      <h4>ติดตั้งและเปิดใช้</h4>
+      <ol style="margin:12px 0 0;padding-left:20px;line-height:1.8">
+        <li>เปิด <strong>Google Chrome</strong> บนคอมพิวเตอร์ (ไม่รองรับเบราว์เซอร์ Chromium อื่นและมือถือ)</li>
+        <li>ติดตั้ง <strong>Claude</strong> จาก Chrome Web Store → กด <strong>Add to Chrome</strong></li>
+        <li>เข้าสู่ระบบด้วยบัญชี Claude แล้วปักหมุด (Pin) ไอคอนไว้ที่แถบเครื่องมือ และอนุญาตสิทธิ์ที่ขอ</li>
+        <li>ใช้กับ Cowork: ใน Claude Desktop ไปที่ <strong>Settings → Customize → Connectors</strong> เปิด Claude in Chrome แล้ว<strong>เปิดใช้ในแต่ละแชท</strong> (ค่าเริ่มต้นปิดอยู่)</li>
+      </ol>
+      <p class="muted" style="font-size:14px;margin:12px 0 0">ต้องใช้บัญชี Claude แบบเสียเงิน (Pro, Max, Team, Enterprise) สำหรับบัญชีองค์กร ผู้ดูแลระบบต้องเปิดสิทธิ์ให้ก่อน และอาจกำหนดเว็บที่อนุญาตไว้</p>
+    </div>
+    <div class="panel">
+      <h4>ใช้ทำอะไรได้บ้าง</h4>
+      <ul style="margin:12px 0 0;padding-left:20px;line-height:1.8">
+        <li><strong>อ่านและสรุปหน้าเว็บ</strong> ที่เปิดอยู่ หรือเปิดหลายแท็บแล้วเปรียบเทียบให้</li>
+        <li><strong>ค้นและดึงข้อมูล</strong> จากเว็บมาจัดเป็นตาราง แล้วให้ Cowork บันทึกเป็นไฟล์ Excel / Word</li>
+        <li><strong>กรอกฟอร์มหรือทำขั้นตอนซ้ำ ๆ</strong> บนเว็บ โดยหยุดถามก่อนกดส่ง</li>
+        <li><strong>Shortcut</strong><span class="gl"> (Prompt ที่บันทึกไว้ใช้ซ้ำ)</span> พิมพ์ <code>/</code> เพื่อเรียกใช้ และตั้งเวลาให้รันอัตโนมัติรายวัน / รายสัปดาห์ได้ (Chrome ต้องเปิดอยู่)</li>
+      </ul>
+    </div>
+  </div>
+  <div class="step" style="margin-top:16px;padding-left:20px">
+    <h4>ตัวอย่าง Prompt</h4>
+      <div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">CH1</b>สรุปหน้าเว็บผู้ผลิตเครื่อง</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>อ่านหน้าเว็บที่เปิดอยู่ (หน้าข้อมูลเครื่องหรืออุปกรณ์สิ้นเปลืองของผู้ผลิต)
+
+สรุปเป็นตาราง: รายการ | ค่า | หน่วย | ตำแหน่งบนหน้าเว็บ
+ถ้าค่าไม่ตรงกับ Manual_BST-1400_EN.pdf ให้แสดงทั้ง 2 ค่า ห้ามเลือกเอง
+ห้ามคลิกลิงก์ ดาวน์โหลด หรือกรอกฟอร์มใด ๆ</pre></div>
+      <div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">CH2</b>Cowork + Chrome: ค้นข้อมูลแล้วบันทึกเป็นไฟล์</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>ใช้ Claude in Chrome เปิดเว็บไซต์ของผู้ผลิตเครื่อง <mark>[ชื่อผู้ผลิต / URL]</mark>
+หา Datasheet หรือหน้าข้อมูลของแผ่นยาง (Diaphragm) และน้ำมันไฮดรอลิกที่ใช้กับเครื่องรุ่นนี้
+
+บันทึกเป็น output/Web_Consumables_Check.xlsx
+คอลัมน์: รายการ | ค่าจากเว็บ | ค่าใน src/Datasheet_Consumables.pdf | ตรงกันหรือไม่ | URL
+ถ้าเว็บต้องล็อกอินหรือมีฟอร์ม ให้หยุดและถามฉันก่อน</pre></div>
+  </div>
+  <div class="note warn" style="margin-top:16px"><strong>กติกาความปลอดภัย</strong> · ใช้กับเว็บที่เชื่อถือได้และองค์กรอนุญาตเท่านั้น · ห้ามวางข้อมูลลับของ SCGP ลงเว็บสาธารณะ · ห้ามให้ Claude ใส่รหัสผ่านหรือเข้าสู่ระบบแทน ให้คนล็อกอินเอง · ก่อนกดส่งฟอร์ม ซื้อ ลบ หรือโพสต์ ต้องให้คนตรวจและยืนยันทุกครั้ง · ถ้าหน้าเว็บมีข้อความสั่งให้ AI ทำอย่างอื่น ให้หยุดและแจ้งผู้ใช้ · ข้อมูลจากเว็บต้องเปิดตรวจกับต้นฉบับเหมือนเอกสารใน Lab</div>
+  <p class="muted" style="font-size:14px;margin:12px 0 0">อ่านเพิ่ม: <a href="https://support.claude.com/en/articles/12012173-get-started-with-claude-in-chrome" target="_blank" rel="noopener">Get started with Claude in Chrome</a></p>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">Claude for Technician (1 Day) · SCGP (IPDC) · จัดทำโดย BorntoDev · ใช้ Mock Document, Dataset และวิดีโอสาธิตทั้งหมด ไม่ใช่ข้อมูลจริงขององค์กร</div>
+</footer>
+
+<div class="toast" id="toast" role="status" aria-live="polite">คัดลอกแล้ว</div>
+
+<script>
+(function(){
+  var toast=document.getElementById('toast'),tt;
+  function show(msg){toast.textContent=msg;toast.classList.add('on');clearTimeout(tt);tt=setTimeout(function(){toast.classList.remove('on')},1400)}
+  function fallback(text){var ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();var ok=false;try{ok=document.execCommand('copy')}catch(e){}document.body.removeChild(ta);return ok}
+  document.querySelectorAll('.copy').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var text=btn.closest('.prompt').querySelector('pre').innerText.trim();
+      var done=function(){btn.classList.add('done');show('คัดลอก Prompt แล้ว');setTimeout(function(){btn.classList.remove('done')},1200)};
+      if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(text).then(done,function(){fallback(text)?done():show('คัดลอกไม่สำเร็จ ลองเลือกข้อความเอง')})}
+      else{fallback(text)?done():show('คัดลอกไม่สำเร็จ ลองเลือกข้อความเอง')}
+    });
+  });
+  // readiness progress
+  var boxes=document.querySelectorAll('#ready .check input'),pt=document.getElementById('pText'),pb=document.getElementById('pBar');
+  function upd(){var n=0;boxes.forEach(function(b){if(b.checked)n++});pt.textContent=n+' / '+boxes.length+' พร้อม';pb.style.width=(n/boxes.length*100)+'%'}
+  boxes.forEach(function(b){b.addEventListener('change',upd)});upd();
+  // step tracking: Done button at bottom-right of each step card; first unfinished card gets "กำลังทำ"
+  var cardsAll=[].slice.call(document.querySelectorAll('#ready .step, .lab .lstep'));
+  cardsAll.forEach(function(card){
+    var row=document.createElement('div');row.className='done-row';
+    var btn=document.createElement('button');btn.type='button';btn.className='done-btn';btn.innerHTML='<i>✓</i>Done';btn.setAttribute('aria-pressed','false');
+    row.appendChild(btn);card.appendChild(row);
+    var tag=document.createElement('span');tag.className='now-tag';tag.textContent='กำลังทำ';
+    var head=card.querySelector('.lstep-head');
+    if(head){var ctl=document.createElement('div');ctl.className='ctl';var chip=head.querySelector(':scope > .chip');if(chip)ctl.appendChild(chip);ctl.appendChild(tag);head.appendChild(ctl)}
+    else{var h=card.querySelector('h4');h.appendChild(document.createTextNode(' '));h.appendChild(tag)}
+    // cards with a checklist: all ticked = Done, and Done ticks/unticks the whole list
+    var boxes=[].slice.call(card.querySelectorAll('.check input'));
+    function setDone(d){card.classList.toggle('is-done',d);btn.setAttribute('aria-pressed',String(d));track()}
+    boxes.forEach(function(b){b.addEventListener('change',function(){setDone(boxes.every(function(x){return x.checked}))})});
+    btn.addEventListener('click',function(){var d=!card.classList.contains('is-done');
+      if(boxes.length){boxes.forEach(function(b){b.checked=d});boxes[0].dispatchEvent(new Event('change'))}else setDone(d)});
+  });
+  function track(){
+    var cur=document.querySelector('.is-now');if(cur)cur.classList.remove('is-now');
+    var next=cardsAll.filter(function(c){return !c.classList.contains('is-done')})[0];
+    if(next)next.classList.add('is-now');
+  }
+  track();
+  // active nav
+  var links=[].slice.call(document.querySelectorAll('.pill a'));
+  var ids=links.map(function(a){return a.getAttribute('href').slice(1)});
+  function onScroll(){var cur='top';ids.forEach(function(id){var el=document.getElementById(id);if(el&&el.getBoundingClientRect().top<120)cur=id});var last;links.forEach(function(a){var on=a.getAttribute('href')==='#'+cur;a.classList.toggle('on',on);if(on)last=a});if(last&&last!==window._navOn){window._navOn=last;var pill=last.parentNode;pill.scrollTo({left:last.offsetLeft-pill.clientWidth/2+last.clientWidth/2,behavior:'smooth'})}}
+  window.addEventListener('scroll',onScroll,{passive:true});onScroll();
+})();
+</script>
+</body>
+</html>

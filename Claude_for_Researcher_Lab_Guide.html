@@ -1,0 +1,1577 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Claude for Researcher · Lab Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&family=Instrument+Serif:ital@1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0a0b; --bg2:#111113; --surface:#161618; --surface2:#1d1d20; --line:#2a2a2f;
+  --text:#f4f4f5; --muted:#a1a1aa; --dim:#6b6b73;
+  --lime:#e4f04a; --lime-ink:#1a1a0a;
+  --A:#6c5ce7; --B:#f0656e; --C:#1fb3cc; --D:#4fcf6a; --E:#5b6cf0;
+  --A-soft:rgba(108,92,231,.16); --B-soft:rgba(240,101,110,.16); --C-soft:rgba(31,179,204,.16); --D-soft:rgba(79,207,106,.16); --E-soft:rgba(91,108,240,.16);
+  --radius:22px;
+  --font:"IBM Plex Sans Thai",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --serif:"Instrument Serif",Georgia,serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:90px}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font);font-size:16px;line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(900px 500px at 50% -10%,rgba(255,255,255,.06),transparent 70%),
+             radial-gradient(1px 1px at 12% 30%,#fff3 50%,transparent 51%),
+             radial-gradient(1px 1px at 82% 18%,#fff3 50%,transparent 51%),
+             radial-gradient(1px 1px at 68% 62%,#fff2 50%,transparent 51%),
+             radial-gradient(1px 1px at 22% 78%,#fff2 50%,transparent 51%)}
+main,header,footer{position:relative;z-index:1}
+a{color:inherit}
+code,.mono{font-family:var(--mono);font-size:.88em}
+code{background:var(--surface2);border:1px solid var(--line);padding:.08em .4em;border-radius:6px;word-break:break-word}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+
+/* NAV */
+.nav{position:sticky;top:0;z-index:20;background:linear-gradient(var(--bg) 60%,transparent);padding:16px 0 14px}
+.nav .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.logo{font-size:34px;font-weight:700;line-height:1;text-decoration:none}
+.pill{display:flex;gap:2px;background:#1a1a1d;border:1px solid var(--line);border-radius:999px;padding:5px;overflow-x:auto;scrollbar-width:none}
+.pill::-webkit-scrollbar{display:none}
+.pill{border-radius:20px}
+.pill{align-items:stretch}
+.pill a{align-content:center;text-decoration:none;color:var(--muted);font-size:13.5px;padding:7px 14px;border-radius:15px;white-space:nowrap;display:grid;grid-template-columns:auto auto;column-gap:8px;align-items:center;line-height:1.3}
+.pill a small{grid-column:1/-1;font-family:var(--mono);font-size:10.5px;color:var(--dim)}
+.pill a span{font-weight:500}
+.pill a .pg{font-style:normal;font-family:var(--mono);font-size:10.5px;padding:0 6px;border-radius:99px;background:#26262b;color:var(--dim)}
+.pill a.part .pg{background:color-mix(in srgb,var(--c) 30%,transparent);color:#fff}
+.pill a.full .pg{background:var(--c);color:#111}
+.pill a:hover{color:var(--text)}
+.pill a.on{background:#2a2a2f;color:var(--text)}
+.pill a.on small{color:var(--muted)}
+.shot{margin:14px 0 0;border:1px solid var(--line);border-radius:16px;overflow:hidden;background:#fff}
+.shot img{display:block;width:100%;height:auto}
+.shot figcaption{background:var(--surface2);color:var(--muted);font-size:13.5px;padding:10px 14px}
+.mini{margin:6px 0 0;padding-left:20px;font-size:14.5px;color:#d4d4d8}
+.mini li{margin:2px 0}
+.ex{margin-top:14px;border:1px dashed #ffffff30;border-radius:14px;padding:12px 16px}
+.ex summary{cursor:pointer;font-weight:600;font-size:14.5px;color:var(--lime)}
+.ex summary:focus-visible{outline:2px solid var(--lime);outline-offset:2px}
+.tools{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.tool{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:500;color:#d4d4d8;background:#1d1d20;border:1px solid var(--line);border-radius:999px;padding:3px 10px 3px 3px;white-space:nowrap;line-height:1.4}
+.tool i{display:grid;place-items:center;min-width:20px;height:20px;padding:0 4px;border-radius:999px;font:700 10px/1 var(--mono);font-style:normal}
+.legend{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:18px;padding:14px 16px;border:1px solid var(--line);border-radius:16px;background:var(--surface)}
+.legend-h{font-size:13px;color:var(--muted);margin-right:4px}
+.gl{font-weight:400;color:var(--muted);font-size:.92em}
+.lab-hero .gl{color:rgba(255,255,255,.72)}
+.legend-br{flex-basis:100%;height:0}
+.legend-n{flex-basis:100%;font-size:13px;color:var(--dim);margin-top:2px}
+.faq{margin-top:4px;border:1px solid var(--line);border-radius:20px;background:var(--surface);padding:0}
+.faq>summary{cursor:pointer;list-style:none;padding:18px 22px;font-weight:600;font-size:16px;display:flex;align-items:center;gap:10px}
+.faq>summary::-webkit-details-marker{display:none}
+.faq>summary::before{content:"?";display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--lime);color:var(--lime-ink);font-weight:700;font-size:14px}
+.faq>summary::after{content:"＋";margin-left:auto;color:var(--muted)}
+.faq[open]>summary::after{content:"－"}
+.faq>summary:focus-visible{outline:2px solid var(--lime);outline-offset:2px;border-radius:20px}
+.faq .fq{border-top:1px solid var(--line);padding:18px 22px}
+.faq .fq h5{margin:0;font-size:15px;font-weight:600}
+.faq .why{margin:6px 0 0;font-size:14px;color:#c9c9cf}
+.faq .why b{color:#fff;font-weight:600}
+.faq .short{background:rgba(228,240,74,.05)}
+.faq .short h5{color:var(--lime)}
+.dl{display:inline-flex;align-items:center;gap:10px;margin:12px 0 4px;background:var(--lime);color:var(--lime-ink);text-decoration:none;font-weight:600;font-size:15px;padding:8px 8px 8px 18px;border-radius:999px}
+.dl span{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:#111;color:var(--lime);font-size:14px}
+.dl:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.done-btn{appearance:none;cursor:pointer;font:500 13px var(--font);display:inline-flex;align-items:center;gap:8px;padding:5px 12px 5px 6px;border-radius:999px;border:1px solid var(--line);background:var(--surface2);color:var(--muted);white-space:nowrap}
+.done-btn i{width:20px;height:20px;border-radius:50%;border:1.5px solid #55555c;display:grid;place-items:center;font-style:normal;font-size:12px;color:transparent}
+.done-btn:hover{color:var(--text)}
+.done-btn:focus-visible{outline:2px solid var(--lime);outline-offset:2px}
+.is-done .done-btn{background:var(--lime);border-color:var(--lime);color:#111}
+.is-done .done-btn i{border-color:#111;background:#111;color:var(--lime)}
+.lstep,.step{transition:border-color .2s}
+.is-done{border-color:rgba(228,240,74,.35)!important}
+.is-done .prompt,.is-done .tbl,.is-done .cp,.is-done>p,.is-done>ul,.is-done .tree,.is-done .note{opacity:.5}
+.is-now{border-color:#ffffffaa!important;box-shadow:0 10px 40px rgba(0,0,0,.45)}
+.now-tag{display:none;font-size:12px;font-weight:600;color:#111;background:#fff;border-radius:999px;padding:1px 10px;vertical-align:middle}
+.is-now .now-tag{display:inline-block}
+.done-row{display:flex;justify-content:flex-end;margin-top:16px}
+.lstep-head .ctl{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+
+.btn-white{background:#fff;color:#111;text-decoration:none;font-size:14px;font-weight:500;padding:9px 18px;border-radius:12px;white-space:nowrap}
+
+/* HERO */
+.hero{text-align:center;padding:56px 0 0}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
+.eyebrow b{color:var(--lime);font-weight:500}
+.eyebrow i{display:inline-block;width:14px;height:10px;border-radius:3px;background:var(--lime)}
+h1{font-size:clamp(34px,6.4vw,64px);line-height:1.12;font-weight:500;letter-spacing:-.02em;margin:18px 0 0}
+h1 .l2{display:block;background:linear-gradient(180deg,#fff,#a8a8ae);-webkit-background-clip:text;background-clip:text;color:transparent}
+.script{font-family:var(--serif);font-style:italic;font-weight:400;color:#fff;-webkit-text-fill-color:#fff}
+.lead{max-width:620px;margin:20px auto 0;color:var(--muted);font-size:16.5px}
+.tag{position:absolute;font-size:13px;padding:4px 12px;border-radius:999px;color:#fff;font-weight:500}
+.tag::after{content:"";position:absolute;width:0;height:0;border:7px solid transparent}
+.tag.t1{left:6%;top:120px;background:#2f8f8a}
+.tag.t1::after{right:-12px;top:-8px;border-left-color:#3fb3a8;transform:rotate(-35deg)}
+.tag.t2{right:6%;top:250px;background:#e2575f}
+.tag.t2::after{left:-12px;top:-8px;border-right-color:#e2575f;transform:rotate(35deg)}
+
+.fan{display:flex;justify-content:center;align-items:flex-end;gap:0;margin:48px auto 90px;height:300px;max-width:900px;position:relative}
+.steps>*,.lab-body>*,.grid2>*,.grid3>*,.mission>*{min-width:0}
+.card{flex:0 0 200px;height:260px;border-radius:24px;padding:18px;text-decoration:none;position:relative;overflow:hidden;transition:transform .25s ease;box-shadow:0 20px 50px rgba(0,0,0,.5)}
+.card h3{margin:0;font-size:24px;font-weight:600;line-height:1.1;color:#fff}
+.card p{margin:4px 0 0;font-size:13px;color:rgba(255,255,255,.78)}
+.card .big{position:absolute;right:-6px;bottom:-34px;font-size:170px;font-weight:700;line-height:1;color:rgba(255,255,255,.22)}
+.card .blob{position:absolute;left:18px;bottom:22px;width:74px;height:74px;border-radius:50%;background:rgba(255,255,255,.9);box-shadow:inset -10px -12px 0 rgba(0,0,0,.12)}
+.card .blob::before,.card .blob::after{content:"";position:absolute;top:28px;width:10px;height:14px;border-radius:50%;background:#111}
+.card .blob::before{left:22px}.card .blob::after{right:22px}
+.card.a{background:linear-gradient(160deg,#7d6ff0,#4a3cc7);transform:rotate(-12deg) translate(40px,40px);z-index:1}
+.card.b{background:linear-gradient(160deg,#f77c84,#d9434f);transform:rotate(-6deg) translate(18px,12px);z-index:2}
+.card.c{background:linear-gradient(160deg,#2cc7de,#138aa3);transform:translateY(-8px);z-index:3;flex-basis:220px;height:290px}
+.card.d{background:linear-gradient(160deg,#68e07f,#2ea94a);transform:rotate(6deg) translate(-18px,12px);z-index:2}
+.card.e{background:linear-gradient(160deg,#7482ff,#3d4bd1);transform:rotate(12deg) translate(-40px,40px);z-index:1}
+.card:hover{z-index:5}
+.card.a:hover{transform:rotate(-12deg) translate(40px,20px)}
+.card.b:hover{transform:rotate(-6deg) translate(18px,-8px)}
+.card.c:hover{transform:translateY(-24px)}
+.card.d:hover{transform:rotate(6deg) translate(-18px,-8px)}
+.card.e:hover{transform:rotate(12deg) translate(-40px,20px)}
+.cta{position:absolute;top:-18px;left:50%;transform:translateX(30px);z-index:6;display:inline-flex;align-items:center;gap:10px;background:#fff;color:#111;text-decoration:none;font-size:14px;font-weight:500;padding:6px 6px 6px 16px;border-radius:999px;box-shadow:0 10px 30px rgba(0,0,0,.4)}
+.cta span{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--lime);font-weight:700}
+
+/* SECTIONS */
+section{padding:72px 0 8px}
+section.wrap{padding-top:72px;padding-bottom:8px}
+section.wrap.lab{padding-top:80px}
+.sec-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:24px}
+.kicker{font-size:13px;color:var(--muted);letter-spacing:.04em}
+h2{font-size:clamp(28px,4.2vw,42px);font-weight:500;letter-spacing:-.015em;line-height:1.15;margin:6px 0 0}
+h3{font-size:20px;font-weight:600;margin:0}
+h4{font-size:16.5px;font-weight:600;margin:0}
+.muted{color:var(--muted)}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:24px}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:500;padding:3px 11px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.chip.lime{background:var(--lime);color:var(--lime-ink);border-color:var(--lime)}
+.chip.human{background:rgba(255,255,255,.08);color:#fff;border-color:#ffffff33}
+.chip.ai{background:rgba(228,240,74,.12);color:var(--lime);border-color:rgba(228,240,74,.35)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+
+/* Mission */
+.mission{display:grid;grid-template-columns:1fr;gap:16px}
+.q3{display:grid;gap:10px}
+.q3 div{display:flex;gap:14px;align-items:center;background:var(--surface2);border:1px solid var(--line);border-radius:16px;padding:14px 16px}
+.q3 b{display:grid;place-items:center;flex:0 0 38px;height:38px;border-radius:12px;color:#111;font-weight:700}
+
+/* timeline */
+.tl{display:grid;gap:8px}
+.tl a{display:grid;grid-template-columns:118px 1fr auto;gap:14px;align-items:center;text-decoration:none;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 16px}
+.tl a:hover{border-color:#44444b}
+.tl .t{font-family:var(--mono);font-size:13px;color:var(--muted)}
+.tl .dot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:8px}
+.tl .brk{opacity:.55}
+
+/* readiness */
+.steps{counter-reset:s;display:grid;gap:14px}
+.step{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:20px 20px 20px 70px}
+.step::before{counter-increment:s;content:counter(s);position:absolute;left:20px;top:18px;width:34px;height:34px;border-radius:11px;background:var(--surface2);border:1px solid var(--line);display:grid;place-items:center;font-weight:600;font-size:15px}
+.step p{margin:6px 0 0}
+.check{list-style:none;padding:0;margin:12px 0 0;display:grid;gap:8px}
+.check li{display:flex;gap:12px;align-items:flex-start}
+.check input{appearance:none;flex:0 0 20px;width:20px;height:20px;margin-top:3px;border-radius:6px;border:1.5px solid #55555c;background:transparent;cursor:pointer;display:grid;place-items:center}
+.check input:checked{background:var(--lime);border-color:var(--lime)}
+.check input:checked::after{content:"";width:6px;height:11px;border:solid #111;border-width:0 2.5px 2.5px 0;transform:rotate(45deg) translate(-1px,-1px)}
+.check input:focus-visible{outline:2px solid var(--lime);outline-offset:2px}
+.check label{cursor:pointer}
+.check input:checked + label{color:var(--muted);text-decoration:line-through;text-decoration-color:#ffffff40}
+.progress{display:flex;align-items:center;gap:12px;font-size:13.5px;color:var(--muted)}
+.bar{flex:1;height:8px;border-radius:99px;background:var(--surface2);overflow:hidden;min-width:120px}
+.bar i{display:block;height:100%;width:0;background:var(--lime);border-radius:99px;transition:width .3s}
+
+.tree{font-family:var(--mono);font-size:13.5px;line-height:1.75;background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:18px 20px;overflow-x:auto;white-space:pre;color:#d4d4d8}
+.tree .c{color:var(--dim)}
+.tree .f{color:var(--lime)}
+
+/* PROMPT BLOCK */
+.prompt{margin-top:14px;border-radius:16px;border:1px solid var(--line);background:var(--bg2);overflow:hidden}
+.prompt-top{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px 10px 16px;border-bottom:1px solid var(--line);background:#141417}
+.prompt-id{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--muted);min-width:0}
+.prompt-id b{font-family:var(--mono);font-size:12.5px;color:#111;padding:2px 9px;border-radius:7px;font-weight:600}
+.copy{appearance:none;border:0;cursor:pointer;font:500 13px var(--font);background:#fff;color:#111;padding:6px 6px 6px 14px;border-radius:999px;display:inline-flex;align-items:center;gap:8px;flex:0 0 auto}
+.copy span{display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--lime);font-size:12px}
+.copy.done{background:var(--lime)}
+.copy:focus-visible{outline:2px solid var(--lime);outline-offset:2px}
+.prompt pre{margin:0;padding:16px 18px;font-family:var(--font);font-size:14.5px;line-height:1.75;white-space:pre-wrap;word-break:break-word;color:#e7e7ea}
+.prompt mark{background:rgba(228,240,74,.18);color:var(--lime);border-radius:5px;padding:0 4px}
+
+/* LAB */
+.lab{padding-top:80px}
+.lab-hero{border-radius:28px;padding:28px;position:relative;overflow:hidden;color:#fff}
+.lab-hero .letter{position:absolute;right:16px;bottom:-60px;font-size:240px;font-weight:700;line-height:1;color:rgba(255,255,255,.16)}
+.lab-hero h2{margin:8px 0 0;max-width:700px}
+.lab-hero p{max-width:640px;margin:10px 0 0;color:rgba(255,255,255,.88)}
+.lab-hero .chips{margin-top:16px}
+.lab-hero .chip{background:rgba(0,0,0,.22);border-color:rgba(255,255,255,.2);color:#fff}
+#labA .lab-hero{background:linear-gradient(135deg,#7d6ff0,#4337b8)}
+#labB .lab-hero{background:linear-gradient(135deg,#f77c84,#c93a46)}
+#labC .lab-hero{background:linear-gradient(135deg,#2cc7de,#11798f)}
+#labD .lab-hero{background:linear-gradient(135deg,#5fd877,#23893b)}
+#labE .lab-hero{background:linear-gradient(135deg,#7482ff,#3340b8)}
+.lab-body{display:grid;gap:16px;margin-top:16px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--muted);font-weight:500;font-size:13px}
+tr:last-child td{border-bottom:0}
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:16px;background:var(--surface)}
+.tbl td:first-child code{white-space:nowrap;word-break:normal}
+.lstep{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:22px}
+.lstep-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.lstep-head h4{display:flex;align-items:center;gap:12px}
+.num{display:grid;place-items:center;width:32px;height:32px;border-radius:10px;color:#111;font-weight:700;font-size:14px;flex:0 0 32px}
+.time{font-family:var(--mono);font-size:12.5px;color:var(--muted)}
+.cp{margin-top:14px;border-radius:14px;padding:14px 16px;background:rgba(255,255,255,.04);border:1px dashed #ffffff30}
+.cp strong{display:flex;align-items:center;gap:8px;font-size:14px}
+.cp p{margin:6px 0 0;font-size:14.5px;color:#d4d4d8}
+.outputs{display:flex;flex-wrap:wrap;gap:8px}
+.outputs code{font-size:12.5px}
+.note{border-left:3px solid var(--lime);padding:10px 16px;background:rgba(228,240,74,.06);border-radius:0 12px 12px 0;font-size:14.5px;color:#e4e4e7}
+.warn{border-left-color:var(--B);background:rgba(240,101,110,.08)}
+.A .num,.A b.id{background:var(--A);color:#fff}
+.B .num,.B b.id{background:var(--B);color:#fff}
+.C .num,.C b.id{background:var(--C);color:#06262c}
+.D .num,.D b.id{background:var(--D);color:#082610}
+.E .num,.E b.id{background:var(--E);color:#fff}
+.T .num,.T b.id{background:var(--lime);color:var(--lime-ink)}
+
+/* index */
+.pidx a{text-decoration:none}
+.pidx td:first-child{white-space:nowrap}
+.pidx b.id{font-family:var(--mono);font-size:12px;padding:2px 8px;border-radius:7px}
+
+/* rules */
+.rule{display:flex;gap:14px;align-items:flex-start}
+.rule i{flex:0 0 10px;height:10px;border-radius:50%;margin-top:9px}
+
+footer{padding:64px 0 48px;color:var(--dim);font-size:13px;text-align:center}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:#fff;color:#111;padding:10px 18px;border-radius:999px;font-size:14px;font-weight:500;opacity:0;transition:.25s;z-index:50;pointer-events:none}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+
+@media (max-width:860px){
+  .grid3{grid-template-columns:1fr}
+  .grid2,.mission{grid-template-columns:1fr}
+  .btn-white{display:none}
+  .tag{display:none}
+  .fan{height:230px;margin:36px auto 60px}
+  .card{flex-basis:118px;height:190px;padding:12px;border-radius:18px}
+  .card.c{flex-basis:130px;height:210px}
+  .card h3{font-size:17px}
+  .card p{font-size:11px}
+  .card .big{font-size:110px;bottom:-20px}
+  .card .blob{width:48px;height:48px;left:12px;bottom:14px}
+  .card .blob::before,.card .blob::after{top:18px;width:7px;height:10px}
+  .card .blob::before{left:13px}.card .blob::after{right:13px}
+  .card.a{transform:rotate(-12deg) translate(60px,30px)}
+  .card.b{transform:rotate(-6deg) translate(28px,8px)}
+  .card.d{transform:rotate(6deg) translate(-28px,8px)}
+  .card.e{transform:rotate(12deg) translate(-60px,30px)}
+  .cta{transform:translateX(-50%);top:-26px}
+  .tl a{grid-template-columns:96px 1fr}
+  .tl a .chip{display:none}
+  .step{padding:18px 16px 18px 60px}
+  .step::before{left:14px}
+}
+@media (max-width:520px){
+  .wrap{padding:0 16px}
+  .card.a,.card.e{display:none}
+  .card.b{transform:rotate(-6deg) translate(14px,8px)}
+  .card.d{transform:rotate(6deg) translate(-14px,8px)}
+  .lab-hero{padding:22px}
+  .panel,.lstep{padding:18px}
+  .prompt pre{font-size:14px;padding:14px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+@media print{
+  .nav,.copy,.fan,.cta,.toast{display:none!important}
+  body{background:#fff;color:#111}
+  body::before{display:none}
+  .panel,.lstep,.step,.prompt,.tbl{background:#fff;border-color:#ccc}
+  .prompt pre{color:#111}
+  section,.lab{padding-top:24px;break-inside:avoid-page}
+}
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap">
+    <a class="logo" href="#top" aria-label="กลับด้านบน">*</a>
+    <nav class="pill" aria-label="เมนูหลัก">
+      <a href="#top" class="on"><span>Home</span></a>
+      <a href="#schedule"><span>ตารางเรียน</span></a>
+      <a href="#ready"><span>Setup</span></a>
+      <a href="#labA" data-sec="labA" style="--c:var(--A)"><span>Lab A</span></a>
+      <a href="#labB" data-sec="labB" style="--c:var(--B)"><span>Lab B</span></a>
+      <a href="#labC" data-sec="labC" style="--c:var(--C)"><span>Lab C</span></a>
+      <a href="#labD" data-sec="labD" style="--c:var(--D)"><span>Lab D</span></a>
+      <a href="#labE" data-sec="labE" style="--c:var(--E)"><span>Lab E</span></a>
+      <a href="#chrome"><span>Chrome</span></a>
+    </nav>
+    <a class="btn-white" href="#ready">เริ่มเลย</a>
+  </div>
+</header>
+
+<main id="top">
+<!-- HERO -->
+<div class="wrap hero" style="position:relative">
+  <span class="tag t1">Researcher</span>
+  <span class="tag t2">Reviewer</span>
+  <div class="eyebrow"><i></i><b>SCGP (IPDC)</b> — Claude for Researcher · 1 Day</div>
+  <h1>ทำงานวิจัยครบวงจร<span class="l2"><span class="script">C</span>owork Lab Guide</span></h1>
+
+  <div class="fan">
+    <a class="cta" href="#ready">เริ่มที่นี่ <span>↗</span></a>
+    <a class="card a" href="#labA"><h3>Lab A</h3><p>Knowledge Base</p><div class="blob"></div><div class="big">A</div></a>
+    <a class="card b" href="#labB"><h3>Lab B</h3><p>DOE Planning</p><div class="blob"></div><div class="big">B</div></a>
+    <a class="card c" href="#labC"><h3>Lab C</h3><p>Data Pipeline</p><div class="blob"></div><div class="big">C</div></a>
+    <a class="card d" href="#labD"><h3>Lab D</h3><p>Multi-agent</p><div class="blob"></div><div class="big">D</div></a>
+    <a class="card e" href="#labE"><h3>Lab E</h3><p>Skills + Auto</p><div class="blob"></div><div class="big">E</div></a>
+  </div>
+</div>
+
+<!-- MISSION -->
+<section class="wrap" id="mission">
+  <div class="sec-head">
+    <div><div class="kicker">MISSION BRIEF</div><h2>โจทย์เดียวตลอดทั้งวัน</h2></div>
+  </div>
+  <div class="mission">
+    <div class="panel">
+      <h3>กระดาษเคลือบ Barrier สูตรใหม่สำหรับบรรจุภัณฑ์อาหาร</h3>
+      <p class="muted" style="margin:8px 0 16px">พัฒนาสารเคลือบแบบน้ำ (water-based) มาทดแทนการเคลือบพลาสติก PE ผู้บริหารต้องการคำตอบครบ 3 มิติ</p>
+      <div class="q3">
+        <div><b style="background:var(--C)">T</b><span><strong>Technical</strong> — ทำได้ทางเทคนิคหรือไม่</span></div>
+        <div><b style="background:var(--D)">M</b><span><strong>Market</strong> — ตลาดต้องการหรือไม่</span></div>
+        <div><b style="background:var(--lime)">F</b><span><strong>Finance</strong> — คุ้มค่าทางการเงินหรือไม่</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="legend">
+    <span class="legend-h">ป้ายขั้นตอน</span>
+    <span class="chip human">● คนทำเอง</span>
+    <span class="chip ai">● ส่ง Prompt ให้ Cowork</span>
+    <span class="chip">ข้อความ <mark style="background:rgba(228,240,74,.18);color:var(--lime);border-radius:5px;padding:0 4px">ไฮไลต์สีเหลือง</mark> ใน Prompt = ต้องแก้ก่อนส่ง</span>
+    <span class="legend-br"></span>
+    <span class="legend-h">ป้ายเครื่องมือ</span>
+    <span class="tool"><i style="background:#d97757;color:#fff">✱</i>Claude Cowork</span><span class="tool"><i style="background:#8b7cf6;color:#fff">SA</i>Sub Agent</span><span class="tool"><i style="background:#5b8cff;color:#fff">Sk</i>Skill</span><span class="tool"><i style="background:#f0656e;color:#fff">ST</i>Scheduled Task</span><span class="tool"><i style="background:#e4f04a;color:#1a1a0a">LA</i>Live Artifact</span><span class="tool"><i style="background:#3776ab;color:#fff">Py</i>Python</span><span class="tool"><i style="background:#21a366;color:#fff">X</i>Excel</span><span class="tool"><i style="background:#2b7cd3;color:#fff">W</i>Word</span><span class="tool"><i style="background:#d35230;color:#fff">P</i>PowerPoint</span>
+    <span class="legend-n">ทุกขั้นทำใน Claude Cowork · ป้ายในการ์ดบอกความสามารถหรือไฟล์ที่ใช้เพิ่มในขั้นนั้น<br>ศัพท์ที่อาจไม่คุ้น มีคำอธิบายสั้น ๆ <span class="gl">(ในวงเล็บสีเทาแบบนี้)</span> ตรงที่เจอครั้งแรก</span>
+  </div>
+</section>
+
+<!-- SCHEDULE -->
+<section class="wrap" id="schedule">
+  <div class="sec-head"><div><div class="kicker">AGENDA · 09:00–16:00</div><h2>ตารางเรียน</h2></div></div>
+  <div class="tl">
+    <a href="#ready"><span class="t">ก่อนวันอบรม</span><span><span class="dot" style="background:var(--lime)"></span>Setup · เตรียมเครื่องให้พร้อม</span><span class="chip">~15 นาที</span></a>
+    <a href="#mission"><span class="t">09:00–09:20</span><span><span class="dot" style="background:#fff"></span>Module 0 · Recap &amp; Mission Brief + Pre-test</span><span class="chip">20 นาที</span></a>
+    <a href="#ready"><span class="t">09:20–10:00</span><span><span class="dot" style="background:#fff"></span>Module 1 · Research Workflow Design Canvas + ตั้ง Project</span><span class="chip">40 นาที</span></a>
+    <a href="#labA"><span class="t">10:00–10:45</span><span><span class="dot" style="background:var(--A)"></span>Lab A · Literature &amp; Standards Knowledge Base</span><span class="chip">45 นาที</span></a>
+    <a class="brk"><span class="t">10:45–11:00</span><span>พักเบรก</span></a>
+    <a href="#labB"><span class="t">11:00–12:00</span><span><span class="dot" style="background:var(--B)"></span>Lab B · DOE ออกแบบการทดลองที่ทำได้จริง</span><span class="chip">60 นาที</span></a>
+    <a class="brk"><span class="t">12:00–13:00</span><span>พักกลางวัน</span></a>
+    <a href="#labC"><span class="t">13:00–14:00</span><span><span class="dot" style="background:var(--C)"></span>Lab C · Research Data Pipeline &amp; Statistics</span><span class="chip">60 นาที</span></a>
+    <a class="brk"><span class="t">14:00–14:15</span><span>พักเบรก</span></a>
+    <a href="#labD"><span class="t">14:15–15:05</span><span><span class="dot" style="background:var(--D)"></span>Lab D · Multi-agent Workflow + Reviewer</span><span class="chip">50 นาที</span></a>
+    <a href="#labE"><span class="t">15:05–15:45</span><span><span class="dot" style="background:var(--E)"></span>Lab E · IPDC Skills Library + Automation</span><span class="chip">40 นาที</span></a>
+    <a class="brk"><span class="t">15:45–16:00</span><span>สรุปผล, Post-test และแนวทางต่อยอด</span></a>
+  </div>
+</section>
+
+<!-- READINESS -->
+<section class="wrap T" id="ready">
+  <div class="sec-head">
+    <div><div class="kicker">SETUP · ทำก่อนวันอบรม ~15 นาที</div><h2>เตรียมเครื่องให้พร้อม</h2></div>
+    <div class="progress" style="min-width:260px"><span id="pText">0 / 0</span><div class="bar"><i id="pBar"></i></div></div>
+  </div>
+
+  <div class="steps">
+    <div class="step">
+      <h4>ติดตั้งโปรแกรมและบัญชี</h4>
+      <div class="tools"><span class="tool"><i style="background:#d97757;color:#fff">✱</i>Claude Cowork</span><span class="tool"><i style="background:#21a366;color:#fff">X</i>Excel</span><span class="tool"><i style="background:#2b7cd3;color:#fff">W</i>Word</span><span class="tool"><i style="background:#d35230;color:#fff">P</i>PowerPoint</span></div>
+      <ul class="check">
+        <li><input type="checkbox" id="r1"><label for="r1">โน้ตบุ๊กส่วนตัวติดตั้ง <strong>Claude Desktop</strong> และเปิดโหมด <strong>Cowork<span class="gl"> (โหมดที่ Claude ทำงานกับไฟล์ในเครื่องให้ได้)</span></strong> ได้</label></li>
+        <li><input type="checkbox" id="r2"><label for="r2">เข้าใช้งานผ่าน <strong>API Gateway<span class="gl"> (ช่องทางที่องค์กรใช้เชื่อมต่อ AI)</span> ของ SCGP</strong> ได้ (ไม่ใช้ Free-tier หรือ Public AI)</label></li>
+        <li><input type="checkbox" id="r3"><label for="r3">API Key<span class="gl"> (รหัสประจำตัวสำหรับใช้ AI)</span> ของตนเอง<strong>มีโควตาคงเหลือ</strong> (หลักสูตรออกแบบให้ใช้ไม่เกินราวครึ่งหนึ่งของโควตารายเดือน)</label></li>
+        <li><input type="checkbox" id="r4"><label for="r4">มี Microsoft <strong>Excel, Word และ PowerPoint</strong> เปิดไฟล์ได้</label></li>
+        <li><input type="checkbox" id="r5"><label for="r5">ตอบ <strong>Pre-Course Survey</strong> เรียบร้อย</label></li>
+      </ul>
+    </div>
+
+    <div class="step">
+      <h4>ดาวน์โหลดไฟล์ Workshop</h4>
+      <a class="dl" href="https://drive.google.com/drive/folders/1_2GS2JWi0LDRtOjZrZWeEnYRslbVCCrS" target="_blank" rel="noopener">ดาวน์โหลดไฟล์ Workshop <span>↓</span></a>
+      <p>กดปุ่มด้านบนเพื่อเปิดโฟลเดอร์ <code>SCGP-Researcher-Labs</code> บน Google Drive คลิกที่<strong>ชื่อโฟลเดอร์ด้านบน</strong> แล้วเลือก <strong>ดาวน์โหลด</strong> ตามภาพ (Drive จะรวมเป็น .zip ให้) จากนั้นแตกไฟล์ไว้ในเครื่อง ทุก Lab แยกโฟลเดอร์และมีไฟล์ครบแล้ว <strong>ไม่ต้องเลือกไฟล์เอง</strong> ส่วนโฟลเดอร์ <code>output/</code> และ <code>skills/</code> Prompt<span class="gl"> (ข้อความสั่งงาน AI)</span> จะสร้างให้</p>
+<figure class="shot"><img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBAUEBAYFBQUGBgYHCQ4JCQgICRINDQoOFRIWFhUSFBQXGiEcFxgfGRQUHScdHyIjJSUlFhwpLCgkKyEkJST/2wBDAQYGBgkICREJCREkGBQYJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCT/wAARCAGFA+gDASIAAhEBAxEB/8QAHAABAAIDAQEBAAAAAAAAAAAAAAQFAgMGBwEI/8QAUhAAAQMDAQUEBQkFAwkHAwUAAAECAwQFERIGEyExUkFRkZIHFBUicSMyMzRTYYGx0RZCVKHhVZTTCBckVmJydJPBNTdDorKz0hhzwiU2RWN1/8QAGQEBAQEBAQEAAAAAAAAAAAAAAAECAwQF/8QALhEBAAICAAUEAQIFBQAAAAAAAAERAhIDBBMUYQUhMVFBkaEVIzLh8FJTYoGx/9oADAMBAAIRAxEAPwD9UgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD497WNVzlRGpxVVIMlycq/IxZTqeuM/gBPBW+0Knoi/mPaFT0RfzAsgVvtCp6Iv5j2hU9EX8wLIFb7QqeiL+Y9oVPRF/MCyBW+0Knoi/mPaFT0RfzAsgVvtCp6Iv5j2hU9EX8wLIFb7QqeiL+Y9oVPRF/MCyBW+0Knoi/mPaFT0RfzAsgVvtCp6Iv5j2hU9EX8wLIFb7QqeiL+Y9oVPRF/MCyBW+0Knoi/mPaFT0RfzAsgVvtCp6Iv5j2hU9EX8wLIFb7QqeiL+Y9oVPRF/MCyBW+0Knoi/mPaFT0RfzAsgVvtCp6Iv5j2hU9EX8wLIFb7QqeiL+Z99oVP2cS+IFiCLT17JnIx7VjevJF5L8FJQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABGr7lSW2Nr6qVGa10saiK5z17mtTiq/Ahpe6mTjFYrm9vYq7pmfwc9F/kBagq/a9b/YFx88H+IPa9b/AGBcfPB/iAWgKv2vW/2BcfPB/iGms2jmoIFqKix3JkaOa1V1Qrxc5Gpyk71QC6BQ/tW7+xLl4w/4g/at39iXLxh/xDfTy+mOpj9r4FD+1bv7EuXjD/iD9q3f2JcvGH/EHTy+jqY/a+BRM2wo2u/02lraFn2k8aKxPi5iuRPiuC8Y9krGvY5r2OTLXNXKKnehmYmPlqJifh9ABFAAAAAAAAADmts7FtDen2pbDf1tCU1UktUmjVv4+Hu/nwXgufuA6UHGv2Y2tW8bSVTdqlbSXCm3Vug3WfUpMcH/AIceXPOV5F3sjbbrZ9naOhvdz9qXCJqpLVYxrXKqn3rhMJleeALcjXK5Utoopa6tlSGniRFe9UVdKZx2EkhXq4UlrtVTV1zVfTRsXWxGa1ei8NOntznH4gS4pY54mSxPbJG9Ec1zVyjkXkqKZHLej+03C2W6d1U11JTVEqy0tuc7UtHGv7qu+/njkh1IAhV18tVsbK6uudFSpCjVlWadrN2jvm5yvDOFx34Jp5pT7OWq++mTaGW6UUNa2lt9GscU7UfGjna0VytXgq4TCKvLKgd1X7SWS1tgdX3e30jahEdEs9Qxm8Re1uV4oSp6+kpqRa2eqgipUbrWd8iIxG9+peGDx/Z203e8X/aqaKzbL3CaG4vo1ZdHPWSCBiIkUbWI1UbHp4pjnxNlNsfPPshT2mS97OrJT3109uo9+s1G9W5X1R2cKqIqv4cVTCAesWy8W29QLPbLhSV0SLhX08rZERe5VRTS3aSyuuS2xt3t616Lj1VKhm9z3ac5yebS3Ways2npW7K0th2q9iyVUctvkR8NVGzKI5uETDkcvamfvKiPZCurfR1Bu7fsTS0L6Vs7Lu6pkbNG9URd8sujOvVxXjz4Aey3O9WyyxNludxpKGNy4a6pmbGjl7kyqZM23SgdRsrW1tMtI/GmdJW7t2VwmHZwuV4HnFalXfNqqW10to2fuN6ttphfWXK56pIsSdkTE55VFXVw4Lg4qubImyW3dpclFTwwXmgRIbc9Vghe98evd5wreKZx2LkD3mmvVsrZKqOmuNHO+kXFQ2OZrlhXj8/C+7yXn3Gu27RWa8ySRW27UFbJF89lPUMkVvxRFOD9IGztmsVssNqpaKnt9mrrrT0tyfC1Gb2JEcrWyPTiqK/CKqr2/edNU7L7I2+72esWlobbXwyLHRLAqQOlVWrmPDca0xx0rnkBD2U9IVHX2dau/wBwtlundXVNNEx8yRa2xyuYiojl4rhEz951tRV01LTOqqioihp2N1OlkejWNTvVV4YPMPRfsdYbrs1eam42ymrZqy41scj52I9UYkr0RrVX5qc14Y4rk5Wjfcrrs16NbYraKrpZlqvkblI5tPPLEqpEx6oi5wmcNXgqoB7lbL1bL3E6a13Gkro2rhz6aZsiNXuVUXgYN2gs76inpmXWgdPVIqwRNnYrpUTOVamePJeXcpwVo2cu1B6QbdcJ49lrO99NNHUUltmeklbFjgu7VqIuh2Fz96n30I7L2eLYu3XhaCnkuM0k0i1UjEdIzEj2ojXLxaiInJO9e8D0sAARK670NsmpYayoZC+rk3UOrk92M4zyT8SWc5t3UUq2b2dNbn3Kor3bmmpmoqapOaO1fuo3nn7ix2boa+22SkpLnWeu1cbESSbHP7vvxyyvMD7XyLJNu/3GcVTvU0omVRDOoTFRJnvyYAeZ0m0+3+2D7rctlv2fpLbb6yaihpq+OR89W+JcO1OaqJHleXBS7vu3dbY7BaJJrFK7aS7q2CmsyTNVd9jLkc9MojGpxV3cUbNlrHte6u2s2F2kr9n7g+aRlVNTKqQyTMVUdv4H8M8OK8FxxKGi2wmuNZ6Pdvb8yKCjxW2urqGcIIp3roZNn91j1YqZ5JkDq5F9LVDAtwc7ZS5K33n2qCOWJyp2tZM5cK771TBP2p21uNBXW7Z6w2uOs2kuMK1G4qJMQUUSfOkmc3sReCInzlTgdVV11LQUUldV1MMFJExZHzyPRGNbzznlg87hu1Da/TAlzqaiJbftPZ4IrZW6k3T5I3K5Y0dyy5HI5O8Cxh/zo2yrppat2zV8pJJWsngpmSUssLVXCva5yqjsc8LxXBt292k2itl+2bsmzfsttReJKhrpLgx7mMSONH/uqi8eJH9IsV4stLcNov29qLFboIdTaRKKGRFejeDWucmpXOd2fecndoNqLvU+iltXdnW3aGoiq5Jqt1MyRY3rAjlRY1w3Onh9wHX2favaa2bW0ezG19Ja3SXOCWahrrYr0je6NMvjex/FFwuUVOB3Jx9g2AqqO/t2i2g2iqtoLrBA6npXyQMgipWO+dpjZw1L2qq8jfb7bt5FcIJLhtHY6iia9Flhitj43vZ3I5ZFwv34UCgp9ovSBtDtFtJSWGTZmGjs9d6m1K6KZZJPca/Kq12P3u46HYXbCXae2VzrnRx225Wqqkoq+FJNUbJGIiq5rl/dVFReJ5slDts+6ekm4bHXxtLNTXXV6gtHHItS5IWKul7vmu08ETGFVENG0MNAz0U2D9nat1ZQ3+9QvutVcplatQ96rrbUOamWor2tY5E5ImAPZrVtJZL6+WO1Xi3174vpG01QyRWfFGquD5VbT2KhuLLbVXq209c/GmmlqWNkXPL3VXJ5pV7I36l2m2Yr30Gw2zk9NXNbG+gmkjlq4sLrp0arER+W8cfcQa7Zz2JS7S3JLDs7tzs5U1lRWVc7ZWtr6fjmRmpUVHaMLjDmqmAPYbldbfZqVau511LQ07VwstTK2NqL3ZVTK33Kiu1K2rt9ZT1lM/5s0EiPYv4ouDx25zVe1vpKtPsqgs1woGbPw1tqpL097YlR7vfka1EdqkRNKLnkhtgppthJ9tbxeabZ6O3LamyVths1Q/KyZ0tkViom71tVWqqd2QPUqLaew3KufQUN6ttVWR51U8NSx8jcc/dRcmddtHZbY2R1dd7fSpHIkT99UMZpeqZRq5XgqpxweH7aWm7bObKWK6y2XYyztiraN1D7NWRtXTqr2+6j1TEuW5R33ZXiddsvsnZL56UvSBXXW3U1e+nraaGJtSxJGRo6narlRq8EcuETPPCAeg3XaSyWJ8TLreLfb3S/Rtqahkav+COVMlPtTtZNZb1snS0q0r6S81kkM8z1yjY2wukRzXIuOzmuUwc16NrHaNpKnaq43230lxva3ippKltXE2V0ELFxFG1HIulmjCpjnkqNqtmNlqmX0fbP2mRlVY1vlTG6OOoWViYje58Wc8G5RWq3sTgB6tatobNfd77Ju1BcNyuJPVZ2yaF+/Sq4MK3aexW6vjt9berbS1kmNFPNUsZI7PL3VXJwt6s9Ds96W9k57Jb6WhlraG4Qzspo0jbOjI2uYjkbhFw447YLZ69bSbDT101g2KuftF877hWXOWX1re6nI9JHaF0K3HBEXgiIB7tVXCioXNbV1lPTuc1z2pLI1mWtTLlTK8kTivcY2650N3pGVlurKetpnqqNmp5EexyouFwqcOCni7dmm3Su9FFm2hrKS+RMgr9c1PKssNVGxjXRorv324RqLnnjiem3KxX2kbT02yFbZLJQxtcr6eS3bxFeq5y3S5qN+GOYGG3+09ZsrbrbU0UcMj6q60lC9JUVURkr9LlTCpxxyOoVOKoeZ+kyG5wbJbOx3irpqyuTaKg3k1PCsTHfLcMNVVxwx2nfbQ3GCzWS5XKrjfJT0lNLPKxicXNa1VVE+9UQDTDtRYam5OtcN7tkte1cLSsqmLKi92lFzko4duWU22m0lpu1TQUNstVNRzR1Ez0jy6VHK5HOcuP3UweS7W2uvovRO2/x7PbGWa37uGroEp3SevU7nOR0bmzYw+TjxTt48eB19qtFkv3pyvzrxDT1lXFaqGamp6hqOaqqxdciMXgrkyiZxwRygepUFxorpSNrKCsp6umfxbNBIj2L+KLgi27aaxXeqlpLdebbW1EWd5DT1LJHtxzyiLk8wrLPaaTbPbjZ23V0VjslZYGTXF8TkZDQ1Tnq1H44I1XM4qnDJlaaZNjbnstT7TbG2FrN+yitl+srtKb1zFRuuPCOw5M9rkyuQPXwFTKKinl7PRjtc3bpap2318XZdPlkpfXH75XZ+hVej/a544c+IHp7mo5MKWVFMssPvLlzV0qveVxNtye7IvYqoBLOYm9JGzULq1rqyVfUmSSSObTyK17Y1xIsbtOH6F+dpzgn7W7S0+yVinu1TGsrInMYjEejEc5zkamXLwamVTKryQ8XrrjaKamrairuFnmoJIp2NoqDaFkktEyZczblro0a5zuPDPaqNA94t1xpLtQwV9DOyopahiSRSs5PavJSQcV6OtorZO+v2SoKF9H+z6RwtTXrbJE5Mseirxyqc0VOa9p2oAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAANdVUR0lNLUyriOJivcvciJlTYVu0zHP2fr0aiqqQuVUTtROK/yAwstDIqe065qLX1Kalzx3DF4pG3uRO3vXK9xanxj2yMa9io5rkRUVO1D6B59N6c9kIJpIXtv2qNysXFmqlTKLj7Mv8AZLb2zbarUpaUuCLTad561Qy0/wA7OMbxqZ5LyPKavb+JlVMz/wCoG3Q6ZHJu/YkC6OPzc9uOR3Hor2iZfX3FG+kWm2y3SR+7DQx03q2c8V0/Ozjt7gPQCm2v/wCwpP8A79P/AO8wuSm2v/7Ck/8Av0//ALzC4/MJl8Sr15gLzOUrLztRHWTWaG1Ruq5nq6luLUX1WODqkRVzrbwTT+8uF5ZPqxFvlXTqGzRPlfE2RjpI8a2I5FVueWU7MnLTekahh2iWyrbLm7TXR291Ykbdw2d6IqNzqzyXuLqxWGmsNK6KFz5p5nb2pqpVzLUSLzc5fyTkicEPNKytsqek1XO2dhdO28wUq1S3NyPWdWorZdxyVE7+RrGIm2cpmHYWb0j0N6vUNqjtlzhSofURQ1M0bUhldDnWiKjlXhjuOssc7rTdGULVxQ1mrdM7IZUTKonc1yIq47FT7zyHYquskm3lO6m2chpJameuZDUNubpXsczOtVhXgzV2fHgesSor6+1xt+e6ra5Pg1rlX+SKcuZwjV15fOdodgU21e1VDshavX61k0zpJGwU9NTs1zVMzuDY2N7XL4IiKq8ELk4H0izxWnavYq+3FUbaaOsngnld8ynlmi0RSO7k1ZbleWtD5j6bW7bnbekdJU1exFJJTwsSWajorq2avhjXOHLFpRrl4LwR3HC4ydpY73QbSWilu9snSoo6uNJIpETGU7lTsVFyiovJUKKnq6mh2zv9dcIqalskdvpXx1742MRyosqyI6XmqNTSuFXCZ4cyD6HmOfsvV3BkT4aK53Ssr6GNzdKtp5JVVi47EdxcidzgO5AAAAAAAAAAAAAAAAIUFkoKa71V3ip0bXVcccU0upffazOlMZwmMryQmgDnL96Pdndoq/2hW0krKxWJG+emqJIHyMT916sVNSfE3T7C7N1Ngj2ffaadLbEqOjhZlu7cnHW1yLlHf7Wcl6AKLZ7YmybMSzz0FNI6pnajJaipmfNK5qcm6nqq4+7kVv8Amn2P9b9Y9lru95vvVN/J6trznVudWjn92DrwBz9/2EsO0tXDWV1LK2qhZumz0074JFZ0K5ioqt+5TXF6OdloKGqoIbRFFS1b4ZJomPeiPdFjQvBeGMJy59uTpABFudror1QTW+40sVVSTt0yRSJlrkKSx+jnZvZ+4MuFHRyvqomqyGWpqJJ1havNGa3Lp/A6UAQbRZLfYqR9JbqdIIHyyTOZqV2XvcrnLxVeaqpAk2G2dm2dj2dktkb7XCuqOFznKsbtSu1NdnUi5VeKLniXoAoNnthbDszUyVdBSyOq5W7t1TUTPml0dKOeqqifchZWay0Gz1thtlsgSnpIdW7jRyu05crl4qqrzVSaAAAAAGEr9DVUCPWw6vlG8VTgqEHUneSGSunbr1KiLywYPpI5FyquRe9FwWktxd69E+xt+uU1xrLW5s9SualKeokhZUr3yNY5Ed+PM6F1ltT7P7Fdb6V1s3SQeqLGixbtP3dPLBYeoR9cvmHqEfXL5hrJbhYfQvsLDMx62mWaGN2tlJPVzSU7F+6Jzlb+GMHT3nZ6zbRWt1qutupquhXGIJGe63HJW4+aqdipjBZ+oR9cvmHqEfXL5hrJbi7Z6ItjLVXw1zLbLVT07kdB67VS1DYVTkrWvcqIqfA6StstuuNzt90qqdJKy2rI6ll1Km7V7dLuCLhcpw45LD1CPrl8w9Qj65fMNZLY6k7xqTvMvUI+uXzD1CPrl8w1ktX22y260VVwqqGnSGa4z+s1TtSrvJNKN1cV4cETlggx7FbOR0d1oUtcLqO7yunrKZ6q6KWRebkaq4aq4RfdxxTPMvvUI+uXzD1CPrl8w1ktydh9GWyuzlxjuVFQzSVcLVZBJVVMlQtO1eaR63KjPwNNz9E+x12uNRX1Ftla+qdrqYYaqWKGpd3yRtcjXKvblOPadl6hH1y+YeoR9cvmGslqDaHYnZ7aikpaa5W9qtovqskD3QyU3DGGPYqK1MInBOBjZdhNmrBbqy30dsjWGvRUrFqHOmfVIqY+Ue9VV3DvU6H1CPrl8w9Qj65fMNZLcRB6HdiIGbt1qlnY1W7ptRVzSJTo1yORI9TvcTLU5c8Y5HT0Nlt1tuFxuFJTpHVXORs1XJqVd69rdLVwq4TCJjhgsPUI+uXzD1CPrl8w1ktyu0Ho22W2luLrlXUUzKyRiRyzUlTJTunanJr9Dk1J8SdDsds9TRWeKntkMEdlkdLQMiVWtgerVaq4ReKqirzzzyXnqEfXL5h6hH1y+YayWrquy22tu1Bd6inR9db0kbTS6lTdpIiI/gi4XKInM5+6+ijY683Gor6m2yNkqna6mOCplhiqXd8jGORrl78pxOx9Qj65fMPUI+uXzDWS1UuzdmWstdY2hijmtDHx0O7y1sDXtRrkRqLjCoiJxQs9Sd5l6hH1y+YeoR9cvmGslqjaXZmz7X232Ze6X1qk3jZd3vHMw9vJctVF4Z7yosvot2P2er0r7da3xzox8eZKqaVqtcitcite5UXKKqcUOu9Qj65fMPUI+uXzDWS3DM9DOwrY5YHWh8tO9rmtp5auV8UCO57tquwz4twpYXj0bbKX2slrq22qtbK2JvrUU8kcrEjarW6HNcit4KqcOfbk6n1CPrl8w9Qj65fMNZLUFk2J2c2etVVaqC2QpSVmVqmzKsrqlVTCrI5yqruHeV9l9FuyVguMFfRUEyy0qqtK2eqlmjpVXtjY9ytb+CcDr/UI+uXzD1CPrl8w1ktjqTvGpO8y9Qj65fMPUI+uTzDWS3xiLI5Gt4qpaQMbDGjEX4r3qQWQtjTDFchlhetw1ktOe2OVqse1r2r2OTKGv1Kl/hoPIhG95OT3Z+830lQk8bXJ2oJiltubFGxyuaxrXO5qiYVTIAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAc1HIrXIiovBUXtAAoqaoXZlvqdbr9ntXFPVYVWxN7I5O7HJHLwxjPHncQ1dPUMR8M8UrF5OY9FRfA28+ClfLs9Zpnq+S00D3Lzc6nYqr/IDetHQuVVWnplVeKqrGmyKOmgzumRR556ERMkL9mbH/Y1u/u7P0H7M2P8Asa3f3dn6AWOtnU3xKba57fYUnvN+np+3/wDuYSP2Zsf9jW7+7s/QfsxYl52a3f3Zn6Fiam0mLilOr25+c3xGtvU3xLj9mLF/Y1t/uzP0H7MWL+xrb/dmfoeruvDy9r5U+tvU3xK52z1jfckujrXb3V6OR6VSwt3upOS6sZydT+zFi/sa2/3Zn6D9mLF/Y1t/uzP0HdeDtfLjm2zZqz1y18VBbaevkVflIYW756u540pqVV+46OwWqofVrda6NYX6Fjp6d3OJq83O/wBp2E4diJjvLaktVvt6qtHQ0tMq81iiazPghKOfE485xTpw+BGE2GmuoaW5Uk1HW08VTTTtVkkMrUcx7V5oqLzQ3A4O7iIfQxsVFLGrrbUT00TkfHRT1s0tKxU5Yic9WY+7GDtmtaxqNaiNaiYRETCIh9AAAAAAAAAAGmrq2Ukep3FV4Nb3lLNX1EyqqyK1O5vBDrhwpz92Ms4h0AOa30n2j/Mo30n2j/Mp07aftnq+HSg5rfSfaP8AMo30n2j/ADKO2n7Or4dKDmt9J9o/zKN9J9o/zKO2n7Or4dKDmt9J9o/zKN9J9o/zKO2n7Or4dKDmt9J9o/zKN9J9o/zKO2n7Or4dKDmt9Kn/AIj/ADKSae5zwuRHuWRnai8/Ek8vMfErHEheAxilZNGkjFy1TI87oAKqImVXCAAAVMtVXXKsnprfNHTQUzkZLUOZrc5+EXSxOXBFTKrniuMcFAtgVXsq5/6wVf8AyIf/AID2Vc/9YKv/AJEP/wAALU0Vf0akH2Vc/wDWCr/5EP8A8DTVWu5JGub/AFf/ACIf/gBtofqkfwX81JBEtTHx26Bkkrpno1UWRyIiu4rxwnApNva2upLbb4bfWy0MtbcqakdPE1qvYx7lR2nUipnh3HRl0wOEu6bR7FwvrP2toauhfpa5b5EuuN6rhNCwo3KLlMoqcMZLXZW/Xavut1tV4S2vmoWQSsnoFfu5GStcqfOVeWnn94tHTDCr2A4zbG108u02z9VVM9bhqZX0T6WRupGokUsqSR44tkyxEynNOAHZg4mb0l2+soKVbZJuq+aqhjdS1TPfbGtUyCRVRFwiorl7fyUtodsqd96itk1vr6T1iV8NPPO1iNme1HOVNOrW1FRrlarmoionDsCugBzEm31B6ja6qmpKyqfc6f1qGBixse2JNKZcr3Nai5c1ETOVVcIfarbyjioqaupLdcq+mmpFrXSQxtbu4k5qqPc1XOTC5a3KpjlyyR0wxg4S8bTLtPe2bNWS5zUrHs01dRDud4rZIke1Y0e9H4RrkVXNauM88opXbF3m3bFUi0lbPVJTV1wqoaeV6fJRbjMa5VV4OesbnYTPNM8cqstXpgOWtvpFtVzis80dNXMiu9Q+mhe+NNLXtXGHKi81XPBM8l7lLHZSvfc7KypkqX1L9/URrI+NGKumZ7UTCdyJjPbjPaVFwAAAAAAAAAAAAAAAAAVd8udfbmwez7XLcHOcrpUa7SjI2/Owva9c+63t48gLQHPU1+u1xrpn0Frp5bbBVrSSPfOrZ1Vqoj3o1U06Wr2KuVwv3ISrjtNS2u4Mo54KrDtGqdrU3bFe7S3PHPF2EyiKiZTKoBbg5x+3FHGjo1t9y9bZJLHJSpG3eM3bGvcq+9pVNL2rwVVXPLmVe0N+W8vpYrVWzUzYain3iq17d82dqpErVaqKreeU4cuaCx24Ki07T0N5kp46dtQ188UsyNlZpVqRyJG5F48F1LyIGz+1c17vVdQr7NYylmmi3TJXrUe4/Sjlbp0oi8+fagHTGuzr/ozPgbEKi1Wy4up2q2+1TUXsSCHh/wCUzksOlBVeyrn/AKwVf/Ih/wDgfIaqut1bDSXCWOphqVVsNS1mhUeiKuh6cuKIuFTHLGORlpbAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKK6SrJVuTsZ7qEQl3ONY6x6ryd7yEQ+jw61inmy+XG+kb0h27Y6z1DGVUcl2lYrKenY5Fc1ypjW5OxE58eZh6NvSLb9r7NTQzVccd3hYjKiCRyI6RyJjW3vRefDkpo9JXoxtm1Vrqq2jpI4LzGxZY5om4WdUTOh+PnZ5Z55Nfoy9GFs2YtVJX11HHPeZWNlfJM3K06rxRjEXkqdq88n0K4HQ/wCX+fs8/wDM6nh6CUUO2lmqKjcxSVL9SyNikSmfu6hzEVXNjdjD3JheCc8LjJenIUOx1fS1VNqroHUlJdpLhDEjVRWMe2VFYnDhxkThy4Lx44TzYRjMTs6ZTP4WLNtrK6CGV800O9qlo93LC5j45eHuuaqZbzTxQnNvlA6irq1Jl3FA+WOocrVTQ6P5/wAcHOXfYq5V7K+OmuUFOysujK9VWPUrUayNGpxTiqOjzjhnOMoWdn2amgstzt12nhqXXKeollfA1WN0y80RFzhfxU3ljw6uJSJytqtd/v1bNRT1Fgiht9dhWOZVI6eBqplrpGKiJheGdKrjPaTYtrbLNWyUbK3MrN4md29GPViZejX40uVuFyiKq8F7jm37D3qsq7RJXVVof7JmhVlXHA9KioijXg1y5w3hzxzXuFs9HU9vqd2r6GSkgWodBK5ZlmVZEciZartDca1yqJxTsTKm5x4U+9/p/dmJzWv+cnZXQr/amWoxJMpBLxjX99Pd4s73ck7VJM+1dDbqquW4V9Iymhkgii3bHq9HSM1IjuGFV2Mpp/MrE2IqUokp/W4Mps+tmzpXGvr/AN37uZ9TYmp9eZUrVwaW1lBU6dK5xTxKxyfFVXKE14X3/n6Leazp9p6S5z2xbdWU74KqaaF7ZY5Gyq5jVVWtRUTS5F5o7HDkXhy9NsjUwX2O5OqoVYy5VNcrERcq2WJGI34oqZU6g5cSMYrVrG/ytLLKuZIl5fOQtCqssa6pJezGlC1Pmcb+uXqw/pR7h9Tl+CfmSE5Ee4fU5fgn5khORybCq2d+ir/+On/9alqVWzv0Vf8A8dP/AOtQLU5ao28o6iipKu0K2qZLdIbbLvEc3RrciKuO/DkVPidScLPsTen3iZ0VRbG22a9Q3Zco/fJoRiKzHzeOjn94FvT+kCxVNJVVzZaltDTJl1W+mekL01afddjDuPd8eRv/AGotFfJDT0tayZ1RHNJG5qLoc2JyNeurlwVyFMmwlZT3S+1duq6G3Mr6eOCnZBSt0s0u1Kr2YRHKuXJniuF7MHyv2UviVdpuEV2o/WaKGoglzTI2NWSK1Ua1idiaETmi9uewC5sVdTXO0UtbSSpLTzMV8ciIuHNyvFM9hW7bWi4Xe3Ua2tlPLVUVfBWtinkWNsiRuyrdSIuOfcSdkLbJZ9mrfQSvY98EatcrPm51KvDgnDj3IXB0ZcDtFb9ptqqFKG77F2Opha9JG5uy6mORc5Rd1wzyXvRVQs9j7JdKK63W53KgoLa2qipoIKSjm3rY2RNcnPS1ET3kwiJ2HVgAUu0uz819W2yU1wfQT2+rSqZK1mvPuOYrcZ7Uev6F0Ajh5fRbRyzS1S18qVUl8beUl3fzWo/VuMZ+bz4965wbqD0cU9Hdo7nJVsnqI7rLcmyupm73S9kjViWTOVT5RPu9xEwdkArgaH0TxMfaGXK8TV9Ja4nQsp90jN4zW1zGq7KqiIreKJzyqcuAm9GFSkdAlJeYGvo6CahR1RRukT5RzlWRqJI1Edh6pxyd8CUObk2PV9Xs3L6+qQ2NqfJJEmZ3pEsaOV2cpwVeHHmRabYHdPibPc3VNLBeXXeGB8KYYqrIqsznqkzn/ZThxOuBRxtX6P6io9UbDf6mlZT3KoufyUSZWSSRXt5qqLpyreKKioq8EXCpe7MWR+ztlit0lX63IySWV8273et0kjnr7uVxxdjmWoAAAIAAAAAAAAAAAAAAAApX7J0D7i6tSatY2SdtVJSsnVIJJkxh6t7+CKqZwqplUU23LZm23a5Ulxqo3unpeDdL9LXpqRyI9P3kRzUVE7y1AFS/Zm3yVslY5Jt7JLJM73+Gp8SRO4f7rU/Ehu2Es76uiqlWsSSiZAyJEnVG4hzoVW8lX3l48+7B0QApLXshbLPdZbpTLVLUSpIjt5Mrmoj3q9yInYmpVXCfmWNvt0Fsilip0cjZZpKh2pc++9yud+GVJQAFOzamxWJkUN1vNvoJXs1tZUztjVze9MryLgqV2bs+0MFC6626nrFo5EmgWVudD07fh93LghnJYdFDLHURMmie18b2o5rmrlHIvJUKzaD/APjf+Oi/6lqVW0HK2/8AHRf9TLS1AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAR62jbVx4VcPT5rilmpJ4Fw+N2O9OKHRA68PjTh7MZYRLmML3L4DC9y+B04Ovc+Gel5cxhe5fAYXuXwOnA7nwdLy5jC9y+AwvcvgdOB3Pg6XlzGF7l8Bhe5fA6cDufB0vLmML3L4DC9y+B04Hc+DpeXMaV7l8CTT2+eoVPdVjO1zkL4EnmZ/EEcL7YQwsgjSNiYRP5mYB5pm3V8c1HorXIiovYp9AAFQ+GttFbUT0lKtZSVLt4+FjmtkikxhVbqVEVFwi4yioueeeFuAKr23Uf2FdfCL/EHtuo/sK6+EX+IWoAqvbdR/YV18Iv8AENNVep1jX/8AQ7r5Yv8AELs0Vf0agVdrmklt8D1gfGrkVdEiojm8V54yn8yVqf8AZp5iFS1qR07GaFXGUzn7zb6+n2a+JtlI1P8As08w1P8As08xH9fT7NfEevp9mviVEjU/7NPMNT/s08xH9fT7NfEevp9mviBI1P8As08w1P8As08xH9fT7NfEevp9mviBI1P+zTzDU/7NPMR/X0+zXxHr6fZr4gSNT/s08w1P+zTzEf19Ps18R6+n2a+IEjU/7NPMNT/s08xH9fT7NfEevp9mviBI1P8As08w1P8As08xH9fT7NfEevp9mviBI1P+zTzDU/7NPMR/X0+zXxHr6fZr4gSNT/s08w1P+zTzEf19Ps18R6+n2a+IEjU/7NPMNT/s08xH9fT7NfEevp9mviBI1P8As08w1P8As08xH9fT7NfEevp9mviBI1P+zTzDU/7NPMR/X0+zXxHr6fZr4gSNT/s08w1P+zTzEf19Ps18R6+n2a+IEjU/7NPMNT/s08xH9fT7NfEevp9mviBI1P8As08w1P8As08xH9fT7NfEevp9mviBI1P+zTzDU/7NPMR/X0+zXxHr6fZr4gSNT+hPMVdpvE7adqJZLo7HajYsL/5yZ6+n2a+Jvs3GlZ8DOTUMPbdR/YV18Iv8QxjhrbtXQVFZTLR0tK5ZI4XuR0kkmFRHO05RERFXCZXjx4YLcGVAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAptpto12eipt3b6iumqZFjjjiThlEVeKoiqnLhhFUC5BQbMXnXs9bp7tUOp6qp1JorHMZKrta+7hMJlOCYQuqqdKaB0qpnHJO9SxFzUJM1Fy2qqNTKqifEIqKmUVFT7jzjbzb2k2Rtzq2uV1RVSI71ekYvvSqiZX4NTtXsJGxe2tJtPbWXC3PdG9uG1FNJwfC/HzXJ+S9qHq7Sdbt5e6jaqd+DCCVJ4WyN5OTJmeSYr2euJv3AAAAAAAAAAAAAAAAAAANFX9GpvNFX9GoHPQ/Rp8V/MzMIfo0+K/mRrzcVtForbilO+p9VhfNuWfOk0pnCHRlqqby2mv1BaFhc59ZDNM2RF4NSPTlMdudX8ixPIrnPs3ddpae6s279VoJGvdUUm8fvGufp1MjfjLWu0plE5YXHM9I2bv8O0lvfXU0T2QJPJDG5y5SVrHYR6fcvNCC1MJp4qeNZJ5Y4o05vkcjUT8VMzjNvbTeLvdLJFbKVkzG7/AFyzxtfBTuXdoj3tdlF93eInBVyvZzSo6/1mBJmw7+LevbqbHrTU5O9E5qhiyspZGveyqp3Njdpe5JEVGL3KueCnEU2zNRFYbOi2xPX6G8t0P3aJJFSpVPxheaM3S8s/NUj7QbKuuFbtLBR2D1al9kJFTrA1I0qalquexzUbjKpqx+fNCKtr3tdc4aFtXR2yooaaOo3VTUVcTHOijVdLXti3iOVFcqJx44yqIp08Eyw06NraqldPHhsz2e4zUv3Kqq3PcqnnVXS7QXeDaWSWwVVK+ahoY6aOR6OdLunq5c4ympdS8EzjTx4qiHzaLY+svMm0NdDQ19M2rt1PVxUbX/SVuZVVFXtVMoitTCLqA9KWogbO2nWaJJnJqSJXprVO9E54CVEKzLAk0azImpY0cmpE78c8Hnl8sN2rdoK+oprY2nbT11DPBNFTMc+oaj40e7er7yKjdSYauEa1UVOPGPa9nNoUu8VzmoEhSO9OfqWNm/kY6WTXKr047vdq1qIq8UxwTSmaPTwAEAAAAAAAAAAAAAAAAAAAAAAAAAAALKy/VY/gVpZWX6rH8DOSwswAZaAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA5Tb61yViWatjt9RXNoa5sszKZflt1pX5qZTPvpGqpz4HVgDxqo2ZvNPaLfR1OzD6xvseogdpgilkZI5z1jYrnKmlU1McrmrzRc5zlPTIIKluzNDHUo71mOni3yOXK6kamrP35yXIVMpheRrHLWYlnLG4mHlW3mz1DLYtoLtHRb26SWuWmbIiK52nSvutTszns5k7ZqwUFLBQ3dtIkVxlt0EE0iZarmoxODk5Kqd68ew7aezMe5XQv0Z7FTKH2ns7I3o+V+8VOzGEPf3OOvy8PbZbN9ujWOjjR3BVTPiSQD5+U3NvfjFRQACKAAAAAAAAAAAAAAAAGir+jU3mir+jUDnofo0+K/mZk+hT/RI/gv5qbZJI4Y3SSvZGxqZc5yoiIneqqdGFTu2dDfBDJEwmE4ISPbtn/ta3f3ln6kqnqaerj3tNNFPGq41xPRzc/FAK0FthBhAKkFthDStXCld6iuvf7rf40Lp06tPzuWc9nMCvBbYQ+omeSAVAJ9HWQ18T5YNelkr4V1MVq6mOVruC9mUXj2m/CAVILbCDCAVILbCDCAVILbCDCAVILbCDCAVILbCDCAVILbCDCAVILbCDCAVILbCDCAVILbCDCAVILbCDCAVILbCDCAVJZWX6rH8DbhDXZ/qzPgZyWFkADLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAculFVewAq45nzW3qTxIj3q9cqv4GJrVLTdbepPEa29SeJCA1S03W3qTxGtvUniQgNS03W3qTxGtvUniQgNS03W3qTxGtvUniQgNS03W3qTxGtvUniQgNS03W3qTxGtvUniQgNS03W3qTxGtvUniQgNS03W3qTxGtvUniQgNS03W3qTxGtvUniQgNS03W3qTxGtvUniQgNS03W3qTxNFW9u7X3k8TSR6v6NRqtlBxo4vgv5qc36U2pJsNXsciOa+Wma5q8nIs8aKinRWz6hD8F/NSBtfY5dpNnqq2U87KeaVY3xySNVzUcx7XplE44y3BpHnl5ZQ3PaW3WvY/ZHZyop/WP9KqJ6NmHxNXD3NwnBiLluv8AedwbnCnWbBUdNb7ptdSUcEVNTRXZEjhiajWMT1eJeCJwQo3+je9SUjqN1LsfuHyb1zEiqk1OxhFVUkyuMrhOSZXB0+w+y9VsxS16Vk1I+asqEm0UjHNiia2NkbWpqVVXgxOakHSlLeb1V0N1oLbR0kVRNWwVUjEfJo9+JrVa3Pcquwq9hdFZdNnrfeK23VtXG9Z7bKs1O5j1bpcuM57091PDuVSo5aPaWvvjNl6pqyUS10VwSeCOXQiujjVE4rlEw5uUVc4+85LZm8psvLdbjC6W7VbLN63GqTSrEsbZW68rIxutfeR28b85EXlwPRKLYCz0U8UjZbjKyFs7YoJqpzoo0mzvNLezOV+Ab6PLC22Jbd1U+rto5aBPl1ykMj2vciL2LlqYxywRVNWeka4Q0M1ZT2umqGUtJRVc6smXCMmWRHac4zhWIif7yrxxx17b3apuslVaYYpVio7xSUTvV6lI3Tb2NrsORUVFwr0937srnGDoHbC2uWmucFVUXKr9qRRwVEs9U50isYqq1Gu/dwrlXh3mqD0cbP0lPVwUsVVTpVTx1SvjqHa45mOVzXtcvHVlVXK5znC8OA9xzlgvlRYrLbLTaUpI5J6itY1l0nkkk1xzObuvcbhFzw1Z0pwRNR3dhurL7ZLfdY43RMraeOoSNy5VmpqLjP3ZKh3o+s+ii3U1yp5aJJ0jnhqnNlcszkdKrndqucmVUvLVbaazWykttG1zaakhbBEjnalRrUwmV7eCASgAVAAAAAAAAAAAAAAAAAAAAABorKeSpgWKGrmpHqvCWJrVcn4ORU/kU9qqKyqpKioqbi+GqpGvp6iFzGblkrW/SfN1aVTD/nYw4vyK610Lqx1a6jgWpezdumVianNxjCr2pjgBwdh2tvNfeqK3VFdGyJkzkfO5jsVKamIjeMTU46lRMK3iqZzyW32JuV4u009TcJq58GudkeuOBsC6ZXNTTpXeZRE/eTv+46GKxWuBKZIrfSs9VcroMRp8mq8VVDGi2ftFuq5KyitlHTVMudcsUSNc7K5XKp3rxILA12f6sz4GwjWGTVTNavNEJksLcA1zSbtvDmplpsVUTmqIfNbepPEhKuVyvEGtUtN1t6k8Rrb1J4kIDVLTdbepPEa29SeJCA1LTdbepPEa29SeJCA1LTdbepPEa29SeJCA1LTdbepPEa29SeJCA1LTdbepPEa29SeJCA1LTdbepPEa29SeJCA1LTdbepPEa29SeJCA1LTdbepPEa29SeJCA1LTdbepPEa29SeJCA1LTdbepPEa29SeJCA1LTdbepPEa29SeJCA1LTdbepPE+oqLyVFIIRVRcpwGq2nAwhk3jePNOZmZUPiuROaohrqJFaiNTmpG5liEmU3W3qTxGtvUniQgXVLTdbepPEa29SeJCA1LTdbepPEa29SeJCA1LTdbepPEa29SeJCA1LTdbepPEa29SeJCA1LTdbepPEa29SeJCA1LTdbepPEa29SeJCA1LTdbepPEa29SeJCA1LTdbepPEa29SeJCA1LTdbepPEa29SeJCA1LTdbepPEa29SeJCA1LTdbepPEa29SeJCA1LTdbepPEa29SeJCA1LTkVF5LkEJrlYuUXBMY7W1Hd5JiliX0AEUMJvonfAzMJvonfAsCIcXth6Wtm9iLo213Na19UsaSq2nhR6NaucZVVTjwO0PzD/AJQv/ePJ/wAFB/8AkamWXuNk9Kmx19oG1kd8pKRFcrVhrZWwytVO9qr/ADTJ0NsvNsvUT5bZcKSujYulzqeVsiNXuXC8D80ei/Yt19t14rarZGtvcD4HQ0c0UrY2xzJz+c5MrxTimcY5cTtP8m2jqbdU7UUdXC+CogfTxyxPTDmOTeIqKhIke3mCyxpKkKyMSVU1IzUmpU78c8GaczxC4pa1t15rZXQft2zaTd0yq5PW0X1hqRMYnzt0sHYnuq1XKvaaHtiyxpKkSyMSVU1IzUmpU78c8GZ4jdW2paC/1sroP25j2j0Uiq5PW2rv2pAxifO3Sw44J7qors9p6P6UJa6DYK9yW9Z2zNg951PneNi1JvFbjjlGasYJY6FaymSKWVamHdwoqyv1piNETK6l7MfeZxSxzxMmie2SORqOY9q5RyLxRUXtQ8tuFH6O6Smql2VfRx1r7FWqjLU9Fjlg3XzqjTlFXONKu45VfvKz9qtqNitn4GMuLLrvdmI7hBG+mYxtG9r4o1VunCuY1smpdSr8zOcKose0GqWrp4Z4YJZ4mTTq5Io3ORHSKiZXSnbhOK4PI4tt9paejqaaa+U3q8lfRUvtaSSlnkoGzI7W5+5+Tx7rdKuThr45whH2r2iu9vk2drrRcYNsq+iq7nFDNDG1i4Sm460aqNe5iZVdGNWERMKLKe0grdm6tlfs/b6uO5e1GT07JErdDWb/ACmdWlvBPh2ciyKgAAAAAAAAAABoq/o1N5oq/o1Awtn1CH4L+akoh21H+ow4ciJhf3fvUk6ZOtvl/qBmDDTJ1t8v9Rpk62+X+oGYMNMnW3y/1GmTrb5f6gZgw0ydbfL/AFGmTrb5f6gZgw0ydbfL/UaZOtvl/qBmDDTJ1t8v9Rpk62+X+oGYMNMnW3y/1GmTrb5f6gZgw0ydbfL/AFGmTrb5f6gZgw0ydbfL/UaZOtvl/qBmDDTJ1t8v9Rpk62+X+oGYMNMnW3y/1GmTrb5f6gZgw0ydbfL/AFGmTrb5f6gZgw0ydbfL/UaZOtvl/qBmDDTJ1t8v9Rpk62+X+oGYMNMnW3y/1GmTrb5f6gZgw0ydbfL/AFGmTrb5f6gZgw0ydbfL/UaZOtvl/qBmQ7B9G34EnTJ1t8v9SNYPo2/7pJ+FhdGiq5tN5oqubfxMx8rLQeaP/wAoTYplS6BXXNUa/QsqUyaOeNXzs4/A9Kf8x3wU/DUnGV+OpfzNTNI/ZDdvtknNRybTWbCplM1bE/6l3DNFURMmhkZLFI1HMexUVrkXkqKnND8ybQ7AVVv9G1vq/wBi7hR3KnestdcHyNVHRLnGWI5VROLebUxhe89z9FX/AHcbO/8ABt/NREjqnORqK5yo1E5qq4RD6cl6WVRPRntKqqiIlBJxX8CHtZtzQRWClSybQU7qqepgpUdQSQTPar0VcZe7RHlGr7z8pw5KpR2klXTxVEVPJPEyeZHLFG5yI6TTxdpTtxniZSTRQ43ksceeWtyJnxPDqbamt2juOyk1dtHFap4q+70CXN7YFc5jGsx3xa1ThlMtXHBOJquV0k2sq9kp7xLszWqxLtAyqvTEbR1bI5Y2MmREXCOciZTHDnjgSynvHNMpxRT6cX6IJWP2DpI2O1tgnqYUex2qJ+mZ/GFe2LsZ/soh2hUAAAAAAAAAAAAAAAAAAAAAEWkulDX1FVTUlZTzz0b0iqY43o50L1TKNciclxx4kootn4qiO73901LZoY31bVifQrmaVN2nGo7n933F6Bvpf3vwN5opf3vwN5iflqEap+k/AhXCugtlBU11U/RT00TppHImcNamVXHwQm1P0n4HO7ef/sjaD/8Azqj/ANtTUfCS5Og/ygNiq6shplkuFMkrkZvp4EbGzPa5UcuE+/B1rdutlHuRjdpbMrlXCIlZHxXxPxvS009bURUtNE+aeZyRxxsTLnuVcIiJ35PQPSdsQ+x2Gz1lPshW2ZsVOkVfUSytkbJMqJhV0uXHHPFcc0THAlj9Scz4rmtxqciZXCZXGVItp/7Jof8Ahov/AEIct6UamCjotnaipmighj2hoXPklcjWsRHrxVV4IhpHaGptXTuqn0jZ4lqGMSR0KOTW1iqqI5U54VUVM/cpwG3W3MbX26nsG0KN37KiV8lA6leipE1ucyzO0NxqRVaiK5c9iIcdSbVVl3u0d9m2spNm6uq2QpK171iiVJ3tkmXCJJlNOVyqN48UwqYJavcpZooGo6aWOJFXCK9yNRV7uJmeRW6ssu1G0K1npDprdCtRY6Kpoaa5ORsEaPa5ahWI/hrR+EVfnImk9B2J9mJsrbks01ZPbd2vq0lWrlkdHqXHF3FU7s/u4KLwABAAAAAAAAAAAAAAAAAAAfFVETK8EQi2y60F6o2V1srKetpXqqNmgej2OVFwqIqdyoqEp2dK4RFXHbyKHYWKoh2ZpmVVLZaSVHyZis65pU99caV7+/78gX5Kp/ovxIpKp/ovxJl8LDYADDQYTfRO+BmfHN1NVO8CEcHtv6HbHt1eG3atrK+mqN02FyU7m6XI3OFw5q8eJ3r2KxcKh8OjDy2n9ANqo4kiptp9pYI0XKMiqGtai/BGnU7D+j23bCJXOo6yurJq57XTTVb0c5dOcckTvU6kEpQjOttC6tbXuoqZaxrdDahYm71G9yOxnH4kkFRGdbaF9c2vdRUrqxjdLahYmrI1vcjsZRPxKqh2eu9LcGVM+110rIGuVy0ssFO1jkXPBVbGjsJ9y9hfACHS2e2UKTpS22ip0qPpkigaze/72E4/ibkpKZFaqU8OWx7pq7tODOlP9ngnDkbgBDhs1rpqKSggttFFRyZ107IGtjfnnlqJhTZT26ipI4I6ejpoWU+UhbHE1qRZ56URPdz9xIAGuCnhpYmw08McMbeTI2o1qdvBENgAAAAAAAAAAAADRV/RqbzRV/RqBhbPqEPwX81JRFtn1CH4L+akh72xsc97msY1Mq5y4RE+9QMgeP3707W6g2/oaOln39iga+Gtnj95rpHYw5vejMdnPLsdh6zRVtLcaWOqoqiKpp5U1MlicjmuT7lQWN4BArb5brdXUtDVVTYqmrRywxqi+/pTK8cYT8QJ4KGXbrZ2L1dXXDLJ4o50kbDI6NkcnzHPcjcRo7s1KhIqNqrPS3P2ZNWaalJGRO+TesbJH/MY6RE0tc7KYRVRVynegFsCkTbKzOmqoEmqlmpmbx8Xqc2t7dWnVG3RmRNSomW55mdFtdY7jNRQUtwjkkro3S07Ua5Fe1upF5pwVFa5MLhfdXhwAuAcxc9urS22zPttyo31jqFa2mSdHpG9q/NVVRM8VVOCcePImv2wssFXUUlRWOp5qeKSaRZoJI2KyNMyK1zmo12nt0quALoFK3bGwvpFq0uLEhSnWrVyscmIkfoVypjKYdwxzPlXtpYKH131i4sZ6jI2GoTQ5VY92cJwTj813LONK9wF2Dgbrtveotro7TRstjaFKyCnfNIkjso9EVUWRPcZIufdYvFeHHjg6SDbGxVNc+ijr0SRu8RHvieyJ6x53iNkVEY5W4XKIq4wvcFXQKKl22sdbFNJT1FRJuY2zKxKSbeSRuXCPYzTqe1V7WoqHyTbnZ+OkpqtK90sVTG6aPcwSSORjVw5zmtarmo1coquRMKmAi+BWXbaCjtVkW7+9VwvSPcNp8OdUOkVGxtZ2LqVzUReXHJGt17u3rMkV8saWuJsDqhtVHVJPAjW41Ne7S3Q5M55Kioi4XgBeAo4dt9m56GevZeaX1Wncxksj1VuhXrhmUVEXDuxeS9h8oduNm7nVQUlFeKWapqFc2OJFVFVyZy1cpwdwVdK4XCcgL0HNU+3tiipqNLleLZDV1EMcqthkc+NEeqo1yOVEwxVTCOdhC3ttc+tmr2OfSu9VqVgRIHq5WojWrh+UTD/AHuSZTGOIE4AAAAAPiqjUy5URO9VK3aS9xbN2Guu8zdbKSJZNHUvJE/FVRD8u121tXtLfo67aWpqqqlWTVJBE9Wo1nSxM4RP5/fk+n6f6ZnzcTlE1Ef9/o83MczHCqPzL9Z72P7RnmQb2P7RnmQ/LW0uyFSl9lhsduqPVklbTad5qRs+jU9iKq5wnHivDgvErKPZmve5rq2GqggfDUyMexqOVViY5VTGeCZTCr3ceJ78fQuHljGXV/b3/wDXCeeyia0/f+z9dJxTKcU7wflPYj0gXbY25wyxVMstArkSopXuVWPZ2qiLycnYqH6pilZPEyWNdTJGo9q96KmUPneoenZ8nlETNxPxL0cvzEcaPb2mGZDsH0bfgTCNYY1bTtcvNUPmz8PTC3NFVzb+JvNc8avbw5oZj5WUXnwU8mm/yb9mJJ3ysul4iRzlcjGvjVG5Xkiq3J6zyBtl5hL6BrdNG6KXavaiSN6aXMfVIqOTuVFTieg2Kz02z1mo7TR6/V6OJIo1euXKidqr3k4ChhNDFUxPhnijliemlzJGo5rk7lReCkFNnLI2CWnbZrY2GbG9jSljRsmOWpMYXH3liAIUtjtU0Hq8troJIOPybqdit44zwxjjhPBBUWW11cUMNRbKGeKBNMTJKdjmxp3NRUwicOwmgDGONkUbY42NYxqYa1qYRqdyJ2GQAAAAAAAAAAAAAAAAAAAAAABBoLHbbXV19ZQ0UNPUXGVJquRiYWd6JhHO+/BOA5gb6X978Dea4I1Y3jzU2GJahGqfpPwINzt8F2ttVbqlHLBVQvhkRq4XS5FRcL+JY1EauRHJzTmRzUfCS8li/wAm/ZyCRskV6vcb2LlrmPjRzV70VGkmb0BWmqZuqvabaWphVUV0UtS1zXY70Vp6iBUDCGJlPDHDGmGRtRjU7kRMIYVdFS18O4rKWCpiVUXdzRo9ue/Cpg3AqK/9n7NuWQ+yLduo5N6yP1Zmlr+pExhF+8ymsVpqWxtntVBK2PSjEfTscjNOdOMpwxlcd2VJwAi19roLqxkdwoaSsYxdTW1ELZEaveiORcElERqIiIiIiYRE7D6AAAAAAAAAAAAAAAAAAAAAAD4qIqKiplF4KhBslitmzdujttoooaKjjVzmQxJhrVcqqq/iqqTwAJVP9F+JFa1XLhEypMjZoYjTOSwyABloAABUReaIpju2dDfAyGUAx3bOhvgN2zob4GWUGUAx3bOhvgN2zob4GWUGUAx3bOhvgN2zob4GWUGUAx3bOhvgN2zob4GWUGUAx3bOhvgN2zob4GWUGUAx3bOhvgN2zob4GWUGUAx3bOhvgN2zob4GWUGUAx3bOhvgN2zob4GWUGUAx3bOhvgN2zob4GWUGUAx3bOhvgN2zob4GWUGUAx3bOhvgaKuNm7X3W+BJyhoq1+TUCBQJijiRO5fzU13a0UF9oJKC50kVXSy/PikTgpsoPqkfwX81JB0Zfnm/egZ8e39DbLbLKyyVzXzrM73nUzWY1sz2rxbpz38eSnt2zOydm2QoPUrNRNpolwr3ZVXyKna5V5qXAJQHObW2e5V9Va7ha4aOpmoHT/IVMixtXeRKxHI5Guwrc8scUVTowVHmVy2A2mbb1tlFUUtTSrYYrSiSVj4WMkRqtfIsaRu1fuqnFF4E2v9G1XWT3qtS4ypU1tfHUQQ79yU7Y2rCq6m4+f8m7/y9yY9AApVE603Kbbpl6llp0t1PQyU0DG53qukfG5yu7P/AA+/tQ5pNitpKars81HPaES3VVbVoszXOV6zPmVGKqIioitlbyXgqKuHcD0IAeaVPo8vfsO3UEbLXPMlk9kTSSSORKV6va7fRroVX4xy91ctauUOg2n2but8u1M9klC6gpqGqia2dFV0k0sSx+8mMKz5v8/uOrBKHmcPo+vstpqKCZKOmxZPZkLlrX1LnybxH6nK6NulvDCJxwTLz6O6raBbxXXCK2PuVdaIaSJyIu7jqmrIrpMKnD5zMO4uTC8j0AChwl72IvN6u1fUz1zX061NFPRM9ZlYkSRSRuka5ie4udD1yqKqqqcUxwxoNk9o236Caukp5qOK7T1++Wte9yROjmYxjIt2iNVEkbn3l+ad6C0ON2V2Ru9pvvrdyuDaqlomVMFC5ZHSTPjmkY75RVRETSkaIiJniqr9xlYdj6603Onq3yU+GxXGOXduXL9/UpLEnLijUV2c8lcuM5OwAHKN2RrF2Ctdi9ZhiuNujpnxTYV0STwq1zcpwVWqrcL24UoLvsDf9qK+rqaxtDZ46uhqKWdlNXTVG+ke1umRUVGtRqK3GlERcKvE9KAoeewbC3OqbJPVU1NTVS1FAvv3KorFdHBOkrk1SJwTnpaid+V48LT9kK31t8ySUyI7aJLvzXO6SJGY5fOynwx2nXAUPOqD0dXOl2Zu9sfNRLUVtjprZG9HO0pJGkqKqrjOnMiY/Hgdbs9Z6i0z3mSd8bkrq91VHoVVw1Yo2YXhzyxf5FwAAACAAApNtLE/aXZW52mJyNlqYVSNV5a0VHNz+KIfkyso6m3VUtJWQPgqIXKySORMOap+ziru2zFjvzmvulpoq17Uwj5okVyJ8eZ9j0v1XtInDKLxn3ePmuV61TE1L86r6SXxXCrrKOjmpfXK2lrZmsqF4rFq1tRccEflPDtyaabbqip7W+i9jPWRUrFbKlSqaH1DVYq6cYVEbjhw4t4Yyp+gP822xv8AqzbP+SP822xv+rNs/wCSe7+L8n/tz+vivv6ce043+qH5h2c2ertqbvBarfE6SWVyI5yJwjb2ucvYiIfr2lp20lLDTMVVZDG2Nqr3ImE/IjWux2uxxLFa7fS0THfOSCNG6vjjmTj5vqfqU85lFRUQ9HK8t0Ym595DXZ/qzPgbDXZ/qzPgfJyeyFkADKvisa7m1F/A+btnQ3wMgBju2dDfAbtnQ3wMgBju2dDfAbtnQ3wMgBju2dDfAbtnQ3wMgBju2dDfAbtnQ3wMgBju2dDfAbtnQ3wMgBju2dDfAbtnQ3wMgBju2dDfAbtnQ3wMgBju2dDfAbtnQ3wMgBju2dDfAbtnQ3wMgBju2dDfAbtnQ3wMgBju2dDfAbtnQ3wMgBju2dDfAbtnQ3wMgBju2dDfA+o1reTUQ+gAAAB8VjV5tRfwPoAx3bOhvgN2zob4GQAx3bOhvgN2zob4GQAx3bOhvgN2zob4GQAx3bOhvgN2zob4GQAx3bOhvgN2zob4GQAx3bOhvgN2zob4GQAx3bOhvgN2zob4GQAx3bOhvgN2zob4GQAx3bOhvgN2zob4GQAx3bOhvgN2zob4GQAx3bOhvgN2zob4GQAx3bOhvgN2zob4GQAx3bOhvgN2zob4GQAI1G8kRAAAAAAKqNRVXsBhN9E74ARnyuevFeHcYg5bab0mbLbH17bfeLi6GqdGku7ZC+RUavJV0ouOR0ZdSCjse22zu0VA2ut13pXwq5W/KPSNzVTsVrsKhbwVMFUxX088UzUXCujejkRfigRtAAAGL3siYr5HtYxqZVzlwiJ96mSceXHPcAAVFTmioAAAAAAAAAAAAAAAAABoq/o1N5oq/o1Awtn1CH4L+amddXUtso5q2tnjp6aBivkleuGsanaphbPqEPwX81Oc9Kc0bdiqumeia6ySGlhe5+hkUrpG6HucvBGtVEVc92O0C6sW0lq2lgkntVUk7Yn6JGqxzHxrjKI5rkRUynFOHEszyBbhVRtulXT32rqaaqlip7hf4adGvqXN9xlNRRt4K7iqLJxRMrg6L0VQQtS/T0cVTQ0XrqU8VuqXOWWnWNiI58iOVVR71XUqfAljvTTW1cVDRz1czmtjhjdI5XKiJhEzzU3HBelG/VNtktluile2GvjnSSGOGOV9SqLE1saNeioqLvFVURM8E+8o6jZ2/M2hoPW20stI73cwzOar25ajkVUaq4yjuGeaceSoWFTVQUcKzVM0cMSKjVfI5GoiqqIiZXvVUT8Tymnv1Vs7sNNR2xIbbVwsuE8VXuWIlS6llc10bkRMJIsbWrnHHSuMYNu0m1l3nuF4X1arkt9qnp2qzcRuo34bDI5JFciv1Kr+CoqacN58SWr1YHn2096vmzVfd6eG7zVMXqUNa188UavpkdU7t6R4aiL7i+6j0XinFVJUr7zjaW1t2hrmyWhkdTT1m6hWV6Ohc7RImjS5qObngiKqLjIsduaZ6ympXwsqKiKF0793E170asju5M81OAp9oL/Je7FJXXFsNPe4ovVIKR7FRirTa3OljdGrlTWjuKSJ+6mOZCoZL5cJrNPebsyrk9t1Vra1tNFpjSNsumZqq3O8R0aL04wmleYsepA4KLaG60bLjZprjLJKlzfbaa6zMZmFywMljSRqIjVVVc5iKiJx08Fya6O636soNkbjHepGS36JKeWF8MboY3rSyPSVqaUdlHsRcKuFRVTCCx6CRWXSglndTsraZ0zZNysaSJqR+NWnHfhFXHcinndp9IlRVMtdJJd6d9cyguEtejI0fpfEqpErk4JqVGPdpymUaq8iniujrXHWXyF2K6utsNY2vraaFtRTq+pbC96K1qN0uY5HJqTsTOU4Cx6jf9o6LZ1lKtU2WSWsm3FPDFp1SvwrsIrlRqcEXmqd3NSfR1K1dNHOsE9Or0ysU7dL2fcqZX8zyWqv9wveyW1MVwmqamBtqirKdauCNkjNUsjMt0NTKKkbVRcc8qnBULXabbypsc20CpfKWSOotsNXZkaxFdvHuexGNTGX8WZXn9+BY9EqK6lpHwx1FTDC+dytibI9Gq9UTKomefA0RXy1T1UdJFc6KSolYkkcTJ2q57VTKKiZ4oqcfhxPMtstoKWrrr/b66utlxZBT01VbWTRNXdSOk0yMYqp766VRVwq8HJyKyepjbtfWVNNTxpJRXqNFZHSxbmJEqWU7Ec7GpHqzKpxznGPdRUFlPbgF4KCoAAAAAAAAAAAAAAAAEexSa6ZqLzRCQQ7B9G34ElYXQAMNAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGE30TvgZmE30TvgWBEPzD/lC/wDeNJ/wUH/5H6ePOPSB6F6Pby+peH3iooZdy2FzGwpI1dOcKmVTHM1MMvFvRzshRbQUl4qLnYb3cWMp1bRyUEaq1s3Hgq9q8uHFOeew7/8AyZ4pqZ20tNMx8T4306PiciorHfKIuU7F4F3bfQldbNSpSW30h3ujp0VXJFBHoairzXCPOo2C9HzdiJLnUyXequ1ZcpGSTT1DUaqq3OO1cr7y5VVJEDrji9gbhHHSbSuqKpuYr7Xr8pJlWtRyLy54T7jtCj/YbZb2r7X/AGdtXtHe771v1Zm93nVqxnP3mh5Re9vrxedmr9b7hIyppbhs5U3Knl9R9VREa5qIrMvcr43I/m5Gu4cuJP2t2ivkOzd+sdxudvuLZrA25Q1NBGsK0ybxrFjXDlyiouWuyirhT0il2G2WomzNptnbXCk7HxSoymamtjsamrw+auE4cuBlS7F7M0VLW0lNYLZDT1/CqiZTtRs6dzkxxT7uRKHKWuhtuzHpDtNq2aqZPVq2hqJbjQpVvnjiRmjdy4c52hyuVW9mc/ceilbZdmrJs4yRlmtFBbWyqivSlgbHrxyzhOJZFAABAAAAAAAAAAAAAANFX9GpvNFX9GoGFs+oQ/BfzU21NLBWwPp6qCKeGRMPjlYjmuTuVF4KarZ9Qh+C/mpKAq7vs3QXi0ttb2PpoInMkgdSru3U72LljmY4IqL92Bs/s9TbO0s0UE1TUy1Eyz1FTUv1yzSKiJqcuETkiJhERERC0AA0yUlNNUQ1MlPC+eDVupXMRXR6kwuleaZTng3ACBV2G0V9MlLV2uhqKdJFmSKWBjmI9VVVdhUxlVVcr96m91uonxTROpKd0c7kdKxY0VJFRERFcmOK4a3n3J3EgAR6i30dW57qikp5nPYkblkjRyuai5Rq55pnjjvM/VKdXzP3EWuoRGzO0JmRETCI7vTCqnHvNoAjezaFJaaVKOm3lK3RA/dpmFuMYauPdTHDCH1LfRt0aaSnTRK6duI092Rc5enc5crlefFe8kACJU2i3VkE9PU0FJPDUuR80ckLXNlcmMOcipxVNKcV7k7jOO30cUdNFHSU7I6THq7GxoiQ4RWpoT93gqpw7FJAAgR2C0RPR8dqoGOaj0RW07EVEf8AP7P3srnvypop9k9naSOaOnsNqhjnajJWx0kbUkai5RHIicURURcKWwA0S0FJOsyy0sEizxpDKro0XeMTOGu728V4fepGl2fs87EZLaqCRqRJAiOp2LiNFyjOXzUXjjlksABAksNomWVZbVQSLMrHSK6nYutWfNVcpxVOzuNyWygRkrEoqZGyypUSN3TcPlyi614cXZRFyvHghJAAAAAAAAAAAAAAAAAAAACHYPo2/AmEOwfRt+BJ+FhdAAw0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAfHN1NVO8+gCE5qtXC8z4TXNa7miKY7mPpQ1slIgJe5j6UG5j6UGyUiAl7mPpQbmPpQbFIgJe5j6UG5j6UGxSICXuY+lBuY+lBsUiAl7mPpQbmPpQbFIgJe5j6UG5j6UGxSICXuY+lBuY+lBsUiAl7mPpQbmPpQbFIgJe5j6UG5j6UGxSICXuY+lBuY+lBsUiGir+jUstzH0oaKuGPdr7qDYpX21maGFdT+S8l+9STu06n+Y1UCIlHEicsL+akg0MN2nU/zDdp1P8AMZgIw3adT/MN2nU/zGYAw3adT/MN2nU/zGYAw3adT/MN2nU/zGYAw3adT/MN2nU/zGYAw3adT/MN2nU/zGYAw3adT/MN2nU/zGYAw3adT/MN2nU/zGYAw3adT/MN2nU/zGYAw3adT/MN2nU/zGYAw3adT/MN2nU/zGYAw3adT/MN2nU/zGYAw3adT/MN2nU/zGYAw3adT/MN2nU/zGYAw3adT/MN2nU/zGYAw3adT/MN2nU/zGYAw3adT/MaLBGqU7XL2pwJRrs/1ZnwMysLIAGWgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADRV/RqbzRV/RqBAofqkfwX81Nsu83Um5Rqy6V0I7krscM/dk1UP1SP4L+alBt7Y7zf6CkpbVNA2Js+urhlqJIG1EelcMV8aakTUqKqJjODoy5nYm77UpcZZK5l/r2xUMklypqqBjEZVo5NMdNyRUVNXbjGFydBsHthX7UpcErbRV0fq9VPEyV7GtZpa/Ska4cq7xE+d2dxylT6N79uVW12TZizVrUzDW0NbUsljd2Kvu4d8HZRT1KkgSnga3RGx6+9Ju2o1HPX5zuHepIG4ra+9w2+50dvkikdJVxTytc3GGpE1qqi/HUmCyKW+7MtvdxtlcldUUklvdJ9F/4rHo1HMX7l0onbzXtwqVFTUekuhpaakqpLbcNzVWv2qx7WoqIzCLpXjwVNTUVeSak7OJq/ama87bQ2eiqpaOCje5tTGkkKOqXIxruDXZcsaZwqt59nBMmtPRi6O009uh2hrGtjopbZJI+Fr1fSvVvuNyvuqmnCO4814csX9Tsyypv1pui1s7YrXG5kNJ+5qVis1Kvfpdj8E5ccxV0ACoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOdvG21BYdqbVYK5rmOusblgmTim8RyIjFTszngp0RBmslBUXenu81OyStponQwyO47trly7Hcq45k4Aa7P8AVmfA2Guz/VmfAzk1CyABlQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADRV/RqbzRV/RqBAofqkfwX81JBHofqkfwX81Im0O0FLs3QMrKqKpn3kzKeKGmj1ySSPXDWtTgdGVmDk4/SZYYZnQXn1vZ+ZGo9jLrDuVlavaxcqi4XnxLuzbRWjaKOSW0XKmrmRKjXrA/VpVeWQixAIl2ucFltlTcalsroKZmt6RMV7sfcgEsEGzXmjv9ItXb3SS06PViSLGrUeqYyrc8044ynDKL3E7CqmcLgABhe45q6ekGy2m8NtEq1ctWs0VOrYYVcjXyKiNRV7sORVVMoic1zwA6UDCp2DC9wAAAAAAAAAAAAAAAAAAAAAAAAAAAAfMpnTlM4zjtPoA12f6sz4Gw12f6sz4GcmoWQAMqAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAaKv6NTeaKv6NQIFD9Uj+C/mpyXpYuUVnsNtuU/0VJdqad/waqr/0OtofqkfwX81Mqujpq+B1PV08NTC750crEe1fii8DbLziy0sV0s1FWXf0kVcNdURNmmhjrqZGROdx0IitVUxnHPsLLYVsztqL42n2grbvaqOKGBj5pI3tdO5Nb1RWNRF0t0p+KnR/sds1/q9aP7nH+hYUVvo7ZB6vQ0lPSQ5V27gjRjc9+EFCQcZ6RoGtS111VQSV9uiqEhq4mPlV0bJHNbvGsjXLnN4rniqdicVVOzCKqcio8bqKXai6S0NDXUdZUTU9mhkfJOsjPVlXfK56OaqJv8NhTtXP3ai3fSVzb9std6n1qvq7oyn30MkDkSia2FNbmvRyaHK9dStVFzxzwQ9NyMr3kpXliVNRQ7MrVwR7Wy+qXCikkjuDcPbG2pVXsYiI3VwyqryVFameGESVi2x90s0VRdHTS3+gnpWSxyK9YXOp3ye8jcaUXeZyvYuT1PK941LjGVwB5JQvqW7QT259XXvfPtM5cKkySJAiSorlXGhG+8mFReKI3uREmWCsfT1FgsLai4SVFDfqxsjZI5EX1ZG1CMVztKNVvFmOzih6fqXGMrgalxjK4FAACoAAAAAAAAAAAAAAAAAAAAAAAA5C/WC+V+39iultrFoqCjp5G1juaTorkVItPbnGc9nPmdeAANdn+rM+BsNdn+rM+BnJqFkADKgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGir+jU3mir+jUCBQ/VI/gv5qSCPQ/VI/gv5qU23V1rLZY2stsiQ11fVQ0EEyplIXSvRuvH3JlU+/B0ZXj6qnjmSB9RC2V3KNz0Ry/hzNpwkmwWydLdKGz1FuoKuSrhmllmrEfJWzuZp99JezGrjxTmmCx2LmqqG4XnZmpqpaxlqkidSzzO1SLBK3U1j17VaqKme1MBHVAHL7a3Cb/RLHAtbSyXTW1lfTLxp3Rt1rw7co1e1Ex38gOoBwFHt7Ja7LSVMlLPXwuoGXWpnqKyNs6Rye87dxJxcjEXl7qIiYTKlvWbdMoai8QT2ypY62OpsKrkRJ45pN217eHLKKvbwTsXgi1dQaaerpqtHLT1EM6NXS5Yno7SvcuORydx2vpay8P2WuNK2niuEsluR0dfGtSiuY7Dlib7zGuRFw7KqmUVUTJVbP7R0eyFspkqbeq08ldWUL7hHExmhkEkiRNk0tTUulq45cl5qSx6ODhaL0gSTU11ucLI6miSshjplqp2UjKeN9NHIu8e7ii6nOTGHLlcYLOxbeUV9fQtjgdH6zDVyvekrXsiWnkYx6I5vByKr8o5OaIUdODjbL6SKe8VEcfs90bainkqabd1DJJHo1qP0vbw3b1auUTKpwVFVFRUMG+knd0VRPUWdyytpmVdPHR1Lals7HSpEqK5qe6rXKmrgqInFFXAHag5zYOoqa6yLWVdxdXyyzSZfvmyMbhyppbhjdOOSoqZRUOjCAAAAAAAAAAAAAAAAAAAAAADmr3tvSWDa20WCshfi7Ru3MzEV2mRHIiNVE7Fzz7O3gdKANdn+rM+BsNdn+rM+BnJqFkADKgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGir+jU3mir+jUCBQ/VI/gv5qQtp7CzaSzTW90z6eRVbLDOxMuhlY5HMenwVE4E2h+qR/BfzUkHRlwck+1SXKjq63Y9K27UUUkEVZTXBjKSRH6dTla73m50pwwuOwvtlLBVWllbW3Sojqbtcpknq5IkVI2YTSyNmeOlrUwmefFS+AQKbaLZz266knhuFRbqukWTdzwsY9dMjdL2q1yKi5THHsVELkAcTX+iyhqmrFTXSto4XWyO0uY2OKRVgYipwc9qq1yo7iqc+BU7XbIzQ359XTwX+vZdJIN8+lnboiSOVHNjexWr7nNUdwxjCKmVPTASlczBsHQ09dJVpWVT1ddfazWOVqtZL7+UThnC61z8G93HRL6N7bURyQT1tdLTPurbskDnpobIjnOVicPmuVy578J9+etBaHJS+ja2Oknkhq62ndNdvbHybk9ybd6Fa3h81Uyv3Kq/A2f5vqFtZT1UNbWQOgnq5tMao1HpUPR72KmPm5RPw8TqQByFs9GVntNLRwwTVTpKeKWJ9Q9WrJUa4kiy9cfutRMImEQ3bM7CR7NTxysu1XU7miWgha6KKPdsVyOV3uNTLlVM5XJ1IFCq2a2fh2ZtfqENTUVWZpJ3zTrl8j3uVzlVfipagBAAAAAAAAAAAAAAAAAAAAABEktVFLdIbpJTsfWwROhimcmVjY5cqid2cJxJYAA12f6sz4Gw12f6sz4GcmoWQAMqAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAaKv6NTeaKv6NQK6h1+qR4RmMLzVe9Tf8p3M8VNVD9Uj+C/mpINssPlO5nio+U7meKmYKjD5TuZ4qPlO5nipmAMPlO5nio+U7meKmYAw+U7meKj5TuZ4qZgDD5TuZ4qPlO5nipmAMPlO5nio+U7meKmYAw+U7meKj5TuZ4qZgDD5TuZ4qPlO5nipmAMPlO5nio+U7meKmYAw+U7meKj5TuZ4qZgDD5TuZ4qPlO5nipmAMPlO5nio+U7meKmYAw+U7meKj5TuZ4qZgDD5TuZ4qPlO5nipmAMPlO5nio+U7meKmYAw+U7meKj5TuZ4qZgDD5TuZ4qfLP8AVmfA2Guz/VmfAzk1CyABlQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADRV/RqbzRV/RqBAofqkfwX81MLrUz0VrrKqmjjlmghfIxkjla1ytRVwqoi4TgZ0P1SP4L+amF3a59prmNarnOppURE5quhToy87pduNtrm+jqqduyFNT1LaZyUk9TMs3yyZjarkbhFdhccF5dp2exV+q9ptnae61lLDSyTueiRQyK9ERrlbnKonHgp5LZbjY0itdTNtHaadY/Y8kkMsjkkZ6s1ySNVNPP3kx/wBD0z0XIv7B2pVRURySvTKYyiyvVF/FFRSQOqNEldSw1UNHJUwsqZ0VYoXPRHyInPCc1wbzl9srRX1NbYrpZ7dBWV9BWK9d7MkSJEsUjeLuK6dTmrhEVe5ColWba6jrmU0NfLR2+4VT3tho3VTHvkRrlbluOfFrkx3opOpdoLRXVs9DS3Sinq6dFWWGOZrnx44LlEXhjt7jkbZs3enbD22graKKO5Q3aKska17cI1KzfPci5XGEV2Eyq4+9cEG3WDaV1wpI620uSKlrK+Rsjlp0gZBJFIxkbWtcrlRyqxVRWoneRXd0O0dlucVRLRXegqY6VMzvina5sSceLlReCcF48uBttl4t16gdPbK+mrYmu0ufBIj0avcuOSnmMWym1Nzs8sFwtczKxlhlpEklkga2So3kckTGpG9fcYrVwrsJ44O+oLZVU+11zuL4mtpqqhpIkcip78rHS6soncjmcf0KLwABAAAAAAAAAAAAAAAAAAAAAAAAFJR7X2utr0oWetxvfNJTxyS072RTSMVUc1j1TCqml3DPHCkue+0ML6ZjZmzrUVSUablzX6JFa52HYXhwapz8Ox90kcykq66jZboa+evj9XY7fue9z3NRVXgiN3nZnOEIdn9HNTb20ySVcDXU8sPykTpFV8cccjc+9wa7MmeHLC8VIrrKq/2mijSWe40rWLO2m1bxFRJXLhGrjkvx5EuOqp5ppIY6iGSWLG8ja9FczPLKc0/E4Wg9G1TRUG6WWglqYZKRYXSJI9kjYHq730X5urKpwRcZXipZ7M7FzWK8zVs08UzMTJE9HP3jt5JrXUi+6mMInDOefDkEdYa7P9WZ8DYa7P8AVmfAmTULIAGVAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAANFX9GpvNNU1XRqBX0P1SP4L+akgrYrnTUbNxUvdE9iqnFqqjkzzRUQy9vW3+KTyO/Q3Esp27Z0N8EMiv9vW3+KTyO/Qe3rb/FJ5HfoWxYAr/b1t/ik8jv0Ht62/xSeR36CxYAr/b1t/ik8jv0Ht62/wAUnkd+gsWAK/29bf4pPI79B7etv8Unkd+gsWAK/wBvW3+KTyO/Qe3rb/FJ5HfoLFgCv9vW3+KTyO/Qe3rb/FJ5HfoLFgCv9vW3+KTyO/Qe3rb/ABSeR36CxYAr/b1t/ik8jv0Ht62/xSeR36CxYAr/AG9bf4pPI79B7etv8Unkd+gsWAK/29bf4pPI79B7etv8Unkd+gsWAK/29bf4pPI79B7etv8AFJ5HfoLFgCv9vW3+KTyO/Qe3rb/FJ5HfoLFgCv8Ab1t/ik8jv0Ht62/xSeR36CxYAr/b1t/ik8jv0Ht62/xSeR36CxYAr/b1t/ik8jv0Ht62/wAUnkd+gsWAK/29bf4pPI79B7etv8Unkd+gsWBrs/1ZnwIa3yhVF3cqyv7GtY7Kr4E+1Rujp2I5MLgzksJ4AMqAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAfHN1Jg+gCLLQxyLlWopr9lxdKeBOAEH2XF0p4D2XF0p4E4AQfZcXSngPZcXSngTgBB9lxdKeA9lxdKeBOAEH2XF0p4D2XF0p4E4AQfZcXSngPZcXSngTgBB9lxdKeA9lxdKeBOAEH2XF0p4D2XF0p4E4AQfZcXSngPZcXSngTgBB9lxdKeA9lxdKeBOAEH2XF0p4D2XF0p4E4AQfZcXSngPZcXSngTgBB9lxdKeA9lxdKeBOAEH2XF0p4D2XF0p4E4AQfZcXSngPZcXSngTgBB9lxdKeA9lxdKeBOAEH2XF0p4D2XF0p4E4AQ2W6Ni5RqeBKYxGJhDIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH/9k=" alt="Google Drive: คลิกชื่อโฟลเดอร์ SCGP-Researcher-Labs ด้านบน แล้วเลือกเมนู ดาวน์โหลด" loading="lazy"><figcaption>คลิกชื่อโฟลเดอร์ <code>SCGP-Researcher-Labs</code> → <strong>ดาวน์โหลด</strong></figcaption></figure>
+<div class="tree" style="margin-top:14px">SCGP-Researcher-Labs/
+├── <span class="f">คู่มือ.html</span>
+├── 00_Check/   src/  <span class="f">DOE_RawData.xlsx · Spec_Limits.csv</span>            <span class="c"># ทดสอบเครื่อง</span>
+├── LabA/       src/  <span class="f">Paper ×3 · Datasheet ×2 · TestMethod · Market · Patents</span>
+├── LabB/       src/  <span class="f">DOE_Constraints.xlsx</span>
+│               prev/ <span class="f">LabA_Research_Gap.md</span>                           <span class="c"># ไฟล์สำรอง</span>
+├── LabC/       src/  <span class="f">DOE_RawData.xlsx · Cost_Inputs.xlsx · TestMethod</span>
+├── LabD/       src/  <span class="f">Patents · Market · Cost_Inputs.xlsx · DOE_RawData.xlsx</span>
+│               prev/ <span class="f">LabA_Evidence_Matrix · LabA_Research_Gap</span>        <span class="c"># ไฟล์สำรอง</span>
+│                     <span class="f">LabC_Analysis_Summary · LabC_Cost_Model</span>
+└── LabE/       src/  <span class="f">Skills_Rules.md · Spec_Limits.csv · weekly_qc/ (W41–W43)</span></div>
+      <div class="note" style="margin-top:14px"><strong>กติกาเดียวที่ต้องจำ:</strong> ทำ Lab ไหน เปิดโฟลเดอร์ Lab นั้นเป็น Project<span class="gl"> (โฟลเดอร์งานที่เปิดใน Cowork)</span> · โฟลเดอร์ <code>prev/</code> มีไฟล์สำรองจาก Lab ก่อนหน้าให้แล้ว ถ้ากลุ่มทำ Lab ก่อนหน้าเสร็จ ให้วางไฟล์ของตัวเองทับ ถ้าไม่เสร็จก็ใช้ไฟล์สำรองต่อได้เลย</div>
+      <ul class="check">
+        <li><input type="checkbox" id="r6"><label for="r6">แตกไฟล์แล้วเห็นโฟลเดอร์ <code>00_Check</code> และ <code>LabA</code>–<code>LabE</code> ครบ 6 โฟลเดอร์</label></li>
+        <li><input type="checkbox" id="r7"><label for="r7">เปิดโฟลเดอร์ <code>00_Check</code> เป็น Cowork Project ได้</label></li>
+      </ul>
+    </div>
+
+    <div class="step">
+      <h4>ทดสอบ Cowork ด้วย Prompt 4 ข้อ</h4>
+      <div class="tools"><span class="tool"><i style="background:#3776ab;color:#fff">Py</i>Python</span><span class="tool"><i style="background:#21a366;color:#fff">X</i>Excel</span><span class="tool"><i style="background:#2b7cd3;color:#fff">W</i>Word</span><span class="tool"><i style="background:#8b7cf6;color:#fff">SA</i>Sub Agent</span></div>
+      <p class="muted">ทำใน Project <code>00_Check</code> ส่งทีละข้อ ใช้เวลารวมราว 5 นาที</p>
+
+      <div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">T1</b>เชื่อมต่อและอ่านไฟล์</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>แสดงรายชื่อไฟล์ในโฟลเดอร์ src/ พร้อมขนาดไฟล์ ยังไม่ต้องสรุปเนื้อหา
+แล้วสร้างโฟลเดอร์ output/ ไว้เก็บไฟล์ทดสอบ
+ถ้ามีไฟล์ที่เปิดไม่ได้ ให้แจ้งชื่อไฟล์และสาเหตุ</pre></div>
+
+      <div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">T2</b>รัน Python และ Library ที่ Lab C ใช้</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>รัน Python เพื่อตรวจความพร้อม:
+1) พิมพ์ Version ของ python, numpy, scipy, openpyxl และ matplotlib
+2) อ่าน src/DOE_RawData.xlsx แล้วบอกชื่อ Sheet และจำนวนแถวของแต่ละ Sheet
+3) สร้างกราฟเส้นง่าย ๆ 5 จุด บันทึกเป็น output/_check_plot.png
+ถ้า Library ใดไม่มี ให้แจ้งก่อน ห้ามติดตั้งเองจนกว่าฉันจะยืนยัน</pre></div>
+
+      <div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">T3</b>สร้างไฟล์ Office</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>สร้างไฟล์ทดสอบ 2 ไฟล์:
+1) output/_check.xlsx ใส่ตัวเลข 1, 2, 3 ใน A1:A3 และสูตร =SUM(A1:A3) ใน A4 (ต้องเป็นสูตรจริง ไม่ใช่ตัวเลข 6)
+2) output/_check.docx มีหัวข้อ 1 บรรทัดและย่อหน้าภาษาไทย 1 ย่อหน้า
+แล้วยืนยันว่าทั้ง 2 ไฟล์ถูกสร้างสำเร็จ</pre></div>
+
+      <div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">T4</b>Sub Agent</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>ใช้ Sub Agent 1 ตัว อ่าน src/Spec_Limits.csv แล้วรายงานกลับว่ามีคอลัมน์อะไรบ้าง และค่า USL ของ Cobb60 กับ WVTR เท่าไร
+บอกด้วยว่างานนี้ทำโดย Sub Agent จริง</pre></div>
+
+      <ul class="check">
+        <li><input type="checkbox" id="r9"><label for="r9">T1 เห็นไฟล์ครบ 2 ไฟล์ และมีโฟลเดอร์ <code>output/</code> แล้ว</label></li>
+        <li><input type="checkbox" id="r10"><label for="r10">T2 พิมพ์ Version ครบ 5 ตัว และมีไฟล์ <code>output/_check_plot.png</code></label></li>
+        <li><input type="checkbox" id="r11"><label for="r11">T3 เปิด <code>_check.xlsx</code> ใน Excel แล้วคลิก A4 เห็นสูตร <code>=SUM(A1:A3)</code> และเปิด <code>_check.docx</code> ใน Word ได้ ภาษาไทยไม่เพี้ยน</label></li>
+        <li><input type="checkbox" id="r12"><label for="r12">T4 ได้คำตอบจาก Sub Agent<span class="gl"> (ผู้ช่วย AI อีกตัวที่แยกไปทำงานย่อย)</span></label></li>
+      </ul>
+      <div class="note warn" style="margin-top:14px">ถ้าข้อใดไม่ผ่าน ให้แจ้งผู้ช่วยวิทยากร<strong>ก่อนวันอบรม</strong> พร้อมแคปหน้าจอข้อความ Error</div>
+    </div>
+
+    <div class="step">
+      <h4>Module 1 · ตั้ง Project ของกลุ่ม (ทำในคลาส)</h4>
+      <p>หลังกรอก Workflow Design Canvas ครบ 8 ช่อง (คำถามวิจัย, Input, ขั้นตอนย่อย, มิติของโจทย์, องค์ประกอบ Cowork, Token Budget<span class="gl"> (งบการใช้งาน AI)</span>, Verification Checkpoint, Output) ทุกคนใส่ <strong>Instruction<span class="gl"> (กฎประจำ Project ที่ Claude ทำตามทุกครั้ง)</span> กลาง</strong> ที่วิทยากรแจกลงใน Project <strong>ของทุก Lab</strong> ตอนเปิดครั้งแรก ซึ่งกำหนดกติกาการอ้างอิง ภาษา หน่วยวัด และรูปแบบไฟล์ผลลัพธ์ เพื่อใช้ร่วมกันทั้งวัน</p>
+      <ul class="check">
+        <li><input type="checkbox" id="r14"><label for="r14">เก็บข้อความ Instruction กลางไว้ พร้อมวางใน Project ของแต่ละ Lab</label></li>
+      </ul>
+      <p class="muted" style="font-size:14px;margin:12px 0 0">ถ้าวิทยากรไม่ได้แจกฉบับอื่น ใช้ข้อความนี้วางในช่อง Instruction ของทุก Project ได้เลย</p>
+      <div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">IN</b>Instruction กลาง (คัดลอกไปวาง)</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>กฎประจำ Project — Claude for Researcher (SCGP IPDC)
+
+1) ตอบเป็นภาษาไทย ใช้ศัพท์เทคนิคภาษาอังกฤษได้
+2) ทุกตัวเลขหรือข้อเท็จจริงที่มาจากไฟล์ ต้องมี Citation รูปแบบ [ชื่อไฟล์หรือรหัส, หน้า/Sheet/แถว, หัวข้อ/ตาราง/รูป]
+   ถ้าหาแหล่งไม่ได้ให้เขียนว่า "ไม่พบในไฟล์" ห้ามเดา
+3) ข้อมูลจากไฟล์ที่ชื่อมีคำว่า MOCK หรือเป็นข้อมูลจำลอง ให้ติดป้าย [MOCK] ทุกครั้ง
+4) หน่วย: Cobb60 = g/m², WVTR = g/(m²·day) และต้องระบุอุณหภูมิ/%RH เสมอ, Coat weight = g/m² แห้ง
+   ถ้าแปลงหน่วยให้แสดงสูตร
+5) ห้ามแก้ไฟล์ใน src/ และ prev/
+   ผลลัพธ์ทุกไฟล์บันทึกใน output/ ตามชื่อที่ Prompt กำหนด
+6) แยก "สิ่งที่แหล่งข้อมูลบอก" ออกจาก "ข้อสรุปหรือสมมติฐานของเรา" ให้ชัด
+7) เรื่องสิทธิบัตรทำได้แค่คัดกรองเบื้องต้น ห้ามสรุปว่าละเมิด ไม่ละเมิด หรือ FTO ผ่าน
+8) การตัดสินใจขั้นสุดท้ายเป็นของนักวิจัย ให้เสนอทางเลือกพร้อมเหตุผล
+9) ถ้าไฟล์เปิดไม่ได้หรือข้อมูลไม่พอ ให้หยุดและบอกก่อนทำต่อ</pre></div>
+    </div>
+  </div>
+    <details class="faq">
+      <summary>วิธีแก้ปัญหาที่พบบ่อย · Setup</summary>
+      <div class="fq"><h5>T2 แจ้งว่าไม่มี Library บางตัว</h5><p class="why"><b>ทำไม:</b> เครื่องบางเครื่องยังไม่ได้ติดตั้ง Library ที่ Lab C ใช้</p><p class="why"><b>ถ้ายังไม่ได้:</b> แคปหน้าจอ Error ส่งผู้ช่วยวิทยากร เครือข่ายองค์กรอาจบล็อกการติดตั้ง</p><div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">S·1</b>ติดตั้ง Library</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>ติดตั้ง Library ที่ยังไม่มีจากรายการนี้: numpy, scipy, openpyxl, matplotlib (ใช้ pip)
+จากนั้นรันตรวจใหม่: พิมพ์ Version ของ python, numpy, scipy, openpyxl, matplotlib และสร้างกราฟเส้น 5 จุด บันทึกเป็น output/_check_plot.png
+ถ้าติดตั้งไม่ได้เพราะเครือข่ายหรือสิทธิ์ ให้แสดงข้อความ Error ทั้งหมด</pre></div></div>
+      <div class="fq"><h5>T3 คลิก A4 แล้วเห็นเลข 6 ไม่ใช่สูตร</h5><p class="why"><b>ทำไม:</b> AI คำนวณค่าเองแล้วเขียนเป็นตัวเลข แทนที่จะเขียนสูตรลงเซลล์</p><div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">S·2</b>บังคับเขียนสูตร</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>สร้าง output/_check.xlsx ใหม่ด้วย openpyxl: ใส่ 1, 2, 3 ใน A1:A3 และเขียนข้อความสูตร "=SUM(A1:A3)" ลงเซลล์ A4 โดยตรง
+ห้ามคำนวณค่าเอง แล้วเปิดไฟล์อ่านกลับมายืนยันว่า A4 เก็บเป็นสูตร</pre></div></div>
+      <div class="fq"><h5>T3 ภาษาไทยใน Word เป็นกล่องหรืออ่านไม่ออก</h5><p class="why"><b>ทำไม:</b> ฟอนต์ที่ใช้สร้างไฟล์ไม่รองรับภาษาไทย</p><div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">S·3</b>ตั้งฟอนต์ภาษาไทย</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>สร้าง output/_check.docx ใหม่ ตั้งฟอนต์ทั้งเอกสาร (รวมฟอนต์สำหรับภาษาไทย/Complex Script) เป็น Tahoma ขนาด 14
+มีหัวข้อ 1 บรรทัดและย่อหน้าภาษาไทย 1 ย่อหน้า</pre></div></div>
+      <div class="fq"><h5>T4 ตอบเองโดยไม่ใช้ Sub Agent</h5><p class="why"><b>ทำไม:</b> Prompt ไม่ชัดพอ AI เลยทำงานเองในแชทหลัก</p><div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">S·4</b>สั่งให้ใช้ Sub Agent ชัด ๆ</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>สร้าง Sub Agent 1 ตัว ส่งงานนี้ให้ Sub Agent ทำแยก ห้ามทำเองในแชทหลัก:
+"อ่าน src/Spec_Limits.csv แล้วรายงานชื่อคอลัมน์ทั้งหมด และค่า USL ของ Cobb60 และ WVTR"
+เมื่อ Sub Agent ส่งผลกลับมา ให้แสดงผลนั้น และบอกว่าได้มาจาก Sub Agent</pre></div></div>
+      <div class="fq"><h5>ยังไม่มีข้อความ Instruction กลาง</h5><p class="why"><b>ทำไม:</b> วิทยากรอาจยังไม่ได้แจก</p><div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">IN</b>Instruction กลาง</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>กฎประจำ Project — Claude for Researcher (SCGP IPDC)
+1) ตอบเป็นภาษาไทย ใช้ศัพท์เทคนิคภาษาอังกฤษได้
+2) ทุกตัวเลขหรือข้อเท็จจริงที่มาจากไฟล์ ต้องมี Citation รูปแบบ
+   [ชื่อไฟล์หรือรหัส, หน้า/Sheet/แถว, หัวข้อ/ตาราง/รูป]
+   ถ้าหาแหล่งไม่ได้ให้เขียนว่า "ไม่พบในไฟล์" ห้ามเดา
+3) ข้อมูลจากไฟล์ที่ชื่อมีคำว่า MOCK หรือเป็นข้อมูลจำลอง ให้ติดป้าย [MOCK] ทุกครั้ง
+4) หน่วย: Cobb60 = g/m², WVTR = g/(m²·day) และต้องระบุอุณหภูมิ/%RH เสมอ, Coat weight = g/m² แห้ง ถ้าแปลงหน่วยให้แสดงสูตร
+5) ห้ามแก้ไฟล์ใน src/ และ prev/ ผลลัพธ์ทุกไฟล์บันทึกใน output/ ตามชื่อที่ Prompt กำหนด
+6) แยก "สิ่งที่แหล่งข้อมูลบอก" ออกจาก "ข้อสรุปหรือสมมติฐานของเรา" ให้ชัด
+7) เรื่องสิทธิบัตรทำได้แค่คัดกรองเบื้องต้น ห้ามสรุปว่าละเมิด ไม่ละเมิด หรือ FTO ผ่าน
+8) การตัดสินใจขั้นสุดท้ายเป็นของนักวิจัย ให้เสนอทางเลือกพร้อมเหตุผล
+9) ถ้าไฟล์เปิดไม่ได้หรือข้อมูลไม่พอ ให้หยุดและบอกก่อนทำต่อ</pre></div></div>
+    </details>
+  
+</section>
+
+<!-- LAB A -->
+<section class="wrap lab A" id="labA">
+  <div class="lab-hero">
+    <div class="letter">A</div>
+    <div class="kicker" style="color:rgba(255,255,255,.75)">LAB A · 10:00–10:45 · 45 นาที</div>
+    <h2>Literature &amp; Standards Knowledge Base</h2>
+    <p>จัดคลังเอกสารให้ค้นและอ้างอิงได้แม่น สังเคราะห์เป็น Evidence Matrix<span class="gl"> (ตารางรวมหลักฐานจากเอกสาร)</span> และ Prior Art Table<span class="gl"> (ตารางเอกสารหรือสิทธิบัตรที่เปิดเผยแนวคิดนี้มาก่อน)</span> ที่ทุกข้อมี Citation<span class="gl"> (การอ้างอิงแหล่งที่มา)</span> (ชื่อไฟล์ / หน้า / หัวข้อ) แล้วสรุป Research Gap<span class="gl"> (เรื่องที่ยังไม่มีหลักฐานตอบ)</span> ส่งต่อ Lab B</p>
+    <div class="chips"><span class="chip">6 Prompt</span><span class="chip">Sub Agent: Citation Checker</span><span class="chip">คนตรวจ: Integrity Reviewer</span></div>
+  </div>
+
+  <div class="lab-body">
+    <div class="tbl"><table>
+      <thead><tr><th>ไฟล์ใน src/ (Research Doc Pack)</th><th>ประเภท</th><th>หมายเหตุ</th></tr></thead>
+      <tbody>
+        <tr><td><code>Paper_Shen2021_PVA.pdf</code></td><td>Paper จริง (Open Access)</td><td>PVA/AKD/Nanoclay coating, CC BY</td></tr>
+        <tr><td><code>Paper_Samyn2021_Sunflower.pdf</code></td><td>Paper จริง (Open Access)</td><td>Coating ปล่อยน้ำมันดอกทานตะวัน, CC BY</td></tr>
+        <tr><td><code>Paper_Arshad2024_Camelina.pdf</code></td><td>Paper จริง (Open Access)</td><td><strong>CC BY-NC-ND ใช้ภายในการอบรมเท่านั้น</strong> ห้ามดัดแปลงหรือแจกต่อ</td></tr>
+        <tr><td><code>Datasheet_EcoShield_Paper.pdf</code></td><td>Datasheet คู่แข่งจริง</td><td>เอกสารเผยแพร่ของผู้ผลิต</td></tr>
+        <tr><td><code>Datasheet_EcoShield_Linerboard.pdf</code></td><td>Datasheet คู่แข่งจริง</td><td>เอกสารเผยแพร่ของผู้ผลิต</td></tr>
+        <tr><td><code>TestMethod_RD-TM-300.pdf</code></td><td>Test Method ภายใน (จำลอง)</td><td>Cobb60, WVTR, KIT, Coat weight ตามแนว ISO/TAPPI</td></tr>
+        <tr><td><code>Market_SEA2026_MOCK.pdf</code></td><td>รายงานตลาด (จำลอง)</td><td>ตัวเลขสมมติเพื่อฝึก</td></tr>
+        <tr><td><code>Patents_MOCK.pdf</code></td><td>Mock Patent Abstracts 8 รายการ</td><td>เลขขึ้นต้นด้วย MOCK- ไม่ใช่เลขจริง</td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="lstep">
+      <div class="lstep-head"><h4><span class="num">0</span>เปิด Project LabA</h4></div>
+      <p style="margin:10px 0 0">เปิดโฟลเดอร์ <code>LabA</code> เป็น Cowork Project ใส่ Instruction กลาง แล้วส่ง Prompt นี้เพื่อตรวจไฟล์และสร้างโฟลเดอร์ผลลัพธ์ <strong>ทำทุก Prompt ของ Lab นี้ต่อกันในแชทเดียว</strong> เพราะบาง Prompt อ้างถึงผลในแชทก่อนหน้า</p>
+      <div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">A0</b>ตรวจไฟล์ + สร้างโฟลเดอร์</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>แสดงรายชื่อไฟล์ใน src/ (ต้องมี 8 ไฟล์ PDF) ยืนยันว่าครบตามนี้ ยังไม่ต้องอ่านเนื้อหาไฟล์
+จากนั้นสร้างโฟลเดอร์ output/ ไว้เก็บผลลัพธ์ของ Lab นี้
+ถ้าไฟล์ไม่ครบหรือเปิดไม่ได้ ให้แจ้งชื่อไฟล์</pre></div>
+    </div>
+
+    <div class="lstep">
+      <div class="lstep-head"><h4><span class="num">1</span>ทำ Index File</h4></div>
+      <div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">A1</b>Source Index</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>อ่านทุกไฟล์ใน src/ (8 ไฟล์) แล้วสร้าง output/LabA_Source_Index.md เป็นตาราง:
+รหัสอ้างอิงสั้น (เช่น [S1]) | ชื่อไฟล์ |
+ประเภท (Paper / Datasheet / Test Method / Market / Patent) | ปี | จำนวนหน้า | หัวข้อหลัก |
+ข้อมูลที่ใช้ตอบโจทย์ได้ (Technical / Market / Finance / IP) | สิทธิ์การใช้งาน | ข้อมูลจริงหรือจำลอง
+
+ท้ายตารางเขียนกติกา Citation ที่ใช้ทั้งโครงการ: [รหัส, หน้า, หัวข้อ/ตาราง/รูป]</pre></div>
+    </div>
+
+    <div class="lstep">
+      <div class="lstep-head"><h4><span class="num">2</span>Evidence Matrix</h4></div>
+      <div class="tools"><span class="tool"><i style="background:#21a366;color:#fff">X</i>Excel</span></div>
+      <div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">A2</b>Evidence Matrix</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>คำถามวิจัย: กระดาษเคลือบ Barrier แบบน้ำ (water-based) ทดแทนการเคลือบ PE ในบรรจุภัณฑ์อาหารได้หรือไม่
+ในด้าน
+- Cobb60
+- WVTR
+- Grease resistance (KIT)
+- ความแข็งแรง
+- และการรีไซเคิล
+
+ใช้ output/LabA_Source_Index.md และไฟล์ใน src/ สร้าง output/LabA_Evidence_Matrix.xlsx คอลัมน์:
+ID | Claim | วัสดุ/สูตรเคลือบ | Coat weight | วิธีทดสอบและสภาวะ (อุณหภูมิ/%RH) | ผลที่วัดได้ (ค่า + หน่วย) |
+แหล่ง [รหัส, หน้า, ตาราง/รูป] | ข้อจำกัด | ความมั่นใจ (สูง/กลาง/ต่ำ)
+
+กติกา:
+- 1 แถว = 1 ผลการวัด ห้ามรวมหลายค่าในแถวเดียว
+- คัดลอกค่าตามต้นฉบับ ห้ามปัด ห้ามแปลงหน่วยในคอลัมน์ผล (ถ้าจะแปลง ให้เพิ่มคอลัมน์ใหม่และเขียนสูตร)
+- ถ้าสภาวะทดสอบ WVTR ต่างกัน (เช่น 23 °C/50 %RH กับ 38 °C/90 %RH) ให้เขียนในคอลัมน์ข้อจำกัดว่าเทียบตรงไม่ได้
+- แยก "สิ่งที่ผู้เขียนรายงาน" ออกจาก "ข้อสรุปของเรา" ห้ามใส่ข้อสรุปของเราใน Evidence Matrix
+- ข้อมูลจากไฟล์จำลอง (Market, Patent, Test Method) ให้ติดป้าย [MOCK]</pre></div>
+    </div>
+
+    <div class="lstep">
+      <div class="lstep-head"><h4><span class="num">3</span>Prior Art Table สำหรับสาย IP</h4></div>
+      <div class="tools"><span class="tool"><i style="background:#21a366;color:#fff">X</i>Excel</span></div>
+      <div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">A3</b>Prior Art</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>จาก src/Patents_MOCK.pdf และ Paper 3 ฉบับใน src/
+สร้าง Sheet ชื่อ Prior_Art ในไฟล์ output/LabA_Evidence_Matrix.xlsx
+
+คอลัมน์:
+เลขเอกสาร | ประเภท (Patent / Paper) | Jurisdiction | สถานะทางกฎหมาย ณ วันที่ในเอกสาร | องค์ประกอบสำคัญใน Claim 1 (แยกเป็นข้อ)
+| ช่วงตัวเลขใน Claim | ความเกี่ยวข้องกับโจทย์ (สูง/กลาง/ต่ำ) และเหตุผล | แหล่ง [รหัส, หน้า]
+
+ห้ามสรุปว่า "ละเมิด" หรือ "ไม่ละเมิด" ให้ระบุเพียงความเกี่ยวข้องเบื้องต้น</pre></div>
+    </div>
+
+    <div class="lstep">
+      <div class="lstep-head"><h4><span class="num">4</span>ตรวจ Citation (Verification Checkpoint)</h4></div>
+      <div class="tools"><span class="tool"><i style="background:#8b7cf6;color:#fff">SA</i>Sub Agent</span><span class="tool"><i style="background:#21a366;color:#fff">X</i>Excel</span></div>
+      <div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">A4</b>Citation Checker (Sub Agent)</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>ใช้ Sub Agent ในบท Citation Checker ตรวจทุกแถวใน output/LabA_Evidence_Matrix.xlsx (ทั้ง 2 Sheet) เทียบกับไฟล์ต้นฉบับใน src/
+เพิ่มคอลัมน์: ผลตรวจ (ตรง / ไม่ตรง / หาไม่พบ) | สิ่งที่ต้นฉบับเขียนจริง | หมายเหตุ
+แถวที่ไม่ตรงหรือหาไม่พบ ให้แก้หรือลบ แล้วสรุปจำนวนแถวที่แก้</pre></div>
+      <div class="cp"><strong><span class="chip human">คนทำเอง</span> Integrity Reviewer<span class="gl"> (คนในกลุ่มที่รับหน้าที่ตรวจความถูกต้อง)</span></strong><p>สุ่มอย่างน้อย 3 แถว เปิด PDF ต้นฉบับตามหน้าที่อ้างด้วยตัวเอง บันทึกผลในแชทกลุ่ม</p></div>
+    </div>
+
+    <div class="lstep">
+      <div class="lstep-head"><h4><span class="num">5</span>สรุป Research Gap ส่งต่อ Lab B</h4></div>
+      <div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">A5</b>Research Gap</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>จาก Evidence Matrix ที่ตรวจแล้ว เขียน output/LabA_Research_Gap.md ไม่เกิน 1 หน้า:
+- สิ่งที่หลักฐานยืนยันแล้ว (อ้างแถว ID)
+- สิ่งที่ยังไม่มีหลักฐาน หรือหลักฐานขัดกัน
+- ปัจจัยการเคลือบที่ควรทดลองใน DOE และเหตุผล
+- ความเสี่ยงด้าน IP ที่ต้องระวังเวลาออกแบบสูตร</pre></div>
+      <div class="cp"><strong><span class="chip human">คนทำเอง</span> ส่งต่อไฟล์</strong><p>คัดลอก <code>LabA/output/LabA_Research_Gap.md</code> ไปวางทับใน <code>LabB/prev/</code> และ <code>LabD/prev/</code> · คัดลอก <code>LabA_Evidence_Matrix.xlsx</code> ไปวางทับใน <code>LabD/prev/</code></p></div>
+    </div>
+
+    <div class="grid2">
+      <div class="panel"><h4>Checkpoint ก่อนจบ Lab</h4>
+        <ul class="check">
+          <li><input type="checkbox" id="a1"><label for="a1">ทุกแถวใน Evidence Matrix มี Citation ครบ ชื่อไฟล์ / หน้า / หัวข้อ</label></li>
+          <li><input type="checkbox" id="a2"><label for="a2">Citation Checker ตรวจครบทุกแถว และ Integrity Reviewer สุ่มซ้ำแล้ว 3 แถว</label></li>
+          <li><input type="checkbox" id="a3"><label for="a3">ข้อมูล [MOCK] แยกจากข้อมูลจริงชัดเจน</label></li>
+          <li><input type="checkbox" id="a4"><label for="a4">ไม่มีข้อสรุปเรื่องการละเมิดสิทธิบัตร</label></li>
+        </ul>
+      </div>
+      <details class="faq">
+      <summary>วิธีแก้ปัญหาที่พบบ่อย · Lab A</summary>
+      <div class="fq"><h5>Source Index มีไม่ครบ 8 ไฟล์ หรือเลขหน้าไม่ตรง PDF</h5><p class="why"><b>ทำไม:</b> PDF ยาวหลายไฟล์ AI อาจข้ามบางไฟล์ หรือใช้เลขหน้าของวารสารแทนเลขหน้าของไฟล์</p><div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">A·1</b>ทำ Index ใหม่ทีละไฟล์</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>ตรวจ output/LabA_Source_Index.md เทียบกับรายชื่อไฟล์ใน src/ ทั้ง 8 ไฟล์ อ่านทีละไฟล์แล้วเติมแถวที่ขาด
+เลขหน้าใน Citation ให้ใช้ "หน้าของไฟล์ PDF" (หน้าแรกของไฟล์ = 1) ไม่ใช่เลขหน้าของวารสาร และเขียนกติกานี้ไว้ท้ายตาราง
+บันทึกทับไฟล์เดิม แล้วยืนยันว่าครบ 8 แถว</pre></div></div>
+      <div class="fq"><h5>ได้ตารางในแชท แต่ไม่มีไฟล์ Excel</h5><p class="why"><b>ทำไม:</b> AI ตอบเป็นข้อความแทนการสร้างไฟล์</p><div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">A·2</b>บันทึกเป็นไฟล์</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>บันทึกตาราง Evidence Matrix ที่สร้างไว้ในแชทนี้เป็นไฟล์ output/LabA_Evidence_Matrix.xlsx (Sheet ชื่อ Evidence) ด้วย openpyxl
+คอลัมน์ตามที่กำหนด ห้ามเปลี่ยนค่า แล้วยืนยันจำนวนแถวที่บันทึก</pre></div></div>
+      <div class="fq"><h5>ค่าที่อยู่ในกราฟถูกใส่เป็นตัวเลข</h5><p class="why"><b>ทำไม:</b> AI อ่านค่าจากรูปแล้วประมาณเอง ทำให้ Citation ตรวจย้อนไม่ได้</p><div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">A·3</b>แก้ค่าที่ประมาณจากกราฟ</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>ตรวจ output/LabA_Evidence_Matrix.xlsx ทุกแถว ถ้าค่าในคอลัมน์ผลที่วัดได้ไม่มีเป็นตัวเลขในข้อความหรือตารางของต้นฉบับ (มีแต่ในกราฟ)
+ให้เปลี่ยนเป็น "ค่าในรูป" และเขียนในคอลัมน์ข้อจำกัดว่า "ตัวเลขอยู่ในกราฟเท่านั้น" แล้วสรุปจำนวนแถวที่แก้</pre></div></div>
+      <div class="fq"><h5>Token ใกล้หมด หรือ AI ตอบช้ามาก</h5><p class="why"><b>ทำไม:</b> อ่าน PDF 8 ไฟล์พร้อมกันใช้ Token สูง</p><div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">A·4</b>ประหยัด Token</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>ทำงานต่อจากเดิมโดยอ่านเฉพาะไฟล์และหน้าที่จำเป็น: เปิดทีละไฟล์ ใช้ output/LabA_Source_Index.md เป็นแผนที่
+ห้ามอ่านทุกไฟล์ซ้ำทั้งหมด และสรุปสั้นเฉพาะสิ่งที่ต้องใส่ในตาราง</pre></div></div>
+      <div class="fq"><h5>เผลอเปิดแชทใหม่กลางทาง</h5><p class="why"><b>ทำไม:</b> แชทใหม่ไม่เห็นงานในแชทเดิม แต่ไฟล์ใน output/ ยังอยู่</p><div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">A·5</b>ทำต่อจากไฟล์ที่มี</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>ดูไฟล์ใน output/ ว่ามีอะไรแล้วบ้าง (LabA_Source_Index.md, LabA_Evidence_Matrix.xlsx และ Sheet Prior_Art, LabA_Research_Gap.md)
+บอกว่า Lab A ทำถึงขั้นไหนแล้ว และขั้นถัดไปที่ต้องทำคืออะไร ยังไม่ต้องทำ รอฉันส่ง Prompt ขั้นถัดไป</pre></div></div>
+      <div class="fq short"><h5>ตามไม่ทัน? ใช้ Prompt ทางลัดชุดเดียวจบ Lab</h5><p class="why">ใช้เมื่อเวลาเหลือน้อย ทำครบ 5 ขั้นในรอบเดียว แต่ยังต้องให้ Integrity Reviewer สุ่มตรวจ 3 แถวเหมือนเดิม</p><div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">A★</b>ทางลัด Lab A</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>ทำ Lab A ทั้งหมดตามลำดับ บันทึกไฟล์ทุกขั้นก่อนไปขั้นถัดไป และอ่าน PDF ทีละไฟล์เพื่อประหยัด Token:
+
+1) อ่านทุกไฟล์ใน src/ (8 ไฟล์) สร้าง output/LabA_Source_Index.md:
+  รหัส [S1]–[S8] | ชื่อไฟล์ | ประเภท | ปี | จำนวนหน้า | หัวข้อหลัก |
+  ใช้ตอบด้าน (Technical/Market/Finance/IP) | สิทธิ์การใช้งาน | จริงหรือจำลอง
+  และกติกา Citation [รหัส, หน้าของไฟล์ PDF, หัวข้อ/ตาราง/รูป]
+
+2) คำถามวิจัย: กระดาษเคลือบ Barrier แบบน้ำทดแทนการเคลือบ PE ได้หรือไม่ ด้าน Cobb60, WVTR, KIT, ความแข็งแรง และการรีไซเคิล
+  สร้าง output/LabA_Evidence_Matrix.xlsx Sheet Evidence:
+  ID | Claim | วัสดุ/สูตรเคลือบ | Coat weight | วิธีทดสอบและสภาวะ | ผลที่วัดได้ (ค่า + หน่วย) | แหล่ง | ข้อจำกัด | ความมั่นใจ
+  กติกา:
+  - 1 แถว = 1 ผลการวัด
+  - คัดลอกค่าตามต้นฉบับห้ามปัดหรือแปลงหน่วย
+  - ค่าที่มีแต่ในกราฟให้เขียน "ค่าในรูป"
+  - WVTR ต่างสภาวะให้ระบุว่าเทียบตรงไม่ได้
+  - ห้ามใส่ข้อสรุปของเรา
+  - ข้อมูลจากไฟล์จำลองติด [MOCK]
+
+3) เพิ่ม Sheet Prior_Art จาก Patents_MOCK.pdf และ Paper 3 ฉบับ:
+  เลขเอกสาร | ประเภท | Jurisdiction | สถานะ | องค์ประกอบใน Claim 1 | ช่วงตัวเลขใน Claim | ความเกี่ยวข้อง (สูง/กลาง/ต่ำ) และเหตุผล | แหล่ง
+  ห้ามสรุปว่าละเมิดหรือไม่ละเมิด
+
+4) ใช้ Sub Agent ในบท Citation Checker ตรวจทุกแถวทั้ง 2 Sheet เทียบต้นฉบับ
+  เพิ่มคอลัมน์ ผลตรวจ (ตรง/ไม่ตรง/หาไม่พบ) | สิ่งที่ต้นฉบับเขียนจริง | หมายเหตุ
+  แล้วแก้หรือลบแถวที่ไม่ตรง
+
+5) เขียน output/LabA_Research_Gap.md ไม่เกิน 1 หน้า:
+  - สิ่งที่หลักฐานยืนยันแล้ว (อ้าง ID)
+  - สิ่งที่ยังไม่มีหลักฐานหรือขัดกัน
+  - ปัจจัยที่ควรทดลองใน DOE และเหตุผล
+  - ความเสี่ยงด้าน IP
+
+จบแล้วสรุปจำนวนแถวในแต่ละ Sheet และจำนวนแถวที่ Citation Checker แก้</pre></div></div>
+    </details>
+    <div class="panel"><h4>ผลลัพธ์ที่ต้องได้</h4>
+        <div class="outputs" style="margin-top:12px"><code>output/LabA_Source_Index.md</code><code>output/LabA_Evidence_Matrix.xlsx</code><code>output/LabA_Research_Gap.md</code></div>
+        <p class="muted" style="font-size:14px;margin:12px 0 0">Evidence Matrix มี 2 Sheet: Evidence และ Prior_Art</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LAB B -->
+<section class="wrap lab B" id="labB">
+  <div class="lab-hero">
+    <div class="letter">B</div>
+    <div class="kicker" style="color:rgba(255,255,255,.8)">LAB B · 11:00–12:00 · 60 นาที</div>
+    <h2>DOE — ออกแบบการทดลองที่ทำได้จริง</h2>
+    <p>ออกแบบการทดลองสูตรเคลือบ 3 ปัจจัย (Coat weight, สัดส่วน PVA ใน Binder, อุณหภูมิอบ) ภายใต้ข้อจำกัดจริงของเครื่อง วัตถุดิบ และงบประมาณ ได้ DOE Plan 2 ทางเลือก, Run Sheet ที่สุ่มลำดับแล้ว และเหตุผลการเลือกแผน 1 หน้า</p>
+    <div class="chips"><span class="chip">5 Prompt</span><span class="chip">Sub Agent: Devil's Advocate</span><span class="chip">นักวิจัยเลือกแผนเอง</span></div>
+  </div>
+
+  <div class="lab-body">
+    <div class="tbl"><table>
+      <thead><tr><th>ไฟล์ใน LabB/</th><th>คืออะไร</th></tr></thead>
+      <tbody>
+        <tr><td><code>src/DOE_Constraints.xlsx</code></td><td>ข้อจำกัดที่เจ้าของงานยืนยันแล้ว: Sheet <code>DOE_Constraints</code> (13 หัวข้อ), <code>Equipment_Limits</code> (Rod coater, ตู้อบ, ตู้ WVTR), <code>Cost_per_Run</code></td></tr>
+        <tr><td><code>prev/LabA_Research_Gap.md</code></td><td>ผลจาก Lab A (มีไฟล์สำรองให้แล้ว ถ้ากลุ่มทำเสร็จให้วางของตัวเองทับ)</td></tr>
+      </tbody>
+    </table></div>
+    <div class="note">AI ช่วยเสนอรูปแบบ จัดลำดับสุ่ม แบ่ง Block และอธิบาย Confounding ได้ แต่ <strong>การเลือกแผนสุดท้ายเป็นของนักวิจัย</strong></div>
+
+    <div class="lstep">
+      <div class="lstep-head"><h4><span class="num">0</span>เปิด Project LabB</h4></div>
+      <p style="margin:10px 0 0">เปิดโฟลเดอร์ <code>LabB</code> เป็น Cowork Project ใส่ Instruction กลาง แล้วส่ง Prompt นี้เพื่อตรวจไฟล์และสร้างโฟลเดอร์ผลลัพธ์ <strong>ทำทุก Prompt ของ Lab นี้ต่อกันในแชทเดียว</strong> เพราะบาง Prompt อ้างถึงผลในแชทก่อนหน้า</p>
+      <div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">B0</b>ตรวจไฟล์ + สร้างโฟลเดอร์</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>แสดงรายชื่อไฟล์ใน src/ และ prev/ (src/DOE_Constraints.xlsx, prev/LabA_Research_Gap.md) ยืนยันว่าครบตามนี้ ยังไม่ต้องอ่านเนื้อหาไฟล์
+จากนั้นสร้างโฟลเดอร์ output/ ไว้เก็บผลลัพธ์ของ Lab นี้
+ถ้าไฟล์ไม่ครบหรือเปิดไม่ได้ ให้แจ้งชื่อไฟล์</pre></div>
+    </div>
+
+    <div class="lstep">
+      <div class="lstep-head"><h4><span class="num">1</span>อ่านข้อจำกัดและตรวจความครบ</h4></div>
+      <div class="tools"><span class="tool"><i style="background:#21a366;color:#fff">X</i>Excel</span></div>
+      <div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">B1</b>Constraints</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>อ่าน src/DOE_Constraints.xlsx ทั้ง 3 Sheet และ prev/LabA_Research_Gap.md
+1) สรุป Objective และ Response variables พร้อมเกณฑ์เป้าหมาย
+2) ทำตาราง Factor: ชื่อ | ช่วงที่เครื่องทำได้ | ระดับที่เป็นไปได้จริง | เปลี่ยนง่ายหรือยาก | เหตุผล
+3) หาข้อจำกัดที่แคบที่สุด (Run budget ที่ทำได้จริง) แสดงวิธีคิดจากความจุตู้ WVTR, งบ และจำนวน Run ต่อวัน
+4) ระบุ Nuisance factor ที่ควรทำ Block
+5) รายการข้อมูลที่ยังไม่ชัดหรือขาด (ถ้ามี) แยกจากสมมติฐานที่คุณตั้งเอง
+ยังไม่ต้องเสนอแผน</pre></div>
+      <div class="cp"><strong><span class="chip human">คนทำเอง</span> Checkpoint 1</strong><p>กลุ่มตรวจว่าจำนวน Run สูงสุดที่ AI คำนวณ ตรงกับที่กลุ่มคิดเองจากไฟล์</p></div>
+    </div>
+
+    <div class="lstep">
+      <div class="lstep-head"><h4><span class="num">2</span>เสนอแผน 2 ทางเลือก</h4></div>
+      <div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">B2</b>DOE Options</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>เสนอแผน DOE 2 ทางเลือกที่อยู่ในข้อจำกัดทั้งหมด เช่น Full factorial + Center points หรือ Response Surface (Box-Behnken / CCD)
+แต่ละทางเลือกแสดง:
+- ตาราง Run ในหน่วยจริงและแบบ Coded
+- จำนวน Run, Center point, จำนวนถ้วย WVTR, ต้นทุนต่อ Run และงบรวม (คำนวณจากชีต Cost_per_Run)
+- การแบ่ง Block ตาม Lot กระดาษฐาน และผลที่ Block ไป Confound กับเทอมใด
+- เทอมที่ประมาณได้ / ประมาณไม่ได้ และ Confounding ที่ต้องรู้
+- จำนวนครั้งที่ต้องเปลี่ยนสัดส่วน PVA ต่อวัน เทียบกับข้อจำกัด
+- ข้อดี ข้อเสีย และความเสี่ยง
+ถ้าแผนใดเกินข้อจำกัดข้อใด ให้บอกชัดเจน ห้ามปรับข้อจำกัดเอง
+สรุปเป็นตารางเปรียบเทียบ 2 ทางเลือก</pre></div>
+    </div>
+
+    <div class="lstep">
+      <div class="lstep-head"><h4><span class="num">3</span>Devil's Advocate</h4></div>
+      <div class="tools"><span class="tool"><i style="background:#8b7cf6;color:#fff">SA</i>Sub Agent</span></div>
+      <div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">B3</b>Devil's Advocate (Sub Agent)</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>ใช้ Sub Agent ในบท Devil's Advocate ที่ไม่เห็นด้วยกับทั้ง 2 แผน หาจุดอ่อนอย่างน้อย 3 ข้อต่อแผน ครอบคลุม:
+- ความเป็นอิสระของ Run (การเตรียมน้ำยาใหม่ต่อ Run หรือใช้ร่วมกัน, ปัจจัยที่เปลี่ยนยาก)
+- ช่วงปัจจัยที่เครื่องทำได้จริง (ความคลาดเคลื่อนของ Rod coater เทียบกับระยะห่างระดับ)
+- จำนวนซ้ำและพลังในการตรวจพบผล (เทียบกับ Repeatability ของ Cobb และ WVTR)
+- ความเสี่ยงที่ผลไม่ครอบคลุมเป้าหมาย
+แต่ละข้อเสนอวิธีแก้ที่ยังอยู่ในข้อจำกัด</pre></div>
+      <div class="cp"><strong><span class="chip human">คนทำเอง</span> Checkpoint 2 · กลุ่มเลือกแผนเอง</strong>
+        <p>ขั้นนี้ไม่ต้องส่ง Prompt ให้กลุ่มคุยกันแล้วตัดสินว่าจะใช้แผนไหนจาก 2 ทางเลือกในขั้นที่ 2 โดยดูจุดอ่อนที่ Devil's Advocate<span class="gl"> (บทบาทที่ตั้งใจค้านเพื่อหาจุดอ่อน)</span> หาเจอ แล้วเขียนเหตุผลของกลุ่มสั้น ๆ เหตุผลนี้จะนำไปกรอกในช่องสีเหลืองของ Prompt B4 ในขั้นถัดไป</p>
+        <p style="margin-top:8px">เหตุผลที่ดีควรตอบ 4 เรื่อง:</p>
+        <ol class="mini">
+          <li>อยู่ในข้อจำกัดครบไหม (จำนวน Run, ถ้วย WVTR, งบ, จำนวนครั้งที่เปลี่ยนสัดส่วน PVA ต่อวัน)</li>
+          <li>ได้ข้อมูลพอตอบโจทย์ไหม (เทอมที่ประมาณได้ / ประมาณไม่ได้, Center point, Block)</li>
+          <li>ทำไมไม่เลือกอีกแผน</li>
+          <li>ยอมรับข้อจำกัดอะไร และจะแก้จุดอ่อนจาก Devil's Advocate ข้อไหนบ้าง</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="lstep">
+      <div class="lstep-head"><h4><span class="num">4</span>Run Sheet และเหตุผลการเลือกแผน</h4></div>
+      <div class="tools"><span class="tool"><i style="background:#21a366;color:#fff">X</i>Excel</span><span class="tool"><i style="background:#2b7cd3;color:#fff">W</i>Word</span></div>
+      <div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">B4</b>Run Sheet + Rationale</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>กลุ่มเลือกแผน <mark>&lt;ใส่ชื่อแผน&gt;</mark> ด้วยเหตุผล: <mark>&lt;ใส่เหตุผลของกลุ่ม&gt;</mark>
+
+สร้าง:
+1) output/LabB_Run_Sheet.xlsx คอลัมน์: Run_ID (R01, R02, ...) | วัน | Block (Lot กระดาษ) |
+   ลำดับสุ่ม | Coat weight เป้า | เบอร์ Rod | สัดส่วน PVA |
+   อุณหภูมิอบ | ค่าแบบ Coded |
+   ช่องว่างให้กรอก Coat weight จริง, Cobb60 ×3, WVTR ×3, KIT | หมายเหตุ
+   สุ่มลำดับภายในแต่ละวัน บันทึก Random seed ที่ใช้ เพื่อสร้างซ้ำได้
+
+2) output/LabB_DOE_Plan_Rationale.docx ไม่เกิน 1 หน้า:
+   - แผนที่เลือก
+   - เหตุผล
+   - ข้อจำกัดที่ยอมรับ
+   - จุดอ่อนจาก Devil's Advocate ที่แก้แล้ว/ยังไม่แก้
+   - งบรวม</pre></div>
+      <details class="ex">
+        <summary>ดูตัวอย่าง Prompt B4 ที่กรอกครบแล้ว</summary>
+        <p class="muted" style="font-size:13.5px;margin:10px 0 0">ตัวอย่างนี้เลือกแผน Factorial จากรอบ Dry Run ของวิทยากร แผน ตัวเลข และจุดอ่อนของกลุ่มคุณอาจต่างจากนี้ ให้ใช้ของกลุ่มตัวเอง</p>
+        <div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">B4</b>ตัวอย่างที่กรอกแล้ว</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>กลุ่มเลือกแผน <mark>แผน 1: 2³ Full factorial + 4 Center points แบ่ง 2 Block ตาม Lot กระดาษ (P-2609 / P-2610)</mark> ด้วยเหตุผล:
+<mark>1) อยู่ในข้อจำกัดครบ: 12 Run, ถ้วย WVTR 36 จาก 48, งบ 21,600 จาก 30,000 บาท และเปลี่ยนสัดส่วน PVA ไม่เกิน 5 ครั้งต่อวัน
+2) Block ตาม Lot แยกได้ชัด เสียเทอม ABC ไปกับ Block ซึ่งกลุ่มยอมรับได้ เพราะรอบนี้ไม่ได้ต้องการรู้ Interaction 3 ทาง
+3) มี Center point 4 จุด (Block ละ 2) ตรวจความโค้งได้ ถ้าพบความโค้งจะใช้งบที่เหลือ 8,400 บาท (4 Run) ทดลองต่อ
+4) ไม่เลือกแผน 2 (Box-Behnken) เพราะต้องเปลี่ยนสัดส่วน PVA 6–7 ครั้งต่อวันถ้าสุ่มเต็มที่ เกินข้อจำกัด และ Block ไม่ตั้งฉาก
+ข้อจำกัดที่ยอมรับ: ประมาณเทอมกำลังสองแยกรายปัจจัยไม่ได้ และ df ของ Error น้อย
+จุดอ่อนจาก Devil's Advocate ที่จะแก้:
+เตรียมน้ำยาใหม่ทุกครั้งที่เปลี่ยนสัดส่วน PVA และบันทึกเลขชุดน้ำยาในคอลัมน์หมายเหตุ /
+ชั่ง Coat weight จริงทุก Run เพราะ Rod คลาดเคลื่อน ±0.6–0.7 g/m²</mark>
+
+สร้าง:
+1) output/LabB_Run_Sheet.xlsx คอลัมน์:
+   Run_ID (R01, R02, ...) | วัน | Block (Lot กระดาษ) | ลำดับสุ่ม | Coat weight เป้า | เบอร์ Rod | สัดส่วน PVA | อุณหภูมิอบ | ค่าแบบ Coded |
+   ช่องว่างให้กรอก Coat weight จริง, Cobb60 ×3, WVTR ×3, KIT | หมายเหตุ
+   สุ่มลำดับภายในแต่ละวัน บันทึก Random seed ที่ใช้ เพื่อสร้างซ้ำได้
+2) output/LabB_DOE_Plan_Rationale.docx ไม่เกิน 1 หน้า:
+   - แผนที่เลือก
+   - เหตุผล
+   - ข้อจำกัดที่ยอมรับ
+   - จุดอ่อนจาก Devil's Advocate ที่แก้แล้ว/ยังไม่แก้
+   - งบรวม</pre></div>
+      </details>
+    </div>
+
+    <div class="grid2">
+      <div class="panel"><h4>Checkpoint ก่อนจบ Lab</h4>
+        <ul class="check">
+          <li><input type="checkbox" id="b1"><label for="b1">จำนวน Run และจำนวนถ้วย WVTR ไม่เกินความจุตู้ และงบรวมไม่เกินที่กำหนด</label></li>
+          <li><input type="checkbox" id="b2"><label for="b2">ทุกระดับปัจจัยอยู่ในช่วงที่เครื่องทำได้จริง</label></li>
+          <li><input type="checkbox" id="b3"><label for="b3">มี Center point ตามข้อกำหนด และแบ่ง Block ตาม Lot กระดาษ</label></li>
+          <li><input type="checkbox" id="b4"><label for="b4">Run Sheet สุ่มลำดับแล้ว และบันทึก Seed ไว้</label></li>
+          <li><input type="checkbox" id="b5"><label for="b5">เหตุผลการเลือกแผนเขียนโดยนักวิจัย ไม่ใช่ให้ AI ตัดสิน</label></li>
+        </ul>
+      </div>
+      <details class="faq">
+      <summary>วิธีแก้ปัญหาที่พบบ่อย · Lab B</summary>
+      <div class="fq"><h5>จำนวน Run สูงสุดที่ AI คำนวณไม่ใช่ 16</h5><p class="why"><b>ทำไม:</b> AI อาจดูแค่ข้อจำกัดเดียว เช่น เคลือบได้ 20 Run แต่ลืมความจุตู้ WVTR</p><div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">B·1</b>คำนวณ Run budget ใหม่</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>คำนวณ Run budget ใหม่จาก src/DOE_Constraints.xlsx โดยแสดงทุกข้อจำกัดแล้วเลือกค่าต่ำสุด:
+- เคลือบได้กี่ Run ต่อวัน × จำนวนวัน
+- ตู้ WVTR กี่ถ้วยต่อรอบ × จำนวนรอบ ÷ จำนวนถ้วยต่อ Run
+- งบรวม ÷ ต้นทุนต่อ Run
+- กระดาษฐานแต่ละ Lot พอกี่ Run × จำนวน Lot
+อ้างแถวในไฟล์ทุกตัวเลข</pre></div></div>
+      <div class="fq"><h5>แผนต้องเปลี่ยนสัดส่วน PVA เกิน 5 ครั้งต่อวัน</h5><p class="why"><b>ทำไม:</b> สุ่มลำดับเต็มที่ทำให้สัดส่วน PVA สลับไปมา แต่การเปลี่ยนแต่ละครั้งต้องเตรียมน้ำยาใหม่ 30 นาที</p><div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">B·2</b>จัดลำดับแบบจำกัด</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>จัดลำดับ Run ใหม่ภายในแต่ละวัน: จัดกลุ่ม Run ที่ใช้สัดส่วน PVA เดียวกันไว้ติดกัน สุ่มลำดับของกลุ่ม และสุ่มลำดับ Run ภายในกลุ่ม
+ให้เปลี่ยนสัดส่วน PVA ไม่เกิน 5 ครั้งต่อวัน บันทึก Random seed ที่ใช้ และอธิบายสั้น ๆ ว่าการสุ่มแบบจำกัดนี้มีผลต่อการวิเคราะห์อย่างไร</pre></div></div>
+      <div class="fq"><h5>Run Sheet ไม่มี Random seed หรือสุ่มใหม่แล้วได้ลำดับไม่เหมือนเดิม</h5><p class="why"><b>ทำไม:</b> ไม่ได้กำหนด seed ทำให้สร้างลำดับเดิมซ้ำไม่ได้</p><div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">B·3</b>กำหนด seed</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>สร้างลำดับสุ่มใน output/LabB_Run_Sheet.xlsx ใหม่ด้วย Python โดยใช้ Random seed = 2026 สุ่มแยกในแต่ละวัน
+เขียนค่า seed ไว้ในเซลล์บนสุดของ Sheet และรันซ้ำอีกครั้งเพื่อยืนยันว่าได้ลำดับเดิม</pre></div></div>
+      <div class="fq"><h5>ยังเลือกแผนไม่ได้ หรือไม่รู้จะกรอก B4 อย่างไร</h5><p class="why"><b>ทำไม:</b> Checkpoint 2 ต้องให้กลุ่มตัดสินใจเอง</p><p class="why"><b>วิธีแก้:</b> เปิด "ดูตัวอย่าง Prompt B4 ที่กรอกครบแล้ว" ใต้ขั้นที่ 4 แล้วใช้ได้ทันที แต่ควรอ่านเหตุผลให้เข้าใจก่อน เพราะต้องอธิบายในคลาส</p></div>
+      <div class="fq short"><h5>ตามไม่ทัน? ใช้ Prompt ทางลัดชุดเดียวจบ Lab</h5><p class="why">ใช้เมื่อเวลาเหลือน้อยหรือเผลอเปิดแชทใหม่ ใช้แผน Factorial จากรอบ Dry Run เป็นค่าตั้งต้น ส่งได้ทันทีโดยไม่ต้องกรอกอะไร</p><div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">B★</b>ทางลัด Lab B</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>อ่าน src/DOE_Constraints.xlsx ทั้ง 3 Sheet และ prev/LabA_Research_Gap.md
+
+ตรวจว่าแผนนี้อยู่ในข้อจำกัดทุกข้อ (
+- Run budget 16
+- ถ้วย WVTR 48
+- งบ 30,000 บาท
+- เปลี่ยนสัดส่วน PVA ไม่เกิน 5 ครั้งต่อวัน
+- Center point อย่างน้อย 3)
+ถ้าข้อใดไม่ผ่านให้แจ้งก่อนทำต่อ:
+
+แผน: 2³ Full factorial + 4 Center points แบ่ง 2 Block ตาม Lot กระดาษ
+- A Coat weight 6 / 8 / 10 g/m² (Rod #6 / #8 / #10)
+- B สัดส่วน PVA 50 / 60 / 70 %
+- C อุณหภูมิอบ 100 / 110 / 120 °C
+- Block 1 = Lot P-2609 (วันที่ 1): Run ที่ ABC = −1 คือ (−,−,−) (+,+,−) (+,−,+) (−,+,+) + Center point 2 Run
+- Block 2 = Lot P-2610 (วันที่ 2): Run ที่ ABC = +1 คือ (+,−,−) (−,+,−) (−,−,+) (+,+,+) + Center point 2 Run
+
+เหตุผลของกลุ่ม:
+- อยู่ในข้อจำกัดครบ (12 Run, 36 ถ้วย, 21,600 บาท)
+- Block ตาม Lot แยกได้ชัดโดยเสีย ABC ไปกับ Block
+- Center point 4 จุดใช้ตรวจความโค้ง
+- และเหลืองบ 8,400 บาท (4 Run) ไว้ทดลองต่อ
+- ไม่เลือก Box-Behnken เพราะต้องเปลี่ยนสัดส่วน PVA เกินข้อจำกัดและ Block ไม่ตั้งฉาก
+
+สร้าง:
+
+1) output/LabB_Run_Sheet.xlsx
+   คอลัมน์:
+   Run_ID (R01, R02, ...) | วัน | Block (Lot กระดาษ) | ลำดับสุ่ม | Coat weight เป้า | เบอร์ Rod | สัดส่วน PVA | อุณหภูมิอบ | ค่าแบบ Coded
+   | ช่องว่างให้กรอก Coat weight จริง, Cobb60 ×3, WVTR ×3, KIT | หมายเหตุ
+   สุ่มลำดับภายในแต่ละวันด้วย Random seed = 2026 โดยให้เปลี่ยนสัดส่วน PVA ไม่เกิน 5 ครั้งต่อวัน
+   และบันทึก seed ไว้ใน Sheet
+
+2) output/LabB_DOE_Plan_Rationale.docx ไม่เกิน 1 หน้า:
+   - แผนที่เลือก
+   - เหตุผล
+   - ข้อจำกัดที่ยอมรับ (ประมาณเทอมกำลังสองแยกรายปัจจัยไม่ได้, df ของ Error น้อย)
+   - จุดอ่อนที่ต้องระวัง (เตรียมน้ำยาใหม่ทุกครั้งที่เปลี่ยนสัดส่วน PVA, ชั่ง Coat weight จริงทุก Run เพราะ Rod คลาดเคลื่อน ±0.6–0.7 g/m²)
+   - งบรวม</pre></div></div>
+    </details>
+    <div class="panel"><h4>ผลลัพธ์ที่ต้องได้</h4>
+        <div class="outputs" style="margin-top:12px"><code>output/LabB_Run_Sheet.xlsx</code><code>output/LabB_DOE_Plan_Rationale.docx</code></div>
+        <p class="muted" style="font-size:14px;margin:12px 0 0">อ่านเพิ่ม: <a href="https://www.itl.nist.gov/div898/handbook/pri/section3/pri3.htm" target="_blank" rel="noopener">NIST/SEMATECH e-Handbook — Choosing an Experimental Design</a></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LAB C -->
+<section class="wrap lab C" id="labC">
+  <div class="lab-hero">
+    <div class="letter">C</div>
+    <div class="kicker" style="color:rgba(255,255,255,.8)">LAB C · 13:00–14:00 · 60 นาที</div>
+    <h2>Research Data Pipeline &amp; Statistics</h2>
+    <p>Pipeline เต็มรอบ Raw Data → Cleaning → Analysis → ตรวจผล → Script ที่รันซ้ำได้ ครอบคลุม ANOVA/Regression ของ DOE, SPC/Cpk ของ Pilot trial และ Cost Model พร้อม Sensitivity ±10 %</p>
+    <div class="chips"><span class="chip">7 Prompt</span><span class="chip">Cowork + Excel</span><span class="chip">กฎเหล็ก: รันซ้ำต้องได้ผลเดิม</span></div>
+  </div>
+
+  <div class="lab-body">
+    <div class="tbl"><table>
+      <thead><tr><th>ไฟล์ใน src/</th><th>คืออะไร</th></tr></thead>
+      <tbody>
+        <tr><td><code>DOE_RawData.xlsx</code></td><td><code>Lab_Results_Raw</code>: ผล DOE 12 Run (2³ + 4 Center points, 2 Block ตาม Lot กระดาษ) รายค่าซ้ำของ Cobb60, WVTR, KIT — <strong>มีปัญหาข้อมูลแบบที่พบจริง</strong><br><code>Pilot_Coater_QC</code>: Pilot trial 25 Subgroup ที่สูตรที่เลือก<br><code>Spec_Limits</code>: USL/LSL และเกณฑ์ Cpk</td></tr>
+        <tr><td><code>Cost_Inputs.xlsx</code></td><td>ราคาวัตถุดิบ (ใบเสนอราคาจำลอง), Process basis, Business case (Capex, ปริมาณขาย, ราคา)</td></tr>
+        <tr><td><code>TestMethod_RD-TM-300.pdf</code></td><td>วิธีทดสอบ (ชุดเดียวกับ Lab A) ใช้อ้างอิงเกณฑ์ตัดค่า การแปลงหน่วย และกติกาบันทึกข้อมูล</td></tr>
+      </tbody>
+    </table></div>
+    <div class="note">ข้อมูลทั้งหมดเป็นข้อมูลจำลองที่สร้างให้ใกล้เคียงงานกระดาษเคลือบจริง</div>
+
+    <div class="lstep">
+      <div class="lstep-head"><h4><span class="num">0</span>เปิด Project LabC</h4></div>
+      <p style="margin:10px 0 0">เปิดโฟลเดอร์ <code>LabC</code> เป็น Cowork Project ใส่ Instruction กลาง แล้วส่ง Prompt นี้เพื่อตรวจไฟล์และสร้างโฟลเดอร์ผลลัพธ์ <strong>ทำทุก Prompt ของ Lab นี้ต่อกันในแชทเดียว</strong> เพราะบาง Prompt อ้างถึงผลในแชทก่อนหน้า</p>
+      <div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">C0</b>ตรวจไฟล์ + สร้างโฟลเดอร์</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>แสดงรายชื่อไฟล์ใน src/ (DOE_RawData.xlsx, Cost_Inputs.xlsx, TestMethod_RD-TM-300.pdf) ยืนยันว่าครบตามนี้ ยังไม่ต้องอ่านเนื้อหาไฟล์
+จากนั้นสร้างโฟลเดอร์ output/ ไว้เก็บผลลัพธ์ของ Lab นี้
+ถ้าไฟล์ไม่ครบหรือเปิดไม่ได้ ให้แจ้งชื่อไฟล์</pre></div>
+    </div>
+
+    <div class="lstep">
+      <div class="lstep-head"><h4><span class="num">1</span>ตรวจข้อมูลและทำ Cleaning Log</h4></div>
+      <div class="tools"><span class="tool"><i style="background:#21a366;color:#fff">X</i>Excel</span></div>
+      <div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">C1</b>Data Check + Cleaning Log</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>อ่าน src/DOE_RawData.xlsx (ทั้ง 3 Sheet) และ src/TestMethod_RD-TM-300.pdf ยังไม่ต้องวิเคราะห์
+
+ตรวจ:
+- Data type
+- หน่วย
+- ค่าว่าง
+- แถวซ้ำ
+- รูปแบบ Sample_ID
+- ตัวเลขที่เป็นข้อความ
+- ค่าผิดปกติ
+- และหมายเหตุในคอลัมน์ Remark
+
+ทำ Cleaning Log คอลัมน์: แถวใน Excel | Sample_ID | ฟิลด์ | ปัญหา | ค่าเดิม | 
+การดำเนินการที่เสนอ (แปลง / รวม ID / ตัดออก / คงไว้และทำเครื่องหมาย) | เหตุผล | อ้างอิง (เช่น RD-TM-300 ข้อ 3)
+
+กติกา: ห้ามแก้ไฟล์ต้นฉบับ ห้ามตัดค่าที่ไม่มีเหตุผลทางเทคนิครองรับเพียงเพราะค่าสูงหรือต่ำ</pre></div>
+      <div class="cp"><strong><span class="chip human">คนทำเอง</span> Checkpoint 1</strong><p>กลุ่มอนุมัติ Cleaning Log<span class="gl"> (บันทึกว่าแก้หรือตัดข้อมูลอะไร เพราะอะไร)</span> ทีละแถว (คนตัดสินว่าค่าไหนตัด ค่าไหนเก็บ) ข้อมูลอ้างอิงที่ใช้ตัดสิน: <code>1 g/(100 in²·day) = 15.50 g/(m²·day)</code></p></div>
+    </div>
+
+    <div class="lstep">
+      <div class="lstep-head"><h4><span class="num">2</span>Script วิเคราะห์ DOE ที่รันซ้ำได้</h4></div>
+      <div class="tools"><span class="tool"><i style="background:#3776ab;color:#fff">Py</i>Python</span><span class="tool"><i style="background:#21a366;color:#fff">X</i>Excel</span></div>
+      <div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">C2</b>labC_pipeline.py</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>ใช้ Cleaning Log ที่กลุ่มอนุมัติแล้ว (แก้ตามนี้: <mark>&lt;ใส่ข้อที่ไม่เห็นด้วย ถ้ามี&gt;</mark>)
+เขียน Python Script output/labC_pipeline.py ที่อ่าน src/DOE_RawData.xlsx แล้วทำทุกขั้นตามลำดับ ห้ามแก้ข้อมูลด้วยมือนอก Script:
+1) Cleaning ตาม Log และบันทึกไฟล์ output/LabC_Clean_Data.xlsx (Sheet Clean_Data + Cleaning_Log)
+2) ค่าเฉลี่ยต่อ Run ของ Cobb60 และ WVTR (และจำนวนค่าที่ใช้)
+3) ANOVA / Regression ของ Cobb60 และ WVTR ด้วยปัจจัย Coded A, B, C, Interaction 2 ทาง และ Block พร้อมทดสอบความโค้งจาก Center points
+4) ตรวจ Model diagnostics: Residual vs Fitted, Normal plot, R², Adjusted R² และบอกข้อจำกัดเมื่อ df ของ Error น้อย
+5) ตรวจ KIT ทุก Run เทียบ LSL
+6) ทำนายผลที่ Setting ที่ทำได้จริง แล้วสรุปว่า Setting ใดผ่าน Development target ของทั้ง 3 ค่า
+ตั้ง Random seed (ถ้ามี) และพิมพ์ Version ของ Library ที่ใช้
+รัน Script แล้วสรุปผลในแชท: สมการ, ปัจจัยที่มีนัยสำคัญ (p-value), ความโค้ง, สมมติฐานทางสถิติที่ใช้ และข้อมูลที่ถูกตัดทิ้ง</pre></div>
+      <details class="ex"><summary>ดูตัวอย่าง Prompt C2 ที่กรอกครบแล้ว</summary><p class="muted" style="font-size:13.5px;margin:10px 0 0">ใช้เมื่อกลุ่มเห็นด้วยกับ Cleaning Log ทุกข้อ ถ้ามีข้อที่ไม่เห็นด้วย ให้เขียนแทนข้อความในวงเล็บ เช่น "แถว 23 ให้คงไว้และทำเครื่องหมาย ไม่ต้องตัด"</p><div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">C2</b>ตัวอย่างที่กรอกแล้ว</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>ใช้ Cleaning Log ที่กลุ่มอนุมัติแล้ว (กลุ่มอนุมัติทุกข้อตามที่เสนอ ไม่มีข้อแก้ไข)
+เขียน Python Script output/labC_pipeline.py ที่อ่าน src/DOE_RawData.xlsx แล้วทำทุกขั้นตามลำดับ ห้ามแก้ข้อมูลด้วยมือนอก Script:
+1) Cleaning ตาม Log และบันทึกไฟล์ output/LabC_Clean_Data.xlsx (Sheet Clean_Data + Cleaning_Log)
+2) ค่าเฉลี่ยต่อ Run ของ Cobb60 และ WVTR (และจำนวนค่าที่ใช้)
+3) ANOVA / Regression ของ Cobb60 และ WVTR ด้วยปัจจัย Coded A, B, C, Interaction 2 ทาง และ Block พร้อมทดสอบความโค้งจาก Center points
+4) ตรวจ Model diagnostics: Residual vs Fitted, Normal plot, R², Adjusted R² และบอกข้อจำกัดเมื่อ df ของ Error น้อย
+5) ตรวจ KIT ทุก Run เทียบ LSL
+6) ทำนายผลที่ Setting ที่ทำได้จริง แล้วสรุปว่า Setting ใดผ่าน Development target ของทั้ง 3 ค่า
+ตั้ง Random seed (ถ้ามี) และพิมพ์ Version ของ Library ที่ใช้
+รัน Script แล้วสรุปผลในแชท: สมการ, ปัจจัยที่มีนัยสำคัญ (p-value), ความโค้ง, สมมติฐานทางสถิติที่ใช้ และข้อมูลที่ถูกตัดทิ้ง</pre></div></details>
+    </div>
+
+    <div class="lstep">
+      <div class="lstep-head"><h4><span class="num">3</span>SPC / Cpk ของ Pilot trial</h4></div>
+      <div class="tools"><span class="tool"><i style="background:#3776ab;color:#fff">Py</i>Python</span></div>
+      <div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">C3</b>SPC / Cpk</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>เพิ่มส่วน SPC ใน output/labC_pipeline.py ใช้ Sheet Pilot_Coater_QC และ Spec_Limits
+1) X̄-R chart ของ Cobb60 (n = 4) และ WVTR (n = 2) บันทึกเป็นภาพ PNG ใน output/
+2) ตรวจความเสถียรก่อนคำนวณ Cpk (จุดหลุด Control limit, Run rule) และดูคอลัมน์ Remark ประกอบ
+3) คำนวณ Cpk (ใช้ σ within จาก R̄/d₂) และ Ppk (σ overall) ด้าน USL พร้อมสูตร
+4) เทียบกับเกณฑ์ Cpk ใน Spec_Limits และอธิบายว่าถ้ากระบวนการไม่เสถียร ค่า Cpk ใช้สรุปได้แค่ไหน</pre></div>
+    </div>
+
+    <div class="lstep">
+      <div class="lstep-head"><h4><span class="num">4</span>Cost Model และ Sensitivity</h4></div>
+      <div class="tools"><span class="tool"><i style="background:#21a366;color:#fff">X</i>Excel</span></div>
+      <div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">C4</b>Cost Model</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>ใช้ src/Cost_Inputs.xlsx สร้าง output/LabC_Cost_Model.xlsx ที่ใช้สูตร Excel จริง (ไม่ใส่ตัวเลขตายตัว):
+
+1) ต้นทุนต่อตันผลิตภัณฑ์ = กระดาษฐาน + สารเคลือบ + พลังงานอบ + Conversion
+   ที่ Coat weight 8 และ 10 g/m² (สัดส่วน PVA 50 %)
+   แสดงวิธีคิด kg สารเคลือบต่อตัน
+2) Sensitivity: ราคา PVA, SB latex, AKD และกระดาษฐาน เปลี่ยน ±10 % ทีละตัว
+   แสดงผลต่อต้นทุนต่อตัน และทำ Tornado chart
+3) Margin ต่อตัน และ NPV แบบ Screening จาก Sheet Business_Case
+
+ระบุสมมติฐานทั้งหมดใน Sheet แยก
+และบอกว่าตัวเลขใดมาจากไฟล์ ตัวเลขใดคำนวณเอง</pre></div>
+    </div>
+
+    <div class="lstep">
+      <div class="lstep-head"><h4><span class="num">5</span>ตรวจสอบ (กฎเหล็กงานวิจัย)</h4><span class="chip human">Integrity Reviewer ทำเอง</span></div>
+      <div class="tools"><span class="tool"><i style="background:#3776ab;color:#fff">Py</i>Python</span><span class="tool"><i style="background:#21a366;color:#fff">X</i>Excel</span></div>
+      <ul class="check">
+        <li><input type="checkbox" id="c1"><label for="c1">คำนวณซ้ำด้วย Excel อย่างน้อย 2 ค่า เช่น ค่าเฉลี่ย WVTR ของ 1 Run ที่ต้องแปลงหน่วย และ Cpk ของ Cobb60</label></li>
+        <li><input type="checkbox" id="c2"><label for="c2">เปิด <strong>แชทใหม่</strong> สั่งรัน <code>output/labC_pipeline.py</code> อีกครั้ง ผลต้องเหมือนเดิมทุกตัวเลข (ใช้ Prompt C5)</label></li>
+        <li><input type="checkbox" id="c3"><label for="c3">ตรวจว่าค่าที่ตัดทิ้งทุกค่ามีอยู่ใน Cleaning Log พร้อมเหตุผล</label></li>
+      </ul>
+      <div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">C5</b>รันซ้ำในแชทใหม่</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>รัน output/labC_pipeline.py ตามเดิมโดยไม่แก้ไข Script แล้วแสดงผลทุกตัวเลขที่ Script พิมพ์ออกมา
+ห้ามคำนวณเองนอก Script</pre></div>
+      <div class="note warn" style="margin-top:14px">ถ้าผลไม่ตรง ต้องหาสาเหตุก่อนไป Lab D</div>
+    </div>
+
+    <div class="lstep">
+      <div class="lstep-head"><h4><span class="num">6</span>เก็บสรุปผลไว้ใช้ใน Lab D</h4></div>
+      <div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">C6</b>Analysis Summary</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>รัน output/labC_pipeline.py อีกครั้ง และอ่าน output/LabC_Cost_Model.xlsx
+แล้วสรุปผลวิเคราะห์ของ Lab C บันทึกเป็น output/LabC_Analysis_Summary.md มี 3 ส่วน:
+1) DOE: สมการ, ปัจจัยที่มีนัยสำคัญ (p-value), ความโค้ง, R² / Adjusted R², Setting ที่ผ่าน Development target
+2) SPC / Cpk: Control limit, จุดหลุด, Cpk และ Ppk ของ Cobb60 และ WVTR เทียบเกณฑ์ และความเสถียรของกระบวนการ
+3) Cost Model: ต้นทุนต่อตัน, Margin, NPV ที่ Coat weight 8 และ 10 g/m² และผล Sensitivity ±10 %
+ใช้ตัวเลขจาก Script และไฟล์เท่านั้น ห้ามเพิ่มข้อสรุปใหม่</pre></div>
+      <div class="cp"><strong><span class="chip human">คนทำเอง</span> ส่งต่อไฟล์</strong><p>คัดลอก <code>LabC_Analysis_Summary.md</code> และ <code>LabC_Cost_Model.xlsx</code> จาก <code>LabC/output/</code> ไปวางทับใน <code>LabD/prev/</code></p></div>
+    </div>
+
+    <details class="faq">
+      <summary>วิธีแก้ปัญหาที่พบบ่อย · Lab C</summary>
+      <div class="fq"><h5>Script Error: ModuleNotFoundError (เช่น statsmodels, pandas)</h5><p class="why"><b>ทำไม:</b> AI เลือกใช้ Library ที่ไม่มีในเครื่อง รอบ Dry Run ใช้แค่ numpy, scipy, openpyxl, matplotlib</p><div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">C·1</b>เขียน Script ด้วย Library ที่มี</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>แก้ output/labC_pipeline.py ให้ใช้เฉพาะ numpy, scipy, openpyxl และ matplotlib (ห้ามใช้ pandas, statsmodels หรือ Library อื่น)
+คำนวณ Regression ด้วย numpy.linalg.lstsq และหา p-value จาก scipy.stats.t ผลลัพธ์และไฟล์ที่ได้ต้องเหมือนเดิมทุกขั้น แล้วรันใหม่</pre></div></div>
+      <div class="fq"><h5>ค่า WVTR ของ Block 2 ต่ำผิดปกติ (ราว 0.7–3)</h5><p class="why"><b>ทำไม:</b> Run R07–R12 ส่งวัดที่แล็บภายนอก (TLab-03) และบันทึกเป็นหน่วย g/(100 in²·day) ต้องแปลงก่อนวิเคราะห์ ห้ามตัดทิ้งเพราะค่าต่ำ</p><div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">C·2</b>แปลงหน่วย WVTR</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>ตรวจคอลัมน์หน่วยของ WVTR ทุกแถวใน src/DOE_RawData.xlsx
+แถวที่เป็น g/(100 in²·day) ให้แปลงด้วย 1 g/(100 in²·day) = 15.50 g/(m²·day) ตาม TestMethod_RD-TM-300.pdf ข้อ 3
+
+เพิ่มรายการใน Cleaning Log ทุกแถวที่แปลง (ค่าเดิม, ค่าใหม่, สูตร)
+ห้ามตัดค่าที่แปลงแล้วออก</pre></div></div>
+      <div class="fq"><h5>เปิดแชทใหม่แล้ว Cleaning Log จาก C1 หายไป</h5><p class="why"><b>ทำไม:</b> Cleaning Log ใน C1 อยู่ในแชท ยังไม่ได้บันทึกเป็นไฟล์</p><div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">C·3</b>สร้าง Cleaning Log ใหม่เป็นไฟล์</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>อ่าน src/DOE_RawData.xlsx (ทั้ง 3 Sheet) และ src/TestMethod_RD-TM-300.pdf
+ทำ Cleaning Log ใหม่แล้วบันทึกเป็น output/LabC_Cleaning_Log_draft.xlsx
+
+คอลัมน์:
+แถวใน Excel | Sample_ID | ฟิลด์ | ปัญหา | ค่าเดิม | การดำเนินการที่เสนอ (แปลง / รวม ID / ตัดออก / คงไว้และทำเครื่องหมาย) | เหตุผล | อ้างอิง
+
+ห้ามแก้ไฟล์ต้นฉบับ ห้ามตัดค่าที่ไม่มีเหตุผลทางเทคนิครองรับ
+แล้วรอให้กลุ่มอนุมัติก่อนเขียน Script</pre></div></div>
+      <div class="fq"><h5>รันซ้ำในแชทใหม่ (C5) แล้วตัวเลขไม่ตรงกับรอบแรก</h5><p class="why"><b>ทำไม:</b> Script มีขั้นที่สุ่มแต่ไม่ได้ตั้ง seed หรือมีการแก้ข้อมูลในแชทนอก Script</p><div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">C·4</b>หาสาเหตุที่ผลไม่ตรง</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>เปรียบเทียบ output/labC_pipeline.py กับผลที่พิมพ์ออกมาในรอบนี้
+หาว่าส่วนไหนของ Script ให้ผลต่างกันได้ระหว่างการรัน
+(
+- การสุ่มที่ไม่ได้ตั้ง seed
+- การอ่านไฟล์ที่ถูกแก้ทีหลัง
+- ค่าที่ไม่ได้มาจาก Script
+)
+
+แก้ Script ให้ได้ผลเดิมทุกครั้ง รันซ้ำ 2 รอบติดกัน แล้วแสดงว่าตัวเลขเหมือนกันทุกตัว</pre></div></div>
+      <div class="fq"><h5>Integrity Reviewer คำนวณ Cpk ใน Excel ไม่เป็น</h5><p class="why"><b>ทำไม:</b> สูตร Cpk ต้องใช้ค่าคงที่ d₂ ตามขนาด Subgroup ซึ่งไม่มีในไฟล์</p><p class="why"><b>สูตร:</b> σ<sub>within</sub> = R̄ ÷ d₂ (n = 4 → d₂ = 2.059, n = 2 → d₂ = 1.128) แล้ว Cpk ด้าน USL = (USL − X̄̄) ÷ (3 × σ<sub>within</sub>) ใน Excel ใช้ <code>=AVERAGE()</code> หา X̄̄ และ R̄ จากค่าเฉลี่ยกับช่วงของแต่ละ Subgroup</p></div>
+      <div class="fq short"><h5>ตามไม่ทัน? ใช้ Prompt ทางลัดชุดเดียวจบ Lab</h5><p class="why">ใช้เมื่อเวลาเหลือน้อย ใช้กติกา Cleaning มาตรฐานแทนการอนุมัติทีละแถว ได้ไฟล์ครบทุกตัวที่ Lab D ต้องใช้ แต่ยังต้องทำขั้นที่ 5 (รันซ้ำในแชทใหม่) เหมือนเดิม</p><div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">C★</b>ทางลัด Lab C</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>ทำ Lab C ทั้งหมดตามลำดับ ใช้ Python เฉพาะ numpy, scipy, openpyxl และ matplotlib
+
+1) อ่าน src/DOE_RawData.xlsx (Sheet Lab_Results_Raw, Pilot_Coater_QC, Spec_Limits) และ src/TestMethod_RD-TM-300.pdf
+   ทำ Cleaning ตามกติกานี้ และบันทึกทุกการแก้ใน Cleaning Log:
+   - แปลง WVTR หน่วย g/(100 in²·day) ด้วย 1 g/(100 in²·day) = 15.50 g/(m²·day)
+   - แปลงตัวเลขที่เก็บเป็นข้อความ (รวมทศนิยมที่ใช้จุลภาค เช่น 17,8) เป็นตัวเลข
+     และค่าปัจจัยที่มีตัวอักษรปน (เช่น 100C) ให้เหลือแต่ตัวเลข
+   - รวม Sample_ID ที่สะกดต่างกันแต่เป็นตัวอย่างเดียวกัน
+   - ลบแถวที่ซ้ำกันทุกช่อง
+   - ตัดเฉพาะค่าที่คอลัมน์ Remark ระบุปัญหาทางเทคนิค (เช่น cup seal leak, pinhole) หรือค่าว่าง
+     ค่าที่สูงหรือต่ำผิดปกติแต่ไม่มีเหตุผลทางเทคนิค ให้คงไว้และทำเครื่องหมาย
+
+2) เขียน output/labC_pipeline.py ที่ทำทุกขั้นใน Script เดียว และรัน:
+   - บันทึก output/LabC_Clean_Data.xlsx (Sheet Clean_Data + Cleaning_Log)
+   - ค่าเฉลี่ยต่อ Run
+   - Regression ของ Cobb60 และ WVTR ด้วย Coded A, B, C, Interaction 2 ทาง, Block
+     และทดสอบความโค้งจาก Center points พร้อม R², Adjusted R² และข้อจำกัดเมื่อ df ของ Error น้อย
+   - ตรวจ KIT เทียบ LSL และทำนายผลที่ A = 6/8/10, B = 50/60/70, C = 100/110/120
+     ว่า Setting ใดผ่าน Development target
+   - X̄-R chart ของ Cobb60 (n = 4) และ WVTR (n = 2) บันทึก PNG ใน output/ ตรวจความเสถียร
+     แล้วคำนวณ Cpk (σ within = R̄/d₂) และ Ppk ด้าน USL เทียบเกณฑ์ใน Spec_Limits
+   - ตั้ง Random seed และพิมพ์ Version ของ Library
+
+3) สร้าง output/LabC_Cost_Model.xlsx จาก src/Cost_Inputs.xlsx ด้วยสูตร Excel จริง:
+   - ต้นทุนต่อตันที่ Coat weight 8 และ 10 g/m² (PVA 50 %)
+   - Sensitivity ±10 % ของราคา PVA, SB latex, AKD และกระดาษฐาน พร้อม Tornado chart
+   - Margin และ NPV แบบ Screening
+   - และ Sheet สมมติฐานแยก
+
+4) บันทึก output/LabC_Analysis_Summary.md สรุป DOE, SPC / Cpk และ Cost Model จากตัวเลขของ Script และไฟล์เท่านั้น
+
+จบแล้วแสดงรายการไฟล์ที่ได้ใน output/</pre></div></div>
+    </details>
+    <div class="panel"><h4>ผลลัพธ์ที่ต้องได้</h4>
+      <div class="outputs" style="margin-top:12px"><code>output/labC_pipeline.py</code><code>output/LabC_Clean_Data.xlsx</code><code>output/*.png (Control chart)</code><code>output/LabC_Cost_Model.xlsx</code><code>output/LabC_Analysis_Summary.md</code></div>
+    </div>
+  </div>
+</section>
+
+<!-- LAB D -->
+<section class="wrap lab D" id="labD">
+  <div class="lab-hero">
+    <div class="letter">D</div>
+    <div class="kicker" style="color:rgba(255,255,255,.8)">LAB D · 14:15–15:05 · 50 นาที</div>
+    <h2>Multi-agent Workflow + Reviewer</h2>
+    <p>ตั้ง 5 Agent ที่ส่งงานกันผ่าน Handoff File<span class="gl"> (ไฟล์ส่งต่องานระหว่าง Agent)</span> ตรวจย้อนได้ ประกอบ Research Brief 3 มิติ พร้อมข้อเสนอ Go / No-Go / ทดลองเพิ่ม และ Review Log ที่จับข้อความไม่มีหลักฐานและตัวเลขไม่ตรงแหล่ง</p>
+    <div class="chips"><span class="chip">4 Prompt</span><span class="chip">Researcher · Analyst · IP · Writer · Reviewer</span></div>
+  </div>
+
+  <div class="lab-body">
+    <div class="grid2">
+      <div class="tbl"><table>
+        <thead><tr><th>ไฟล์ใน src/</th><th>ใช้โดย Agent</th></tr></thead>
+        <tbody>
+          <tr><td><code>Patents_MOCK.pdf</code></td><td>IP</td></tr>
+          <tr><td><code>Market_SEA2026_MOCK.pdf</code></td><td>Researcher (Market Fit)</td></tr>
+          <tr><td><code>Cost_Inputs.xlsx</code></td><td>Analyst (Financial Case)</td></tr>
+          <tr><td><code>DOE_RawData.xlsx</code></td><td>Analyst (เฉพาะเมื่อไม่มีผลจาก Lab C)</td></tr>
+        </tbody>
+      </table></div>
+      <div class="panel"><h4>ไฟล์จาก Lab ก่อนหน้าใน prev/</h4><p class="muted" style="font-size:14px;margin:6px 0 0">มีไฟล์สำรองให้แล้ว ถ้ากลุ่มทำ Lab A และ C เสร็จ ให้วางไฟล์ของตัวเองทับ</p>
+        <div class="outputs" style="margin-top:12px"><code>prev/LabA_Evidence_Matrix.xlsx</code><code>prev/LabA_Research_Gap.md</code><code>prev/LabC_Analysis_Summary.md</code><code>prev/LabC_Cost_Model.xlsx</code></div>
+      </div>
+    </div>
+
+    <div class="lstep">
+      <div class="lstep-head"><h4><span class="num">0</span>เปิด Project LabD</h4></div>
+      <p style="margin:10px 0 0">เปิดโฟลเดอร์ <code>LabD</code> เป็น Cowork Project ใส่ Instruction กลาง แล้วส่ง Prompt นี้เพื่อตรวจไฟล์และสร้างโฟลเดอร์ผลลัพธ์ <strong>ทำทุก Prompt ของ Lab นี้ต่อกันในแชทเดียว</strong> เพราะบาง Prompt อ้างถึงผลในแชทก่อนหน้า</p>
+      <div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">D0</b>ตรวจไฟล์ + สร้างโฟลเดอร์</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>แสดงรายชื่อไฟล์ใน src/ และ prev/
+(src/ 4 ไฟล์:
+  - Patents_MOCK.pdf
+  - Market_SEA2026_MOCK.pdf
+  - Cost_Inputs.xlsx
+  - DOE_RawData.xlsx
+·
+prev/ 4 ไฟล์:
+  - LabA_Evidence_Matrix.xlsx
+  - LabA_Research_Gap.md
+  - LabC_Analysis_Summary.md
+  - LabC_Cost_Model.xlsx)
+ยืนยันว่าครบตามนี้ ยังไม่ต้องอ่านเนื้อหาไฟล์
+
+จากนั้นสร้างโฟลเดอร์ output/ ไว้เก็บผลลัพธ์ของ Lab นี้
+
+ถ้าไฟล์ไม่ครบหรือเปิดไม่ได้ ให้แจ้งชื่อไฟล์</pre></div>
+    </div>
+
+    <div class="lstep">
+      <div class="lstep-head"><h4><span class="num">1</span>ออกแบบ Workflow และ Handoff</h4></div>
+      <div class="tools"><span class="tool"><i style="background:#8b7cf6;color:#fff">SA</i>Sub Agent</span></div>
+      <div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">D1</b>Workflow Design</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>ออกแบบ Multi-agent Workflow 5 บทบาทสำหรับโจทย์ "กระดาษเคลือบ Barrier ทดแทนการเคลือบ PE: ทำได้ทางเทคนิคไหม ตลาดต้องการไหม คุ้มค่าไหม"
+ทำตาราง: Agent | หน้าที่ | Input (ชื่อไฟล์) | Output / Handoff File | ห้ามทำ | งบ Token โดยประมาณ | โมเดลที่แนะนำ
+Handoff File ใช้ชื่อ output/LabD_handoff_1_researcher.md, _2_analyst.md, _3_ip.md, _4_writer (ไฟล์รายงาน), _5_review_log.xlsx
+ยังไม่ต้องรัน ให้กลุ่มตรวจตารางก่อน</pre></div>
+      <div class="cp"><strong><span class="chip human">คนทำเอง</span> อนุมัติตาราง</strong><p>กลุ่มตรวจตาราง Agent ก่อนสั่งรัน</p></div>
+    </div>
+
+    <div class="lstep">
+      <div class="lstep-head"><h4><span class="num">2</span>รัน Agent ตามลำดับ</h4></div>
+      <div class="tools"><span class="tool"><i style="background:#8b7cf6;color:#fff">SA</i>Sub Agent</span><span class="tool"><i style="background:#2b7cd3;color:#fff">W</i>Word</span><span class="tool"><i style="background:#d35230;color:#fff">P</i>PowerPoint</span></div>
+      <div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">D2</b>Run 4 Agents</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>รัน Workflow ตามตารางที่กลุ่มอนุมัติ โดยใช้ Sub Agent แยกตามบทบาท และส่งต่องานผ่าน Handoff File เท่านั้น
+
+Researcher:
+ใช้ prev/LabA_Evidence_Matrix.xlsx, prev/LabA_Research_Gap.md และ src/Market_SEA2026_MOCK.pdf
+สรุปหลักฐานด้าน Technical และ Market พร้อม Citation [ไฟล์, หน้า/แถว] → output/LabD_handoff_1_researcher.md
+
+Analyst:
+ใช้ prev/LabC_Analysis_Summary.md และ prev/LabC_Cost_Model.xlsx
+(ถ้าไม่มีใน prev/ ให้ใช้ src/DOE_RawData.xlsx และ src/Cost_Inputs.xlsx เฉพาะค่าเฉลี่ยต่อ Run และต้นทุนต่อตัน)
+สรุปผลทางเทคนิค ความสามารถของกระบวนการ (Cpk) ต้นทุน Margin และ NPV แบบ Screening พร้อมสมมติฐาน → output/LabD_handoff_2_analyst.md
+
+IP:
+คัดกรอง src/Patents_MOCK.pdf เทียบกับสูตรที่เลือก (Coat weight 10 g/m², PVA:SB latex 50:50, AKD 15 pph, Nanoclay 5 pph, อบ 120 °C)
+ทีละองค์ประกอบใน Claim 1
+บันทึก:
+- Query/เกณฑ์ที่ใช้คัด
+- Jurisdiction ที่สนใจ (TH และประเทศส่งออก)
+- วันที่ของข้อมูลสถานะ
+- จำนวนเอกสารที่ตรวจ
+- ตาราง Claim chart
+- ระดับความเสี่ยงเบื้องต้น (สูง/กลาง/ต่ำ/ไม่เกี่ยว)
+- และสิ่งที่ต้องส่งฝ่าย IP ตรวจต่อ
+ห้ามสรุปว่า FTO ผ่าน ให้เขียนว่าเป็น Preliminary screen ไม่ใช่ความเห็นทางกฎหมาย → output/LabD_handoff_3_ip.md
+
+Writer:
+ใช้เฉพาะ Handoff 1–3 สร้าง Research Brief 3 มิติ (Technical Feasibility, Market Fit, Financial Case) + ส่วน IP
++ ข้อเสนอ Go / No-Go / ทดลองเพิ่ม พร้อมเงื่อนไขและเหตุผล
+ทุกตัวเลขอ้าง Handoff ที่มา → output/LabD_Research_Brief.docx (หรือ .pptx 6–8 หน้า)</pre></div>
+    </div>
+
+    <div class="lstep">
+      <div class="lstep-head"><h4><span class="num">3</span>Reviewer Agent</h4></div>
+      <div class="tools"><span class="tool"><i style="background:#8b7cf6;color:#fff">SA</i>Sub Agent</span><span class="tool"><i style="background:#21a366;color:#fff">X</i>Excel</span></div>
+      <div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">D3</b>Reviewer (Sub Agent)</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>ใช้ Sub Agent ในบท Reviewer ที่ไม่ได้ร่วมเขียนรายงาน ตรวจ output/LabD_Research_Brief.docx เทียบกับ Handoff 1–3 และไฟล์ต้นทาง
+
+ทำ output/LabD_handoff_5_review_log.xlsx
+คอลัมน์:
+ตำแหน่งในรายงาน | ข้อความ |
+
+ประเภทปัญหา (ไม่มีหลักฐาน / ตัวเลขไม่ตรงแหล่ง / สรุปเกินข้อมูล / ใช้ข้อมูล MOCK โดยไม่ระบุ / อื่น ๆ) |
+หลักฐานที่ตรวจ | ระดับ (สูง/กลาง/ต่ำ) | ข้อเสนอแก้
+
+ตรวจทุกตัวเลขในรายงาน แล้วให้ Writer แก้ตาม Review Log เฉพาะระดับสูงและกลาง</pre></div>
+    </div>
+
+    <div class="lstep">
+      <div class="lstep-head"><h4><span class="num">4</span>Peer Review ข้ามกลุ่ม</h4><span class="chip human">คนตรวจ ไม่ใช้ AI</span></div>
+      <p style="margin:10px 0 0">สลับรายงานกับกลุ่มข้างเคียง ตรวจด้วย <strong>Peer Review<span class="gl"> (ให้กลุ่มอื่นตรวจงาน)</span> Checklist 5 ข้อ</strong></p>
+      <ul class="check">
+        <li><input type="checkbox" id="d1"><label for="d1">ตัวเลขสำคัญ 3 ตัวที่สุ่มตรวจ ตรงกับไฟล์ต้นทาง</label></li>
+        <li><input type="checkbox" id="d2"><label for="d2">ข้อสรุปไม่เกินหลักฐาน (ขนาดตัวอย่าง นัยสำคัญทางสถิติ ความเสถียรของกระบวนการ)</label></li>
+        <li><input type="checkbox" id="d3"><label for="d3">มีครบ 3 มิติ และข้อเสนอ Go / No-Go / ทดลองเพิ่ม มีเงื่อนไขที่วัดได้</label></li>
+        <li><input type="checkbox" id="d4"><label for="d4">ส่วน IP ระบุชัดว่าเป็นการคัดกรองเบื้องต้น และระบุเอกสารที่ต้องส่งฝ่าย IP</label></li>
+        <li><input type="checkbox" id="d5"><label for="d5">ข้อมูลจำลอง (MOCK) และสมมติฐานถูกแยกจากข้อมูลจริงชัดเจน</label></li>
+      </ul>
+    </div>
+
+    <div class="grid2">
+      <details class="faq">
+      <summary>วิธีแก้ปัญหาที่พบบ่อย · Lab D</summary>
+      <div class="fq"><h5>Writer ไปอ่านไฟล์ต้นทางเอง ไม่ใช้ Handoff</h5><p class="why"><b>ทำไม:</b> ถ้าไม่สั่งชัด AI จะหยิบไฟล์ที่เห็นใน Project มาใช้ ทำให้ตรวจย้อนว่าตัวเลขมาจาก Agent ไหนไม่ได้</p><div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">D·1</b>บังคับใช้ Handoff</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>เขียน output/LabD_Research_Brief.docx ใหม่ โดย Writer อ่านได้เฉพาะ
+- output/LabD_handoff_1_researcher.md
+- output/LabD_handoff_2_analyst.md
+- และ output/LabD_handoff_3_ip.md
+
+ห้ามเปิดไฟล์ใน src/ หรือ prev/
+ทุกตัวเลขในรายงานต้องมีวงเล็บบอก Handoff ที่มา เช่น (H2)
+ถ้า Handoff ไม่มีข้อมูลที่ต้องใช้ ให้เขียนว่า "ไม่มีข้อมูลใน Handoff"</pre></div></div>
+      <div class="fq"><h5>IP Agent สรุปว่า "ไม่ละเมิด" หรือ "FTO ผ่าน"</h5><p class="why"><b>ทำไม:</b> AI มักสรุปเกินหน้าที่ แต่หลักสูตรกำหนดให้ทำได้แค่คัดกรองเบื้องต้น</p><div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">D·2</b>แก้ข้อสรุป IP</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>แก้ output/LabD_handoff_3_ip.md:
+ลบข้อความที่สรุปว่าละเมิด ไม่ละเมิด หรือ FTO ผ่าน
+
+เขียนแทนด้วย "Preliminary screen ไม่ใช่ความเห็นทางกฎหมาย" พร้อม
+- ระดับความเสี่ยงเบื้องต้น (สูง/กลาง/ต่ำ/ไม่เกี่ยว) ของแต่ละเอกสาร
+- และรายการที่ต้องส่งฝ่าย IP ตรวจต่อ</pre></div></div>
+      <div class="fq"><h5>ไม่ได้ไฟล์ Word หรือ Excel ตามที่สั่ง</h5><p class="why"><b>ทำไม:</b> AI ตอบเป็นข้อความในแชทแทนการสร้างไฟล์</p><div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">D·3</b>สร้างไฟล์จากเนื้อหาในแชท</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>บันทึก Research Brief ที่เขียนไว้ในแชทเป็นไฟล์ output/LabD_Research_Brief.docx
+(หัวข้อ: Technical Feasibility, Market Fit, Financial Case, IP, ข้อเสนอ Go / No-Go / ทดลองเพิ่ม)
+
+และบันทึก Review Log เป็น output/LabD_handoff_5_review_log.xlsx ตามคอลัมน์ที่กำหนด
+ห้ามเปลี่ยนเนื้อหา แล้วยืนยันว่าทั้ง 2 ไฟล์ถูกสร้าง</pre></div></div>
+      <div class="fq"><h5>Token เกินงบที่ตั้งไว้</h5><p class="why"><b>ทำไม:</b> แต่ละ Agent อ่านไฟล์ทั้งไฟล์ซ้ำกัน</p><div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">D·4</b>ลดขนาด Input</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>ทำงานต่อโดยให้แต่ละ Agent อ่านเฉพาะส่วนที่จำเป็น:
+- Researcher อ่านเฉพาะแถวใน Evidence Matrix ที่ความมั่นใจสูงหรือกลาง
+- Analyst อ่านเฉพาะ LabC_Analysis_Summary.md
+- IP อ่านเฉพาะ Claim 1 ของแต่ละสิทธิบัตร
+
+แต่ละ Handoff ยาวไม่เกิน 1 หน้า และรายงานการใช้ Token โดยประมาณของแต่ละ Agent</pre></div></div>
+      <div class="fq short"><h5>ตามไม่ทัน? ใช้ Prompt ทางลัดชุดเดียวจบ Lab</h5><p class="why">ใช้เมื่อเวลาเหลือน้อย รวมขั้นที่ 1–3 ในรอบเดียวด้วยตาราง Agent สำเร็จรูป แต่ยังต้องทำ Peer Review ข้ามกลุ่มเหมือนเดิม</p><div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">D★</b>ทางลัด Lab D</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>ทำ Multi-agent Workflow สำหรับโจทย์ "กระดาษเคลือบ Barrier ทดแทนการเคลือบ PE: ทำได้ทางเทคนิคไหม ตลาดต้องการไหม คุ้มค่าไหม"
+โดยใช้ Sub Agent แยกตามบทบาท และส่งงานกันผ่านไฟล์เท่านั้น
+
+1) Researcher: อ่าน prev/LabA_Evidence_Matrix.xlsx, prev/LabA_Research_Gap.md และ src/Market_SEA2026_MOCK.pdf
+   สรุปหลักฐานด้าน Technical และ Market พร้อม Citation [ไฟล์, หน้า/แถว]
+   → output/LabD_handoff_1_researcher.md
+
+2) Analyst: อ่าน prev/LabC_Analysis_Summary.md และ prev/LabC_Cost_Model.xlsx
+   สรุปผลทางเทคนิค, Cpk, ต้นทุน, Margin และ NPV แบบ Screening พร้อมสมมติฐาน
+   → output/LabD_handoff_2_analyst.md
+
+3) IP: คัดกรอง src/Patents_MOCK.pdf เทียบสูตร
+   - Coat weight 10 g/m²
+   - PVA:SB latex 50:50
+   - AKD 15 pph
+   - Nanoclay 5 pph
+   - อบ 120 °C
+   ทีละองค์ประกอบใน Claim 1
+   บันทึก
+   - เกณฑ์ที่ใช้คัด
+   - Jurisdiction (TH และประเทศส่งออก)
+   - วันที่ของข้อมูลสถานะ
+   - จำนวนเอกสาร
+   - Claim chart
+   - ระดับความเสี่ยงเบื้องต้น
+   - และสิ่งที่ต้องส่งฝ่าย IP
+   เขียนว่าเป็น Preliminary screen ไม่ใช่ความเห็นทางกฎหมาย
+   → output/LabD_handoff_3_ip.md
+
+4) Writer: อ่านเฉพาะ Handoff 1–3 สร้าง output/LabD_Research_Brief.docx:
+   - Technical Feasibility
+   - Market Fit
+   - Financial Case
+   - IP
+   - และข้อเสนอ Go / No-Go / ทดลองเพิ่ม พร้อมเงื่อนไขที่วัดได้
+   ทุกตัวเลขอ้าง Handoff ที่มา
+
+5) Reviewer (ไม่ได้ร่วมเขียน): ตรวจทุกตัวเลขในรายงานเทียบ Handoff และไฟล์ต้นทาง
+   ทำ output/LabD_handoff_5_review_log.xlsx: ตำแหน่ง | ข้อความ |
+   ประเภทปัญหา (ไม่มีหลักฐาน / ตัวเลขไม่ตรงแหล่ง / สรุปเกินข้อมูล / ใช้ข้อมูล MOCK โดยไม่ระบุ / อื่น ๆ) |
+   หลักฐานที่ตรวจ | ระดับ | ข้อเสนอแก้
+
+6) ให้ Writer แก้รายงานตาม Review Log เฉพาะระดับสูงและกลาง แล้วสรุปสิ่งที่แก้</pre></div></div>
+    </details>
+    <div class="panel"><h4>ผลลัพธ์ที่ต้องได้</h4>
+        <div class="outputs" style="margin-top:12px"><code>output/LabD_handoff_1_researcher.md</code><code>output/LabD_handoff_2_analyst.md</code><code>output/LabD_handoff_3_ip.md</code><code>output/LabD_Research_Brief.docx</code><code>output/LabD_handoff_5_review_log.xlsx</code></div>
+      </div>
+      <div class="panel"><h4>ข้อควรระวัง</h4>
+        <div style="display:grid;gap:10px;margin-top:12px;font-size:14.5px">
+          <div class="rule"><i style="background:var(--B)"></i><span>เลขสิทธิบัตรในชุดนี้เป็นของจำลองทั้งหมด ห้ามอ้างนอกห้องอบรม</span></div>
+          <div class="rule"><i style="background:var(--lime)"></i><span>ดูการใช้ Token<span class="gl"> (หน่วยนับปริมาณการใช้งาน AI)</span> ของแต่ละ Agent ถ้าเกินงบในตาราง ให้ลดขนาด Input ก่อนเปลี่ยนเป็นโมเดลใหญ่ขึ้น</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LAB E -->
+<section class="wrap lab E" id="labE">
+  <div class="lab-hero">
+    <div class="letter">E</div>
+    <div class="kicker" style="color:rgba(255,255,255,.8)">LAB E · 15:05–15:45 · 40 นาที</div>
+    <h2>IPDC Skills Library + Automation</h2>
+    <p>สร้าง Skill<span class="gl"> (ชุดคำสั่งสำเร็จรูปที่เรียกใช้ซ้ำได้)</span> ของทีมจาก 1 ขั้นตอนใน Canvas นำเข้า IPDC Skills Library ทำ Skill Swap กับกลุ่มอื่น และตั้ง Scheduled Research Watch ที่ตรวจโฟลเดอร์ผลทดสอบทุกสัปดาห์พร้อมอัปเดต Live Dashboard<span class="gl"> (หน้าแสดงผลที่อัปเดตเอง)</span></p>
+    <div class="chips"><span class="chip">3 Prompt</span><span class="chip">Skill · Scheduled Task · Live Dashboard</span></div>
+  </div>
+
+  <div class="lab-body">
+    <div class="tbl"><table>
+      <thead><tr><th>ไฟล์ใน src/</th><th>คืออะไร</th></tr></thead>
+      <tbody>
+        <tr><td><code>Skills_Rules.md</code></td><td>กติกากลาง: 6 ส่วนที่ Skill ต้องมี, ชื่อ, Owner, Version, ผู้ตรวจรับรอง, data_class, ข้อห้ามด้าน Research Integrity และตัวอย่าง Skill</td></tr>
+        <tr><td><code>weekly_qc/QC_W41.csv</code>, <code>_W42</code>, <code>_W43</code></td><td>ผล QC ของ Pilot coater รายสัปดาห์ (สัปดาห์ละ 10 Subgroup: Cobb60 n=4, WVTR n=2, Coat weight) โฟลเดอร์ที่ Scheduled Task<span class="gl"> (งานที่ตั้งเวลาให้ทำเองอัตโนมัติ)</span> จะตรวจ</td></tr>
+        <tr><td><code>Spec_Limits.csv</code></td><td>USL ของ Cobb60 และ WVTR และเกณฑ์ Cpk</td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="panel">
+      <h4>กติกา IPDC Skills Library ที่ต้องรู้ก่อนเขียน Skill</h4>
+      <div class="grid3" style="margin-top:14px;font-size:14px">
+        <div><strong>6 ส่วนที่ต้องมี</strong><p class="muted" style="margin:6px 0 0">ใช้เมื่อใด · Input · ขั้นตอน · หลักฐานที่ต้องแสดง · รูปแบบผลลัพธ์ · เกณฑ์ตรวจคุณภาพ + สิ่งที่ห้ามทำ + การจัดการเมื่อผิดพลาด</p></div>
+        <div><strong>Version</strong><p class="muted" style="margin:6px 0 0">แก้คำ/รูปแบบ → PATCH · เพิ่มขั้นตอน/เกณฑ์ → MINOR · เปลี่ยนวิธีคำนวณ/เกณฑ์/แบบฟอร์ม → MAJOR (reviewer ตรวจใหม่) · สถานะ draft → reviewed → approved</p></div>
+        <div><strong>ห้ามทำ 5 ข้อ</strong><p class="muted" style="margin:6px 0 0">สร้างตัวเลข/Citation/เลขสิทธิบัตรที่ไม่มีในต้นทาง · แก้ข้อมูลดิบ · สรุปเกินข้อมูล · ให้ความเห็นทางกฎหมาย IP/FTO · นำข้อมูล confidential เข้าเครื่องมือที่ไม่อนุญาต</p></div>
+      </div>
+    </div>
+
+    <div class="lstep">
+      <div class="lstep-head"><h4><span class="num">0</span>เปิด Project LabE</h4></div>
+      <p style="margin:10px 0 0">เปิดโฟลเดอร์ <code>LabE</code> เป็น Cowork Project ใส่ Instruction กลาง แล้วส่ง Prompt นี้เพื่อตรวจไฟล์และสร้างโฟลเดอร์ผลลัพธ์ <strong>ทำทุก Prompt ของ Lab นี้ต่อกันในแชทเดียว</strong> เพราะบาง Prompt อ้างถึงผลในแชทก่อนหน้า</p>
+      <div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">E0</b>ตรวจไฟล์ + สร้างโฟลเดอร์</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>แสดงรายชื่อไฟล์ใน src/ รวมโฟลเดอร์ย่อย
+(Skills_Rules.md
+Spec_Limits.csv
+weekly_qc/QC_W41.csv, QC_W42.csv, QC_W43.csv)
+ยืนยันว่าครบตามนี้ ยังไม่ต้องอ่านเนื้อหาไฟล์
+
+จากนั้นสร้างโฟลเดอร์ output/ และ skills/ ไว้เก็บผลลัพธ์ของ Lab นี้
+
+ถ้าไฟล์ไม่ครบหรือเปิดไม่ได้ ให้แจ้งชื่อไฟล์</pre></div>
+    </div>
+
+    <div class="lstep">
+      <div class="lstep-head"><h4><span class="num">1</span>สร้าง Skill</h4></div>
+      <div class="tools"><span class="tool"><i style="background:#5b8cff;color:#fff">Sk</i>Skill</span></div>
+      <p style="margin:10px 0 0">เลือก 1 Skill จาก Canvas ของกลุ่ม: <strong>Citation Checker</strong>, <strong>DOE Plan Reviewer</strong> หรือ <strong>Cpk Report</strong> แล้วแนบ Prompt และผลลัพธ์ที่ดีที่สุดของกลุ่มจาก Lab A–D ที่เกี่ยวข้อง</p>
+      <div class="note" style="margin-top:12px">โฟลเดอร์ LabE มีข้อมูลพร้อมสำหรับ <strong>Cpk Report</strong> เท่านั้น ถ้าไม่แน่ใจให้เลือกตัวนี้ และใช้ Prompt สำเร็จรูปในหัวข้อ "วิธีแก้ปัญหาที่พบบ่อย · Lab E" ได้เลย ถ้าเลือก Skill อื่น ให้คัดลอกไฟล์ output จาก Lab นั้นมาไว้ในโฟลเดอร์ LabE ก่อน</div>
+      <div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">E1</b>Create Skill</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>อ่าน src/Skills_Rules.md ให้ครบ
+สร้าง Skill ชื่อ ipdc-<mark>&lt;ชื่อที่เลือก&gt;</mark> จาก Prompt และผลลัพธ์ที่แนบมา (<mark>&lt;ใส่ชื่อไฟล์ output/ ที่ใช้&gt;</mark>)
+- เขียนเป็นไฟล์ skills/ipdc-<mark>&lt;ชื่อ&gt;</mark>/SKILL.md ตามรูปแบบในข้อ 2 และตัวอย่างข้อ 6 ของกติกา status = draft, version = 0.1.0
+- ต้องมีครบ 6 ส่วน และระบุขั้นที่ต้องหยุดให้นักวิจัยตรวจ (Human-in-the-loop)
+- ระบุ data_class และ model_hint พร้อมเหตุผลด้าน Token
+- เพิ่มแถวของ Skill นี้ในตาราง Register ในไฟล์ skills/REGISTER.md
+แล้วตรวจ Skill ของตัวเองตามข้อ 1 และข้อ 4 ของกติกา รายงานข้อที่ยังขาด</pre></div>
+    </div>
+
+    <div class="lstep">
+      <div class="lstep-head"><h4><span class="num">2</span>Skill Swap</h4><span class="chip human">คนทำเอง</span></div>
+      <div class="tools"><span class="tool"><i style="background:#5b8cff;color:#fff">Sk</i>Skill</span></div>
+      <p style="margin:10px 0 0">ส่งโฟลเดอร์ <code>skills/ipdc-&lt;ชื่อ&gt;/</code> ให้กลุ่มข้างเคียง กลุ่มที่รับ <strong>ห้ามถามคำอธิบายจากเจ้าของ</strong> ติดตั้งแล้วทดลองใน Project ของ Lab ที่มีข้อมูลตรงกับ Skill</p>
+      <div class="tbl" style="margin-top:12px"><table>
+        <thead><tr><th>Skill ที่ได้รับ</th><th>ทดลองใน Project</th><th>ข้อมูลที่ใช้</th></tr></thead>
+        <tbody>
+          <tr><td>Citation Checker</td><td><code>LabA</code></td><td><code>output/LabA_Evidence_Matrix.xlsx</code> + ไฟล์ใน <code>src/</code></td></tr>
+          <tr><td>DOE Plan Reviewer</td><td><code>LabB</code></td><td><code>output/LabB_Run_Sheet.xlsx</code> และ <code>output/LabB_DOE_Plan_Rationale.docx</code></td></tr>
+          <tr><td>Cpk Report</td><td><code>LabE</code></td><td><code>src/weekly_qc/QC_W41.csv</code> และ <code>src/Spec_Limits.csv</code></td></tr>
+        </tbody>
+      </table></div>
+      <div class="cp"><strong>บันทึก Feedback 3 ข้อ</strong><p>ทำงานได้ไหม · จุดที่ AI ต้องเดาหรือถาม · ผลลัพธ์ผิดตรงไหน → ส่งคืนเจ้าของ เจ้าของแก้และเพิ่ม Version ตามกติกาข้อ 3</p></div>
+    </div>
+
+    <div class="lstep">
+      <div class="lstep-head"><h4><span class="num">3</span>Scheduled Research Watch + Live Dashboard</h4></div>
+      <div class="tools"><span class="tool"><i style="background:#f0656e;color:#fff">ST</i>Scheduled Task</span><span class="tool"><i style="background:#e4f04a;color:#1a1a0a">LA</i>Live Artifact</span></div>
+      <p style="margin:10px 0 0">วิทยากรสาธิตก่อน แล้วผู้เรียนตั้งค่าตามบนเครื่องตนเอง</p>
+      <div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">E2</b>Research Watch</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>ฉันต้องการงานอัตโนมัติทุกวันจันทร์ 08:00 น. ทำดังนี้:
+
+1) ตรวจโฟลเดอร์ src/weekly_qc/ หาไฟล์ QC_W*.csv ที่ยังไม่เคยประมวลผล
+2) ต่อข้อมูลกับสัปดาห์ก่อนหน้า คำนวณ X̄-R ของ Cobb60 (n=4) และ WVTR (n=2), Cpk และ Ppk ด้าน USL จาก src/Spec_Limits.csv
+3) ตรวจ Run rule (เช่น 6 จุดเพิ่มขึ้นต่อเนื่อง จุดหลุด Control limit ค่าเกิน USL) และดูแนวโน้ม Coat weight ประกอบ
+4) อัปเดต Live Dashboard output/LabE_Research_Watch.html แสดง:
+   - Control chart
+   - Cpk รายสัปดาห์เทียบเกณฑ์ 1.33
+   - รายการ Alert (สีแดง) พร้อม Subgroup และวันที่
+   - เวลาที่อัปเดตล่าสุด
+5) เขียนสรุปสัปดาห์ 5 บรรทัดใน output/weekly_watch/ ระบุข้อสังเกตที่ต้องให้นักวิจัยตรวจ ห้ามสรุปสาเหตุโดยไม่มีหลักฐาน
+6) ถ้าไฟล์อ่านไม่ได้หรือคอลัมน์ไม่ครบ ให้หยุดและแจ้งฉัน
+
+ก่อนตั้งเวลา ให้รันครั้งแรกกับ 3 ไฟล์ที่มีอยู่ตอนนี้ แล้วสรุปผลให้ฉันตรวจ
+อย่าเพิ่งตั้งเวลาจนกว่าฉันจะยืนยัน</pre></div>
+      <div class="cp"><strong><span class="chip human">คนทำเอง</span> Checkpoint ก่อนตั้งเวลาจริง</strong>
+        <ul class="check">
+          <li><input type="checkbox" id="e1"><label for="e1">Integrity Reviewer คำนวณ Cpk ของ Cobb60 สัปดาห์ W41 ซ้ำด้วย Excel ได้ค่าตรงกัน</label></li>
+          <li><input type="checkbox" id="e2"><label for="e2">Alert ใน Dashboard ชี้ Subgroup ที่มีปัญหาจริง และตรวจย้อนไปที่ไฟล์ได้</label></li>
+          <li><input type="checkbox" id="e3"><label for="e3">Task ทำงานเฉพาะในโฟลเดอร์ของ Project ข้อมูล data_class confidential ไม่ออกนอกองค์กร</label></li>
+          <li><input type="checkbox" id="e4"><label for="e4">ยืนยันแล้วจึงตั้งเวลา และรู้วิธีหยุด Task</label></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="grid2">
+      <details class="faq">
+      <summary>วิธีแก้ปัญหาที่พบบ่อย · Lab E</summary>
+      <div class="fq"><h5>ไม่มีไฟล์ผลลัพธ์จาก Lab ก่อนหน้าให้สร้าง Skill</h5><p class="why"><b>ทำไม:</b> โฟลเดอร์ LabE มีข้อมูลพร้อมสำหรับ Cpk Report เท่านั้น</p><div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">E·1</b>สร้าง Skill Cpk Report (ไม่ต้องกรอกอะไร)</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>อ่าน src/Skills_Rules.md ให้ครบ
+สร้าง Skill ชื่อ ipdc-cpk-report สำหรับคำนวณ Cpk / Ppk และรายงานความเสถียรของกระบวนการจากไฟล์ QC รายสัปดาห์
+- เขียนเป็นไฟล์ skills/ipdc-cpk-report/SKILL.md ตามรูปแบบในข้อ 2 และตัวอย่างข้อ 6 ของกติกา
+  status = draft, version = 0.1.0, owner = ชื่อกลุ่มของเรา
+- ต้องมีครบ 6 ส่วน:
+  - ใช้เมื่อใด /
+  - Input (ไฟล์ CSV ผล QC ที่มี Subgroup, Cobb60 n = 4, WVTR n = 2, Coat weight และไฟล์ Spec Limits) /
+  - ขั้นตอน (ตรวจคอลัมน์ → X̄-R chart → ตรวจความเสถียรและ Run rule → Cpk จาก σ within = R̄/d₂ และ Ppk จาก σ overall ด้าน USL → เทียบเกณฑ์) /
+  - หลักฐานที่ต้องแสดง (สูตร, ค่า d₂, Subgroup ที่หลุด) /
+  - รูปแบบผลลัพธ์ /
+  - เกณฑ์ตรวจคุณภาพ ข้อห้าม และการจัดการเมื่อผิดพลาด
+- ระบุขั้นที่ต้องหยุดให้นักวิจัยตรวจ: ก่อนสรุป Cpk เมื่อกระบวนการไม่เสถียร
+- data_class = confidential และ model_hint พร้อมเหตุผลด้าน Token
+- เพิ่มแถวของ Skill นี้ในตาราง Register ในไฟล์ skills/REGISTER.md
+
+ทดลองใช้ Skill กับ src/weekly_qc/QC_W41.csv และ src/Spec_Limits.csv แล้วตรวจ Skill ตามข้อ 1 และข้อ 4 ของกติกา รายงานข้อที่ยังขาด</pre></div></div>
+      <div class="fq"><h5>ไม่รู้วิธีติดตั้ง Skill ที่ได้จากกลุ่มอื่น</h5><p class="why"><b>ทำไม:</b> ขั้นตอนติดตั้งขึ้นกับการตั้งค่า Cowork ในเครื่อง ให้วิทยากรสาธิต ระหว่างนี้สั่งให้ AI อ่านไฟล์ SKILL.md แล้วทำตามได้เลยโดยไม่ต้องติดตั้ง</p><p class="why"><b>ถ้าได้ Skill อื่น:</b> เปลี่ยนชื่อโฟลเดอร์ใน Prompt และทดลองใน Project ของ Lab ที่มีข้อมูลตรงกับ Skill ตามตารางขั้นที่ 2</p><div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">E·2</b>ใช้ Skill โดยไม่ต้องติดตั้ง</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>วางโฟลเดอร์ Skill ที่ได้รับไว้ใน skills/ ของ Project นี้แล้ว
+อ่าน skills/ipdc-cpk-report/SKILL.md ให้ครบ แล้วทำงานตามขั้นตอนใน Skill นี้ทุกข้อกับ src/weekly_qc/QC_W41.csv และ src/Spec_Limits.csv
+ห้ามเพิ่มขั้นตอนที่ Skill ไม่ได้เขียนไว้ ถ้า Skill ไม่ชัดตรงไหนให้จดไว้เป็น Feedback แทนการเดา</pre></div></div>
+      <div class="fq"><h5>AI ตั้งเวลา Scheduled Task จากแชทไม่ได้</h5><p class="why"><b>ทำไม:</b> บางเครื่องต้องตั้งเวลาจากหน้าจอ Cowork เอง ให้ดูตอนวิทยากรสาธิต ระหว่างนี้รันด้วยมือได้เลย</p><div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">E·3</b>รัน Research Watch ด้วยมือ 1 รอบ</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>ทำงาน Research Watch 1 รอบตอนนี้ (ยังไม่ต้องตั้งเวลา):
+
+1) อ่านทุกไฟล์ src/weekly_qc/QC_W*.csv ต่อข้อมูลตามลำดับสัปดาห์
+2) คำนวณ X̄-R ของ Cobb60 (n=4) และ WVTR (n=2), Cpk และ Ppk ด้าน USL จาก src/Spec_Limits.csv แยกรายสัปดาห์
+3) ตรวจ Run rule (6 จุดเพิ่มขึ้นต่อเนื่อง, จุดหลุด Control limit, ค่าเกิน USL)
+   และแนวโน้ม Coat weight
+4) สร้าง output/LabE_Research_Watch.html:
+   - Control chart
+   - Cpk รายสัปดาห์เทียบเกณฑ์ 1.33
+   - รายการ Alert สีแดงพร้อม Subgroup และวันที่
+   - เวลาที่อัปเดตล่าสุด
+
+5) เขียนสรุป 5 บรรทัดใน output/weekly_watch/summary_รอบแรก.md ห้ามสรุปสาเหตุโดยไม่มีหลักฐาน</pre></div></div>
+      <div class="fq"><h5>เปิด Dashboard แล้วไม่เห็นกราฟ</h5><p class="why"><b>ทำไม:</b> กราฟอาจโหลดจาก Internet ซึ่งเครือข่ายองค์กรอาจบล็อก</p><div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">E·4</b>ทำ Dashboard แบบไม่ต้องใช้ Internet</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>แก้ output/LabE_Research_Watch.html ให้เปิดได้โดยไม่ต้องใช้ Internet: วาดกราฟด้วย SVG หรือ Canvas ในไฟล์เอง ห้ามโหลด Library จากภายนอก
+ข้อมูลทั้งหมดอยู่ในไฟล์ HTML ไฟล์เดียว แล้วยืนยันว่าไม่มีลิงก์ไปเว็บภายนอก</pre></div></div>
+    </details>
+    <div class="panel"><h4>ผลลัพธ์ที่ต้องได้</h4>
+        <div class="outputs" style="margin-top:12px"><code>skills/ipdc-&lt;ชื่อ&gt;/SKILL.md</code><code>skills/REGISTER.md</code><code>output/LabE_Research_Watch.html</code><code>output/weekly_watch/</code><code>Scheduled Task 1 งาน</code></div>
+      </div>
+      <div class="panel"><h4>อ่านเพิ่ม</h4>
+        <div style="display:grid;gap:8px;margin-top:12px;font-size:14.5px">
+          <a href="https://academy.claude.com/tutorials/customize-claude-cowork" target="_blank" rel="noopener">Claude Academy — Customize Claude Cowork ↗</a>
+          <a href="https://support.claude.com/en/articles/13854387-schedule-recurring-tasks-in-claude-cowork" target="_blank" rel="noopener">Claude Help Center — Schedule recurring tasks ↗</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="wrap" id="chrome">
+  <div class="sec-head"><div><div class="kicker">BONUS · ใช้ต่อหลังอบรม</div><h2>Claude in Chrome · ให้ Claude ช่วยทำงานบนเว็บ</h2></div></div>
+  <p class="muted" style="margin:0 0 18px">Claude in Chrome คือ Extension<span class="gl"> (ส่วนเสริมของเบราว์เซอร์)</span> ที่ให้ Claude อ่านหน้าเว็บ คลิก พิมพ์ เปลี่ยนหน้า และกรอกฟอร์มใน Google Chrome ให้ได้ ใช้ได้ทั้งจากแถบด้านข้างของ Chrome และสั่งจาก Claude Cowork ให้ไปทำงานบนเว็บแล้วนำผลกลับมาเป็นไฟล์ในเครื่อง</p>
+  <div class="grid2">
+    <div class="panel">
+      <h4>ติดตั้งและเปิดใช้</h4>
+      <ol style="margin:12px 0 0;padding-left:20px;line-height:1.8">
+        <li>เปิด <strong>Google Chrome</strong> บนคอมพิวเตอร์ (ไม่รองรับเบราว์เซอร์ Chromium อื่นและมือถือ)</li>
+        <li>ติดตั้ง <strong>Claude</strong> จาก Chrome Web Store → กด <strong>Add to Chrome</strong></li>
+        <li>เข้าสู่ระบบด้วยบัญชี Claude แล้วปักหมุด (Pin) ไอคอนไว้ที่แถบเครื่องมือ และอนุญาตสิทธิ์ที่ขอ</li>
+        <li>ใช้กับ Cowork: ใน Claude Desktop ไปที่ <strong>Settings → Customize → Connectors</strong> เปิด Claude in Chrome แล้ว<strong>เปิดใช้ในแต่ละแชท</strong> (ค่าเริ่มต้นปิดอยู่)</li>
+      </ol>
+      <p class="muted" style="font-size:14px;margin:12px 0 0">ต้องใช้บัญชี Claude แบบเสียเงิน (Pro, Max, Team, Enterprise) สำหรับบัญชีองค์กร ผู้ดูแลระบบต้องเปิดสิทธิ์ให้ก่อน และอาจกำหนดเว็บที่อนุญาตไว้</p>
+    </div>
+    <div class="panel">
+      <h4>ใช้ทำอะไรได้บ้าง</h4>
+      <ul style="margin:12px 0 0;padding-left:20px;line-height:1.8">
+        <li><strong>อ่านและสรุปหน้าเว็บ</strong> ที่เปิดอยู่ หรือเปิดหลายแท็บแล้วเปรียบเทียบให้</li>
+        <li><strong>ค้นและดึงข้อมูล</strong> จากเว็บมาจัดเป็นตาราง แล้วให้ Cowork บันทึกเป็นไฟล์ Excel / Word</li>
+        <li><strong>กรอกฟอร์มหรือทำขั้นตอนซ้ำ ๆ</strong> บนเว็บ โดยหยุดถามก่อนกดส่ง</li>
+        <li><strong>Shortcut</strong><span class="gl"> (Prompt ที่บันทึกไว้ใช้ซ้ำ)</span> พิมพ์ <code>/</code> เพื่อเรียกใช้ และตั้งเวลาให้รันอัตโนมัติรายวัน / รายสัปดาห์ได้ (Chrome ต้องเปิดอยู่)</li>
+      </ul>
+    </div>
+  </div>
+  <div class="step" style="margin-top:16px;padding-left:20px">
+    <h4>ตัวอย่าง Prompt</h4>
+      <div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">CH1</b>สรุปบทความที่เปิดอยู่</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>อ่านหน้าบทความวิชาการที่เปิดอยู่ (Abstract หรือ Full Text)
+
+สรุปเป็นตาราง: วัสดุ | วิธีทดสอบ | ผลหลัก (ค่า + หน่วย) | ข้อจำกัด | DOI หรือ URL
+ทุกค่าต้องบอกว่ามาจากส่วนไหนของบทความ ถ้าไม่พบให้เขียนว่า "ไม่พบในหน้าเว็บ"
+ห้ามคลิกลิงก์ ดาวน์โหลด หรือกรอกฟอร์มใด ๆ</pre></div>
+      <div class="prompt"><div class="prompt-top"><div class="prompt-id"><b class="id">CH2</b>Cowork + Chrome: ค้นงานวิจัยแล้วเติม Evidence Matrix</div><button class="copy" type="button">คัดลอก <span>⧉</span></button></div>
+<pre>ใช้ Claude in Chrome ค้นงานวิจัยหัวข้อ <mark>[เช่น bio-based barrier coating for paperboard]</mark> ใน Google Scholar
+เลือก 5 รายการที่เกี่ยวข้องที่สุด เปิดอ่านเฉพาะหน้า Abstract
+
+บันทึกเป็น output/Web_Literature_Scan.xlsx
+คอลัมน์: ชื่อเรื่อง | ปี | วัสดุ | ค่าที่รายงาน (WVTR / Cobb / KIT) | DOI หรือ URL | เกี่ยวกับโจทย์อย่างไร
+ห้ามเดาค่าที่ไม่ได้อยู่ใน Abstract และถ้าเว็บต้องล็อกอินหรือขอยืนยันตัวตน ให้หยุดและถามฉันก่อน</pre></div>
+  </div>
+  <div class="note warn" style="margin-top:16px"><strong>กติกาความปลอดภัย</strong> · ใช้กับเว็บที่เชื่อถือได้และองค์กรอนุญาตเท่านั้น · ห้ามวางข้อมูลลับของ SCGP ลงเว็บสาธารณะ · ห้ามให้ Claude ใส่รหัสผ่านหรือเข้าสู่ระบบแทน ให้คนล็อกอินเอง · ก่อนกดส่งฟอร์ม ซื้อ ลบ หรือโพสต์ ต้องให้คนตรวจและยืนยันทุกครั้ง · ถ้าหน้าเว็บมีข้อความสั่งให้ AI ทำอย่างอื่น ให้หยุดและแจ้งผู้ใช้ · ข้อมูลจากเว็บต้องเปิดตรวจกับต้นฉบับเหมือนเอกสารใน Lab</div>
+  <p class="muted" style="font-size:14px;margin:12px 0 0">อ่านเพิ่ม: <a href="https://support.claude.com/en/articles/12012173-get-started-with-claude-in-chrome" target="_blank" rel="noopener">Get started with Claude in Chrome</a></p>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">Claude for Researcher (1 Day) · SCGP (IPDC) · จัดทำโดย BorntoDev · ใช้ Mock Dataset ทั้งหมด ไม่ใช่ข้อมูลจริงขององค์กร</div>
+</footer>
+
+<div class="toast" id="toast" role="status" aria-live="polite">คัดลอกแล้ว</div>
+
+<script>
+(function(){
+  var toast=document.getElementById('toast'),tt;
+  function show(msg){toast.textContent=msg;toast.classList.add('on');clearTimeout(tt);tt=setTimeout(function(){toast.classList.remove('on')},1400)}
+  function fallback(text){var ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();var ok=false;try{ok=document.execCommand('copy')}catch(e){}document.body.removeChild(ta);return ok}
+  document.querySelectorAll('.copy').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var text=btn.closest('.prompt').querySelector('pre').innerText.trim();
+      var done=function(){btn.classList.add('done');show('คัดลอก Prompt แล้ว');setTimeout(function(){btn.classList.remove('done')},1200)};
+      if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(text).then(done,function(){fallback(text)?done():show('คัดลอกไม่สำเร็จ ลองเลือกข้อความเอง')})}
+      else{fallback(text)?done():show('คัดลอกไม่สำเร็จ ลองเลือกข้อความเอง')}
+    });
+  });
+  // readiness progress
+  var boxes=document.querySelectorAll('#ready .check input'),pt=document.getElementById('pText'),pb=document.getElementById('pBar');
+  function upd(){var n=0;boxes.forEach(function(b){if(b.checked)n++});pt.textContent=n+' / '+boxes.length+' พร้อม';pb.style.width=(n/boxes.length*100)+'%'}
+  boxes.forEach(function(b){b.addEventListener('change',upd)});upd();
+  // step tracking: Done button at bottom-right of each step card; first unfinished card gets "กำลังทำ"
+  var cardsAll=[].slice.call(document.querySelectorAll('#ready .step, .lab .lstep'));
+  cardsAll.forEach(function(card){
+    var row=document.createElement('div');row.className='done-row';
+    var btn=document.createElement('button');btn.type='button';btn.className='done-btn';btn.innerHTML='<i>✓</i>Done';btn.setAttribute('aria-pressed','false');
+    row.appendChild(btn);card.appendChild(row);
+    var tag=document.createElement('span');tag.className='now-tag';tag.textContent='กำลังทำ';
+    var head=card.querySelector('.lstep-head');
+    if(head){var ctl=document.createElement('div');ctl.className='ctl';var chip=head.querySelector(':scope > .chip');if(chip)ctl.appendChild(chip);ctl.appendChild(tag);head.appendChild(ctl)}
+    else{var h=card.querySelector('h4');h.appendChild(document.createTextNode(' '));h.appendChild(tag)}
+    // cards with a checklist: all ticked = Done, and Done ticks/unticks the whole list
+    var boxes=[].slice.call(card.querySelectorAll('.check input'));
+    function setDone(d){card.classList.toggle('is-done',d);btn.setAttribute('aria-pressed',String(d));track()}
+    boxes.forEach(function(b){b.addEventListener('change',function(){setDone(boxes.every(function(x){return x.checked}))})});
+    btn.addEventListener('click',function(){var d=!card.classList.contains('is-done');
+      if(boxes.length){boxes.forEach(function(b){b.checked=d});boxes[0].dispatchEvent(new Event('change'))}else setDone(d)});
+  });
+  function track(){
+    var cur=document.querySelector('.is-now');if(cur)cur.classList.remove('is-now');
+    var next=cardsAll.filter(function(c){return !c.classList.contains('is-done')})[0];
+    if(next)next.classList.add('is-now');
+  }
+  track();
+  // active nav
+  var links=[].slice.call(document.querySelectorAll('.pill a'));
+  var ids=links.map(function(a){return a.getAttribute('href').slice(1)});
+  function onScroll(){var cur='top';ids.forEach(function(id){var el=document.getElementById(id);if(el&&el.getBoundingClientRect().top<120)cur=id});var last;links.forEach(function(a){var on=a.getAttribute('href')==='#'+cur;a.classList.toggle('on',on);if(on)last=a});if(last&&last!==window._navOn){window._navOn=last;var pill=last.parentNode;pill.scrollTo({left:last.offsetLeft-pill.clientWidth/2+last.clientWidth/2,behavior:'smooth'})}}
+  window.addEventListener('scroll',onScroll,{passive:true});onScroll();
+})();
+</script>
+</body>
+</html>
